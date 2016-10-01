@@ -1,0 +1,35 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`nm-cloud`
+A cloud
+
+@demo demo/index.html
+-->
+
+<dom-module id="nm-cloud">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+			section {
+				background-color: #FFF;
+				padding: 5rem;
+				margin: 30rem auto 0 auto;
+				width: 80%;
+				box-shadow: 0px 4px 4px rgba(0, 0, 0, .2);
+				border-radius: 2rem;
+			}
+		</style>
+		<section>
+			<content></content>
+		</section>
+	</template>
+
+	<script>
+		Polymer({
+			is: 'nm-cloud'
+		});
+	</script>
+</dom-module>

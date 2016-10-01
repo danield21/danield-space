@@ -1,0 +1,11 @@
+application: danield-space
+version: ohju-001
+runtime: go
+api_version: go1
+
+handlers:
+- url: /dist
+  static_dir: dist
+
+- url: /.*
+  script: _go_app

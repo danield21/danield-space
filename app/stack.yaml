@@ -1,0 +1,49 @@
+app:
+  name: 'danield-space'
+  type: 'Web Application'
+  reason: 'Practice, experiment, and present what I am capable of'
+  development:
+    backend:
+      languages:
+        - 'Go'
+      environment: 'Google Cloud Platform'
+      libraries:
+        -
+          library: 'Testify'
+          license: 'MIT'
+          reason: 'Provides better unit testing support'
+        -
+          library: 'Gorilla Toolkit'
+          license: 'BSD 2-Clause'
+          reason: 'Provides better http routing support'
+        -
+          library: 'Gabs'
+          license: 'MIT'
+          reason: 'Provides better json parsing support. Used for translations'
+    frontend:
+      languages:
+       - 'HTML'
+       - 'CSS'
+       - 'JavaScript'
+      libraries:
+       -
+         library: 'Font Awesome'
+         license:
+           - font: 'SIL OFL 1.1'
+           - css: 'MIT'
+         reason: 'Better icons and images'
+       -
+         library: 'Polymer'
+         license: 'BSD 3-Clause'
+         reason: 'Provides Web components support and readily reusable HTML'
+       -
+         library: 'Browserify'
+         license:
+           - 'MIT'
+           - 'BSD 3-Clause'
+         reason: 'Converts ES6 to JavaScript that the browser can understand'
+       -
+         library: 'Watchify'
+         license:
+           - 'MIT'
+         reason: 'Allows for quick deployment for development'
