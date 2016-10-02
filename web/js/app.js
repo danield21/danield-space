@@ -1,0 +1,1 @@
+const Coordinates = require("./coordinate")

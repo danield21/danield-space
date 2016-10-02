@@ -1,0 +1,48 @@
+$skyblue: #87CEEB;
+
+body {
+    background: $skyblue;
+}
+
+nav {
+    -ms-box-orient: horizontal;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -moz-flex;
+    display: -webkit-flex;
+    display: flex;
+
+    -webkit-justify-content: space-around;
+    justify-content: space-around;
+    -webkit-flex-flow: row wrap;
+    flex-flow: row wrap;
+    -webkit-align-items: stretch;
+    align-items: stretch;
+}
+
+nav a {
+    flex-grow: 1;
+    display: block;
+    color: #444;
+    font-size: 2rem;
+    font-family: sans-serif;
+    text-decoration: none;
+    text-align: center;
+    transition: color .5s, background-color .5s;
+    padding: 1rem 0 1rem 0;
+}
+
+nav a + a {
+    border-left: solid 1px #AAA;
+}
+
+nav a:hover {
+    color: #222;
+    background: rgba(128, 128, 128, .1)
+}
+
+body > nm-cloud {
+    width: 80%;
+    margin: auto;
+}

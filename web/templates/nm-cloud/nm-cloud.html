@@ -1,35 +1,48 @@
 <link rel="import" href="../polymer/polymer.html">
 
-<!--
-`nm-cloud`
-A cloud
-
-@demo demo/index.html
--->
-
 <dom-module id="nm-cloud">
 	<template>
 		<style>
 			:host {
 				display: block;
 			}
-			section {
-				background-color: #FFF;
-				padding: 5rem;
-				margin: 30rem auto 0 auto;
-				width: 80%;
-				box-shadow: 0px 4px 4px rgba(0, 0, 0, .2);
-				border-radius: 2rem;
+			.cloud {
+				border-radius: 8px;
+				background-color: rgba(255,255,255, .7);
+				box-shadow: 2px 2px 2px rgba(0, 0, 0, .3);
+			}
+			svg {
+			    position: absolute;
 			}
 		</style>
-		<section>
-			<content></content>
+		<section class="cloud">
+			<div class="contents">
+				<content></content>
+			</div>
 		</section>
 	</template>
 
 	<script>
 		Polymer({
-			is: 'nm-cloud'
+			is: 'nm-cloud',
+			properties: {
+				padding: {
+					type: Number,
+					value: 50
+				}
+			},
+			attached: function () {
+				this.resize();
+				window.addEventListener('resize', this.resize.bind(this));
+			},
+			resize: function () {
+				var cloud = this.$$(".cloud");
+				var rect = this.getBoundingClientRect();
+
+				cloud.style.padding = this.padding + "px";
+				cloud.style.height = rect.height;
+				cloud.style.width = rect.width;
+			}
 		});
 	</script>
 </dom-module>
