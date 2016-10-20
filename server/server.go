@@ -14,7 +14,7 @@ func New() http.Handler {
 	config := handlers.Config{Views: views.Get()}
 
 	r.HandleFunc("/", handlers.Index(config)).Methods(http.MethodGet)
-	r.HandleFunc("/", handlers.IndexHeaders(config)).Methods(http.MethodOptions)
+	r.HandleFunc("/", handlers.IndexHeaders(config)).Methods(http.MethodHead)
 
 	return r
 }
