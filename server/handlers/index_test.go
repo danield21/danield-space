@@ -1,12 +1,13 @@
 package handlers
 
 import (
-	"github.com/stretchr/testify/assert"
-	"net/http/httptest"
-	"net/http"
-	"testing"
 	"bytes"
 	"html/template"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestIndex(t *testing.T) {
@@ -17,14 +18,14 @@ func TestIndex(t *testing.T) {
 
 	settings := Config{Views: view}
 
-	server := httptest.NewServer(Index(settings));
+	server := httptest.NewServer(Index(settings))
 	defer server.Close()
 
 	request, err := http.NewRequest(http.MethodGet, server.URL, bytes.NewBuffer(nil))
 	assert.NoError(t, err, "Error in creating GET request for Index: %v", err)
 	request.Header.Add("Content-Type", "text/html")
 
-	response, err := client.Do(request);
+	response, err := client.Do(request)
 	assert.NoError(t, err, "Error in creating GET request for Index: %v", err)
 	defer response.Body.Close()
 
@@ -42,14 +43,14 @@ func TestIndexOptions(t *testing.T) {
 
 	settings := Config{Views: view}
 
-	server := httptest.NewServer(IndexHeaders(settings));
+	server := httptest.NewServer(IndexHeaders(settings))
 	defer server.Close()
 
 	request, err := http.NewRequest(http.MethodOptions, server.URL, bytes.NewBuffer(nil))
 	assert.NoError(t, err, "Error in creating GET request for Index: %v", err)
 	request.Header.Add("Content-Type", "text/html")
 
-	response, err := client.Do(request);
+	response, err := client.Do(request)
 	assert.NoError(t, err, "Error in creating GET request for Index: %v", err)
 	defer response.Body.Close()
 
