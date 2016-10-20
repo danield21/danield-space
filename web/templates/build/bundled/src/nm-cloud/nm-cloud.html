@@ -1,0 +1,26 @@
+<html><head><link rel="import" href="../polymer/polymer.html">
+
+</head><body><dom-module id="nm-cloud">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+			.cloud {
+				border-radius: 8px;
+				background-color: rgba(255,255,255, .7);
+				box-shadow: 2px 2px 2px rgba(0, 0, 0, .3);
+			}
+			svg {
+			    position: absolute;
+			}
+		</style>
+		<section class="cloud">
+			<div class="contents">
+				<content></content>
+			</div>
+		</section>
+	</template>
+
+	<script>Polymer({is:"nm-cloud",properties:{padding:{type:Number,value:50}},attached:function(){this.resize(),window.addEventListener("resize",this.resize.bind(this))},resize:function(){var e=this.$$(".cloud"),i=this.getBoundingClientRect();e.style.padding=this.padding+"px",e.style.height=i.height,e.style.width=i.width}});</script>
+</dom-module></body></html>
