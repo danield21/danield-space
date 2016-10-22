@@ -16,7 +16,7 @@ func TestIndex(t *testing.T) {
 	view := template.New("index")
 	view.Parse("Hello, World!")
 
-	settings := Config{Views: view}
+	settings := config{Templates: view}
 
 	server := httptest.NewServer(Index(settings))
 	defer server.Close()
@@ -35,13 +35,13 @@ func TestIndex(t *testing.T) {
 	assert.NotEmpty(t, response.ContentLength)
 }
 
-func TestIndexOptions(t *testing.T) {
+func TestIndexHead(t *testing.T) {
 	client := &http.Client{}
 
 	view := template.New("pages/index")
 	view.Parse("Hello, World!")
 
-	settings := Config{Views: view}
+	settings := config{Templates: view}
 
 	server := httptest.NewServer(IndexHeaders(settings))
 	defer server.Close()

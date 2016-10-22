@@ -17,6 +17,6 @@ func IndexHeaders(c Config) http.HandlerFunc {
 func Index(c Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		IndexHeaders(c)(w, r)
-		c.Views.ExecuteTemplate(w, "pages/index", nil)
+		c.View(w, "pages/index", nil)
 	}
 }
