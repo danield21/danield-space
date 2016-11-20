@@ -21,7 +21,7 @@
      id="defs4">
     <linearGradient
        inkscape:collect="always"
-       id="linearGradient4219">
+       id="fireGradient">
       <stop
          style="stop-color:#ffa610;stop-opacity:0.45490196"
          offset="0"
@@ -33,8 +33,8 @@
     </linearGradient>
     <radialGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient4219"
-       id="radialGradient4225"
+       xlink:href="#fireGradient"
+       id="fireRedialGradient"
        cx="396.96979"
        cy="901.03595"
        fx="396.96979"
@@ -77,23 +77,21 @@
   <g
      inkscape:label="base"
      inkscape:groupmode="layer"
-     id="layer1"
+     id="base"
      transform="translate(0,-52.36216)"
      style="display:inline">
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1"
        d="m 375,952.36216 5,60.00004"
-       id="path3374"
+       id="string1"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cc"
-       inkscape:label="#string1" />
+       sodipodi:nodetypes="cc"/>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1"
        d="m 390,952.36216 2.5,60.00004"
        id="string2"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cc"
-       inkscape:label="#string2" />
+       sodipodi:nodetypes="cc" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1"
        d="M 409.10714,951.4693 407.5,1012.3622"
@@ -121,14 +119,14 @@
   </g>
   <g
      inkscape:groupmode="layer"
-     id="layer2"
+     id="night"
      inkscape:label="night"
      style="display:inline">
     <path
        transform="translate(0,-52.36216)"
-       style="opacity:1;fill:url(#radialGradient4225);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="opacity:1;fill:url(#fireRedialGradient);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 300.00011,52.36216 c -509.71115,159.84026 -291.617941,504.53107 74.99992,900 l 50.00041,0 c 366.61785,-395.46893 584.71106,-740.15974 75,-900 z"
-       id="path4292-3"
+       id="flame"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccc" />
   </g>

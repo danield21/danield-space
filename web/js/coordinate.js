@@ -1,11 +1,11 @@
 const methods = {
-	add: function (that) {
+	add(that) {
 		return create(this.x + that.x, this.y + that.y)
 	},
-	subtract: function (that) {
+	subtract (that) {
 		return create(this.x - that.x, this.y - that.y)
 	},
-	distance: function () {
+	distance () {
 		return Math.sqrt(this.x*this.x + this.y*this.y)
 	}
 }
