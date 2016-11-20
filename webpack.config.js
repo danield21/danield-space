@@ -26,7 +26,8 @@ module.exports = {
 				loader: "style!css!sass"
 			}
 		]
-	},plugins: [
+	},
+	plugins: [
 		new WebpackCopy([
 			{from: path.join("web", "view"), to: path.join("..", "view")},
 			{from: path.join("web", "svg"), to: path.join("svg")}
