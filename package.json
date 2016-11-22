@@ -20,5 +20,9 @@
     "vulcanize-loader": "^2.0.0",
     "webpack": "^1.13.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "animejs": "^1.1.1",
+    "gauss-random": "^1.0.1",
+    "pleasejs": "^0.4.2"
+  }
 }

@@ -2,10 +2,12 @@
 <html lang="en">
 {{template "core/head" .}}
 <body>
-	<nm-cloud>
+	<div id="js-balloon-flight"></div>
+	<nm-cloud style="position: relative">
 		{{template "core/navigation" .}}
         <nm-cloud>
             This is a test
+			<nm-balloon width="100"></nm-balloon>
         </nm-cloud>
 	</nm-cloud>
 </body>

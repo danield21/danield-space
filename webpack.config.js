@@ -30,7 +30,9 @@ module.exports = {
 	plugins: [
 		new WebpackCopy([
 			{from: path.join("web", "view"), to: path.join("..", "view")},
-			{from: path.join("web", "svg"), to: path.join("svg")}
+			{from: path.join("web", "svg"), to: path.join("svg")},
+			{from: path.join("web", "lib"), to: path.join("js")},
+			{from: path.join("web", "bower_components", "webcomponentsjs", "webcomponents-lite.min.js"), to: path.join("js", "webcomponents-lite.min.js")}
 		])
 	]
 };
