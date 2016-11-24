@@ -1,3 +1,5 @@
+require("./shim")
+
 const imports = exports.imports = {}
 
 const Coordinates = imports.Coordinates = require('./coordinate')
@@ -20,7 +22,7 @@ function styleDesert(mainCloud) {
 			resolve()
 		}, 0)
 	})
-}   
+}
 
 document.addEventListener('DOMContentLoaded', () => {
 	window.addEventListener('WebComponentsReady', () => {
