@@ -26,7 +26,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	window.addEventListener('WebComponentsReady', () => {
 		let mainCloud = Bliss("body > nm-cloud")
 		let styleFunc = styleDesert.bind(null, mainCloud)
-		let stickFunc = Stick.toBottom(document.getElementById("mountain-range"));
+
+		let mountainRange = document.getElementById("mountain-range");
+		let stickFunc = Stick.toBottom(mountainRange);
+
 		styleFunc().then(stickFunc)
 		
 		window.addEventListener('resize', () => {

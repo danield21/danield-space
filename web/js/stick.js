@@ -13,7 +13,7 @@ exports.toBottom = (element, up = 0) => {
 			element.style.bottom = 0
 			wrapper.style.height = elementRect.height + "px"
 		} else {
-			element.style.position = null
+			element.style.position = "relative"
 			element.style.bottom = null
 			wrapper.style.height = 0
 		}
