@@ -1,0 +1,17 @@
+body > nm-cloud {
+    width: 80%;
+    min-width: 400px;
+    margin: 10px auto 0 auto;
+}
+
+body > .sand {
+    height: 100px;
+    position: relative;
+    z-index: 5;
+}
+
+body > .mountain {
+    height: 150px;
+    position: relative;
+    z-index: 5;
+}
