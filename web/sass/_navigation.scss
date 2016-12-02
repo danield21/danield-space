@@ -27,5 +27,5 @@ nav a {
 }
 
 nav a + a {
-    border-left: solid 1px #DDD;
+    border-left: solid 1px rgba($font-color, .1);
 }

@@ -35,9 +35,9 @@
       getSVGDocument: function () {
         return new Promise(function (resolve, reject) {
           var embed = this.$$("embed");
-          var svg = embed.getSVGDocument();
+          var svg;
 
-          if(svg != null) {
+          if(embed.getSVGDocument && (svg = embed.getSVGDocument()) != null) {
             resolve(svg);
           } else {
             embed.addEventListener('load', function () {

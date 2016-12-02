@@ -25,6 +25,29 @@ function styleDesert(mainCloud) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+
+	const easel = Bliss("#sky-easel")
+	easel.style.position = 'fixed'
+	easel.style.top = 0
+	setInterval(() => {
+		if(easel.children.length < balloons.MAX) {
+			Balloons.createFlying(easel)
+		}
+	}, balloons.EVERY);
+
+	(() => {
+		let sun = document.createElement("div")
+		const size = 500;
+		const radius = size/2;
+		sun.style.margin = `-${radius}px 0 0 -${radius}px`
+		sun.style.top = 0
+		sun.style.left = 0
+		sun.style.background = 'radial-gradient(circle closest-side at center, #FFFF00 0%, #FFFFFF 10%, transparent 100%)'
+		sun.style.height = `${size}px`
+		sun.style.width = `${size}px`
+		easel.appendChild(sun);
+	})();
+
 	window.addEventListener('WebComponentsReady', () => {
 		let mainCloud = Bliss("body > nm-cloud")
 		let styleFunc = styleDesert.bind(null, mainCloud)
@@ -37,14 +60,17 @@ document.addEventListener('DOMContentLoaded', () => {
 		window.addEventListener('resize', () => {
 			styleFunc().then(stickFunc)
 		})
-		document.addEventListener('scroll', () => { stickFunc() })
+		document.addEventListener('scroll', () => {
+			stickFunc().then(() => {
+				var height = util.screenSize().height
+				const offset = Bliss(".sand").getBoundingClientRect().top
+				if(offset < height) {
+					easel.style.transform = `translateY(-${height - offset}px)`
+				} else {
+					easel.style.transform = null
+				}
+			})
+		})
 
 	})
-
-	const path = Bliss("#js-balloon-flight")
-	setInterval(() => {
-		if(path.children.length < balloons.MAX) {
-			Balloons.createFlying(path)
-		}
-	}, balloons.EVERY)
 })
