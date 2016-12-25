@@ -41,18 +41,22 @@ exports.prepare = (svg) => {
 			transform: `translateX(${position.left}px) translateY(0)`
 		});
 
-		var flame = dom.getElementById("flame");
-		flame.style.opacity = 0;
+		const ids = new Map()
+		Bliss.$("[id]", dom).forEach(element => {
+			ids.set(element.id, element)
+			element.removeAttribute("id")
+		})
 
-		var balloon = dom.getElementById("balloon");
-		balloon.style.fill = color;
+		ids.get("flame").style.opacity = 0;
+		ids.get("balloon").style.fill = color;
 
 		resolve({
 			dom,
 			width,
 			speed,
 			position,
-			root
+			root,
+			ids
 		})
 	})
 }
@@ -106,7 +110,7 @@ function ascend(balloon) {
 		complete: () => descend(balloon)
 	});
 
-	var flame = balloon.root.getElementById("flame");
+	var flame = balloon.ids.get("flame");
 	anime({
 		targets: flame,
 		opacity: 1,

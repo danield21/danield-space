@@ -3,6 +3,8 @@ package handlers
 import (
 	"net/http"
 
+	"log"
+
 	"github.com/danield21/danield-space/server/content"
 )
 
@@ -17,6 +19,9 @@ func IndexHeaders(c Config) http.HandlerFunc {
 func Index(c Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		IndexHeaders(c)(w, r)
-		c.View(w, "pages/index", nil)
+		err := c.View(w, "pages/index", nil)
+		if err != nil {
+			log.Print(err)
+		}
 	}
 }

@@ -16,9 +16,7 @@ function styleDesert(mainCloud) {
 	return new Promise((resolve) => {
 		setTimeout(() => {
 			let screen = util.screenSize()
-			let dom = document.body.getBoundingClientRect()
-			let offset = ((dom.height+300 < screen.height) ? (screen.height - dom.height) : 0) + 300
-			mainCloud.style.marginBottom = offset + "px"
+			mainCloud.style.marginBottom = (screen.height - 300) + "px"
 			resolve()
 		}, 0)
 	})
@@ -53,29 +51,31 @@ document.addEventListener('DOMContentLoaded', () => {
 		easel.appendChild(sun);
 	})();
 
-	window.addEventListener('WebComponentsReady', () => {
-		let mainCloud = Bliss("body > nm-cloud")
-		let styleFunc = styleDesert.bind(null, mainCloud)
+	let mainCloud = Bliss("body > .cloud")
+	let styleFunc = styleDesert.bind(null, mainCloud)
 
-		let mountainRange = document.getElementById("mountain-range");
-		let stickFunc = Stick.toBottom(mountainRange);
+	let mountainRange = document.getElementById("mountain-range");
+	let stickFunc = Stick.toBottom(mountainRange);
+	let raiseEasel = () => {
+		var height = util.screenSize().height
+		const offset = Bliss(".sand").getBoundingClientRect().top
+		if(offset < height) {
+			easel.style.transform = `translateY(-${height - offset}px)`
+		} else {
+			easel.style.transform = null
+		}
+	}
 
-		styleFunc().then(stickFunc)
-		
-		window.addEventListener('resize', () => {
-			styleFunc().then(stickFunc)
-		})
-		document.addEventListener('scroll', () => {
-			stickFunc().then(() => {
-				var height = util.screenSize().height
-				const offset = Bliss(".sand").getBoundingClientRect().top
-				if(offset < height) {
-					easel.style.transform = `translateY(-${height - offset}px)`
-				} else {
-					easel.style.transform = null
-				}
-			})
-		})
-
+	styleFunc()
+		.then(stickFunc)
+		.then(raiseEasel)
+	
+	window.addEventListener('resize', () => {
+		styleFunc()
+			.then(stickFunc)
+			.then(raiseEasel)
+	})
+	document.addEventListener('scroll', () => {
+		stickFunc().then(raiseEasel)
 	})
 })
