@@ -4,60 +4,82 @@ const anime = require('animejs')
 
 const util = require("./util")
 
-exports.createFlying = (target) => {
-	var balloon = document.createElement("nm-balloon");
+exports.prepare = (svg) => {
+	return new Promise((resolve, reject) => {
+		if(DOMParser == null) {
+			reject("DOMParser unavailable")
+			return
+		}
 
-	const screen = util.screenSize()
+		const parser = new DOMParser()
 
-	const width = 100 + 50 * util.inBetween(sdRand(), -1, 1);
-	const hHalf = screen.height / 2;
+		const dom = parser.parseFromString(svg.responseText, "image/svg+xml")
+		const root = Bliss("svg", dom)
 
-	const position = {
-		top: hHalf + hHalf * util.inBetween(sdRand(), -1, 1),
-		left: screen.width + width + (50 + 50 * util.inBetween(sdRand(), -1, 1))
-	}
-	
-	const speed = Math.sqrt(width*width*width) / 2;
-	const color = Please.make_color({
-		saturation: .8 + Math.random() * .2,
-		value: .8 + Math.random() * .2
-	})[0];
+		const screen = util.screenSize()
 
-	Bliss.style(balloon, {
-		position: "fixed",
-		top: position.top + "px",
-		left: 0 + "px",
-		transform: `translateX(${position.left}px) translateY(0)`
-	});
+		const width = 100 + 50 * util.inBetween(sdRand(), -1, 1);
+		const hHalf = screen.height / 2;
 
-	balloon.getSVGDocument().then(svg => {
-		var flame = svg.getElementById("flame");
+		const position = {
+			top: hHalf + hHalf * util.inBetween(sdRand(), -1, 1),
+			left: screen.width + width + (50 + 50 * util.inBetween(sdRand(), -1, 1))
+		}
+		
+		const speed = Math.sqrt(width*width*width) / 2;
+		const color = Please.make_color({
+			saturation: .8 + Math.random() * .2,
+			value: .8 + Math.random() * .2
+		})[0];
+
+		Bliss.style(root, {
+			width: width + "px",
+			height: "auto",
+			position: "fixed",
+			top: position.top + "px",
+			left: 0 + "px",
+			transform: `translateX(${position.left}px) translateY(0)`
+		});
+
+		var flame = dom.getElementById("flame");
 		flame.style.opacity = 0;
+
+		var balloon = dom.getElementById("balloon");
+		balloon.style.fill = color;
+
+		resolve({
+			dom,
+			width,
+			speed,
+			position,
+			root
+		})
 	})
+}
 
-	balloon.width = width;
-	balloon.color = color;
+exports.drawOn = function (easel) {
+	return (balloon) => {
+		return new Promise((resolve, reject) => {
+			easel.appendChild(balloon.root)
+			resolve(balloon)
+		})
+	}
+}
 
-	target.appendChild(balloon)
-	
-	setTimeout(ascend.bind(null, {
-		dom: balloon,
-		width,
-		speed,
-		position
-	}), 10);
+exports.fly = function (balloon) {
+	ascend(balloon)
 }
 
 function descend(balloon) {
 	if(balloon.position.left < -balloon.width) {
-		balloon.dom.remove();
+		balloon.root.remove();
 		return;
 	}
 
 	balloon.position.left -= balloon.speed
 
 	anime({
-		targets: balloon.dom,
+		targets: balloon.root,
 		translateX: balloon.position.left + 'px',
 		translateY: '0',
 		easing: 'easeOutQuad',
@@ -68,7 +90,7 @@ function descend(balloon) {
 
 function ascend(balloon) {
 	if(balloon.position.left < -balloon.width) {
-		balloon.dom.remove();
+		balloon.root.remove();
 		return;
 	}
 
@@ -76,7 +98,7 @@ function ascend(balloon) {
 	balloon.position.left -= balloon.speed/5;
 
 	anime({
-		targets: balloon.dom,
+		targets: balloon.root,
 		translateX: balloon.position.left + 'px',
 		translateY: `-${climb}px`,
 		easing: 'easeInQuad',
@@ -84,21 +106,19 @@ function ascend(balloon) {
 		complete: () => descend(balloon)
 	});
 
-	balloon.dom.getSVGDocument().then(svg => {
-		var flame = svg.getElementById("flame");
-		anime({
-			targets: flame,
-			opacity: 1,
-			easing: 'easeInQuad',
-			duration: 4000,
-			complete: () => {
-				anime({
-					targets: flame,
-					opacity: 0,
-					easing: 'easeInQuad',
-					duration: 2000
-				});
-			}
-		});
-	})
+	var flame = balloon.root.getElementById("flame");
+	anime({
+		targets: flame,
+		opacity: 1,
+		easing: 'easeInQuad',
+		duration: 4000,
+		complete: () => {
+			anime({
+				targets: flame,
+				opacity: 0,
+				easing: 'easeInQuad',
+				duration: 2000
+			});
+		}
+	});
 }
