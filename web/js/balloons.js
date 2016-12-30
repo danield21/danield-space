@@ -42,16 +42,13 @@ exports.prepare = (svg) => {
 		});
 
 		const ids = new Map()
-		Bliss.$("[id]", dom).map(element => {
-			return {
-				element: element,
-				id: element.id
-			}
-		}).forEach(o => {
-			ids.set(o.id, o.element)
-			o.element.classList.add(o.id)
-			o.element.removeAttribute("id")
-		})
+		Bliss.$("[id]", dom)
+			.map(element => {return { dom: element, id: element.id}})
+			.forEach(e => {
+				ids.set(e.id, e.dom)
+				e.dom.classList.add(e.id)
+				e.dom.removeAttribute("id")
+			})
 
 		ids.get("flame").style.opacity = 1;
 		ids.get("balloon").style.fill = color;
