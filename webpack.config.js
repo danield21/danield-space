@@ -6,7 +6,7 @@ var webpack = require('webpack'),
 module.exports = {
 	debug: true,
 	entry: {
-		app: './web/bundler.js',
+		app: './web/js/app.js',
 		styles: './web/sass/app.scss'
 	},
 	output: {
@@ -33,8 +33,7 @@ module.exports = {
 		new WebpackCopy([
 			{from: path.join("web", "view"), to: path.join("..", "view")},
 			{from: path.join("web", "svg"), to: path.join("svg")},
-			{from: path.join("web", "lib"), to: path.join("js")},
-			{from: path.join("web", "bower_components", "webcomponentsjs", "webcomponents-lite.min.js"), to: path.join("js", "webcomponents-lite.min.js")}
+			{from: path.join("web", "lib"), to: path.join("js")}
 		]),
 		new ExtractTextPlugin("css/[name].css")
 	]

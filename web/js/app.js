@@ -69,7 +69,11 @@ document.addEventListener('DOMContentLoaded', () => {
 	styleFunc()
 		.then(stickFunc)
 		.then(raiseEasel)
-	
+	window.addEventListener('load', () => {
+		styleFunc()
+			.then(stickFunc)
+			.then(raiseEasel)
+	})
 	window.addEventListener('resize', () => {
 		styleFunc()
 			.then(stickFunc)

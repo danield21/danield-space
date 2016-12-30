@@ -42,12 +42,18 @@ exports.prepare = (svg) => {
 		});
 
 		const ids = new Map()
-		Bliss.$("[id]", dom).forEach(element => {
-			ids.set(element.id, element)
-			element.removeAttribute("id")
+		Bliss.$("[id]", dom).map(element => {
+			return {
+				element: element,
+				id: element.id
+			}
+		}).forEach(o => {
+			ids.set(o.id, o.element)
+			o.element.classList.add(o.id)
+			o.element.removeAttribute("id")
 		})
 
-		ids.get("flame").style.opacity = 0;
+		ids.get("flame").style.opacity = 1;
 		ids.get("balloon").style.fill = color;
 
 		resolve({
@@ -110,7 +116,7 @@ function ascend(balloon) {
 		complete: () => descend(balloon)
 	});
 
-	var flame = balloon.ids.get("flame");
+	/*var flame = balloon.ids.get("flame");
 	anime({
 		targets: flame,
 		opacity: 1,
@@ -124,5 +130,5 @@ function ascend(balloon) {
 				duration: 2000
 			});
 		}
-	});
+	});*/
 }
