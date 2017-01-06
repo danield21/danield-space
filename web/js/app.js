@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	easel.style.top = 0
 	const getBalloon = Bliss.fetch("dist/svg/balloon.svg")
 	setInterval(() => {
-		if(easel.childNodes.length >= balloons.MAX) {
+		if(easel.childNodes.length >= balloons.MAX || (document.hidden || document.msHidden || document.webkitHidden)) {
 			return
 		}
 		getBalloon.then(Balloons.prepare)

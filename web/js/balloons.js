@@ -14,7 +14,7 @@ exports.prepare = (svg) => {
 		const parser = new DOMParser()
 
 		const dom = parser.parseFromString(svg.responseText, "image/svg+xml")
-		const root = Bliss("svg", dom)
+		const root = dom.documentElement
 
 		const screen = util.screenSize()
 

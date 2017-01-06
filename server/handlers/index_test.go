@@ -13,7 +13,7 @@ import (
 func TestIndex(t *testing.T) {
 	client := &http.Client{}
 
-	view := template.New("index")
+	view := template.New("pages/index")
 	view.Parse("Hello, World!")
 
 	settings := config{Templates: view}
@@ -29,7 +29,7 @@ func TestIndex(t *testing.T) {
 	assert.NoError(t, err, "Error in creating GET request for Index: %v", err)
 	defer response.Body.Close()
 
-	assert.Equal(t, http.StatusOK, response.StatusCode, "Expected response status 200, recieved %s", response.Status)
+	assert.Equal(t, http.StatusOK, response.StatusCode, "Expected response status 200, received %s", response.Status)
 	assert.Equal(t, "text/html; charset=utf-8", response.Header.Get("Content-Type"))
 
 	assert.NotEmpty(t, response.ContentLength)
@@ -54,7 +54,7 @@ func TestIndexHead(t *testing.T) {
 	assert.NoError(t, err, "Error in creating GET request for Index: %v", err)
 	defer response.Body.Close()
 
-	assert.Equal(t, http.StatusOK, response.StatusCode, "Expected response status 200, recieved %s", response.Status)
+	assert.Equal(t, http.StatusOK, response.StatusCode, "Expected response status 200, received %s", response.Status)
 	assert.Equal(t, "text/html; charset=utf-8", response.Header.Get("Content-Type"))
 
 	assert.Empty(t, response.ContentLength)

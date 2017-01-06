@@ -25,6 +25,7 @@ func New() http.Handler {
 
 	r.HandleFunc("/", handlers.Index(c)).Methods(http.MethodGet)
 	r.HandleFunc("/", handlers.IndexHeaders(c)).Methods(http.MethodHead)
+	r.NotFoundHandler = handlers.NotFound(c)
 
 	return r
 }

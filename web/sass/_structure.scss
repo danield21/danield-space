@@ -1,6 +1,5 @@
 body > .cloud {
     width: 80%;
-    min-width: 400px;
     margin: 20px auto 0 auto;
 }
 
@@ -18,4 +17,19 @@ footer > .mountain {
 
 main > .cloud {
     margin: 1rem;
+}
+
+article > a {
+    text-decoration: none;
+    color: currentColor;
+    display: block;
+}
+
+a:hover > h1 {
+    text-decoration: underline;
+}
+
+article h1 {
+    font-size: 2rem;
+    margin: 0 0 10px 0;
 }
