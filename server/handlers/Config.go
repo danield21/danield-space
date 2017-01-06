@@ -18,3 +18,7 @@ type config struct {
 func (c config) View(w io.Writer, view string, data interface{}) error {
 	return c.Templates.ExecuteTemplate(w, view, data)
 }
+
+func (c config) Context() {
+
+}

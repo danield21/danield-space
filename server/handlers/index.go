@@ -6,7 +6,12 @@ import (
 	"log"
 
 	"github.com/danield21/danield-space/server/content"
+	"github.com/danield21/danield-space/server/controllers"
 )
+
+type indexModel struct {
+	SiteInfo controllers.SiteInfo
+}
 
 //IndexHeaders contains the headers for index
 func IndexHeaders(c Config) http.HandlerFunc {
@@ -18,8 +23,14 @@ func IndexHeaders(c Config) http.HandlerFunc {
 //Index handles the index page
 func Index(c Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		siteInfo := controllers.SiteInfoController{}
+
+		pageData := indexModel{
+			SiteInfo: siteInfo.Get(),
+		}
+
 		IndexHeaders(c)(w, r)
-		err := c.View(w, "pages/index", nil)
+		err := c.View(w, "pages/index", pageData)
 		if err != nil {
 			log.Print(err)
 		}
