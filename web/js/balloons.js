@@ -11,7 +11,7 @@ exports.prepare = (svg) => {
 			return
 		}
 
-		const MAX_HEIGHT = getBalloonHeight(1)
+		const MAX_HEIGHT = getBalloonHeight(MAX_HEIGHT_N)
 
 		const parser = new DOMParser()
 
@@ -138,6 +138,7 @@ function ascend(balloon) {
 	});*/
 }
 
+const MAX_HEIGHT_N = 2
 function getBalloonHeight(seed) {
-	return 100 + 50 * util.inBetween(seed, -1, 1)
+	return 100 + 25 * util.inBetween(seed, -MAX_HEIGHT_N, MAX_HEIGHT_N)
 }
