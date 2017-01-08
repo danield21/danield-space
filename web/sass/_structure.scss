@@ -20,7 +20,7 @@ main > .cloud {
     margin: 1rem;
 }
 
-article > a {
+main > a, article > a {
     text-decoration: none;
     color: currentColor;
     display: block;

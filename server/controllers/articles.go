@@ -102,3 +102,16 @@ func (c ArticleController) Get(Type, Key string) (article Article, err error) {
 
 	return
 }
+
+//GetMapKeyedByTypes gets a map of articles with the key being the article type.
+//Map returns an array of article with the same type limited by Limit.
+func (c ArticleController) GetMapKeyedByTypes(Limit int) (articleMap map[string][]Article) {
+	articleMap = make(map[string][]Article)
+	for _, article := range c.GetAll() {
+		if len(articleMap[article.Type]) <= Limit {
+			articleMap[article.Type] = append(articleMap[article.Type], article)
+		}
+	}
+
+	return
+}

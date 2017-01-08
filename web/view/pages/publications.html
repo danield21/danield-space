@@ -8,12 +8,12 @@
         		{{template "core/navigation" .}}
                 </header>
                 <main>
-                        <div class="cloud">
-                                {{ .SiteInfo.Description }}
-                        </div>
-                        {{range .Articles}}
-                                {{ template "templates/article-heading" . }}
-                        {{end}}
+			{{ range $type, $articles := .ArticleMap }}
+				<a href="/publications/{{ $type }}"><h1>{{ asTitle $type }}</h1></a>
+				{{range $articles}}
+					{{ template "templates/article-heading" . }}
+				{{end}}
+			{{end}}
                 </main>
 	</div>
         <footer>

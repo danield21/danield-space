@@ -25,6 +25,8 @@ func New() http.Handler {
 
 	r.HandleFunc("/", handlers.IndexHeaders(c)).Methods(http.MethodHead)
 	r.HandleFunc("/", handlers.Index(c)).Methods(http.MethodGet)
+	r.HandleFunc("/publications", handlers.PublicationsHeaders(c)).Methods(http.MethodHead)
+	r.HandleFunc("/publications", handlers.Publications(c)).Methods(http.MethodGet)
 	r.HandleFunc("/publications/{type}", handlers.PublicationsTypeHeaders(c)).Methods(http.MethodHead)
 	r.HandleFunc("/publications/{type}", handlers.PublicationsType(c)).Methods(http.MethodGet)
 	r.HandleFunc("/publications/{type}/{key}", handlers.ArticleHeaders(c)).Methods(http.MethodHead)

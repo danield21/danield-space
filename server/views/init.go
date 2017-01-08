@@ -17,6 +17,7 @@ func Get() *template.Template {
 	funcs := template.FuncMap{
 		"humanTime":   HumanTime,
 		"machineTime": MachineTime,
+		"asTitle":     strings.Title,
 	}
 	views.Funcs(funcs)
 

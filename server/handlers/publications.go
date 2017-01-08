@@ -6,31 +6,33 @@ import (
 
 	"github.com/danield21/danield-space/server/content"
 	"github.com/danield21/danield-space/server/controllers"
-	"github.com/gorilla/mux"
 )
 
-//PublicationsTypeHeaders contains the headers for index
-func PublicationsTypeHeaders(c Config) http.HandlerFunc {
+type publicationsModel struct {
+	SiteInfo   controllers.SiteInfo
+	ArticleMap map[string][]controllers.Article
+}
+
+//PublicationsHeaders contains the headers for index
+func PublicationsHeaders(c Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", content.HTML.AddCharset("utf-8").String())
 	}
 }
 
-//PublicationsType handles the index page
-func PublicationsType(c Config) http.HandlerFunc {
+//Publications handles the index page
+func Publications(c Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-
 		siteInfo := controllers.SiteInfoController{}
 		articles := controllers.ArticleController{}
 
-		pageData := indexModel{
-			SiteInfo: siteInfo.Get(),
-			Articles: articles.GetType(vars["type"]),
+		pageData := publicationsModel{
+			SiteInfo:   siteInfo.Get(),
+			ArticleMap: articles.GetMapKeyedByTypes(5),
 		}
 
 		PublicationsTypeHeaders(c)(w, r)
-		err := c.View(w, "pages/index", pageData)
+		err := c.View(w, "pages/publications", pageData)
 		if err != nil {
 			log.Print(err)
 		}

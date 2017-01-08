@@ -1,0 +1,9 @@
+<article class="cloud">
+	<a href="/publications{{ .Path }}">
+		<h1>{{ .Heading }}</h1>
+		<span class="published">Published by {{ .CreatedBy }} <time datetime="{{ machineTime .CreatedOn}}">{{ humanTime .CreatedOn}}</time></span>
+		<p>
+			{{ .Abstract }}
+		</p>
+	</a>
+</article>
