@@ -13,7 +13,7 @@ func NotFound(c Config) http.HandlerFunc {
 		w.Header().Set("Content-Type", content.HTML.AddCharset("utf-8").String())
 		w.WriteHeader(http.StatusNotFound)
 
-		err := c.View(w, "pages/not_found", nil)
+		err := c.View(w, "pages/not-found", nil)
 		if err != nil {
 			log.Print(err)
 		}

@@ -13,7 +13,7 @@ import (
 func TestNotFound(t *testing.T) {
 	client := &http.Client{}
 
-	view := template.New("pages/not_found")
+	view := template.New("pages/not-found")
 	view.Parse("Hello, World!")
 
 	settings := config{Templates: view}
