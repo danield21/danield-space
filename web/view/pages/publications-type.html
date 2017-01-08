@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "core/head" .}}
+<body>
+        <div id="sky-easel"></div>
+	<div class="cloud">
+                <header>
+        		{{template "core/navigation" .}}
+                </header>
+                <main>
+                        <h1>
+                                {{ asTitle .Type }}
+			</h1>
+                        {{range .Articles}}
+                                {{ template "templates/article-heading" . }}
+			{{else}}
+				There are no articles of type {{ asTitle .Type }}
+                        {{end}}
+                </main>
+	</div>
+        <footer>
+	        {{template "core/footer" .}}
+        </footer>
+</body>
+</html>

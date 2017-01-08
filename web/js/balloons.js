@@ -11,19 +11,27 @@ exports.prepare = (svg) => {
 			return
 		}
 
+		const MAX_HEIGHT = getBalloonHeight(1)
+
 		const parser = new DOMParser()
 
 		const dom = parser.parseFromString(svg.responseText, "image/svg+xml")
 		const root = dom.documentElement
 
+		const aspectRatio = root.width.baseVal.value / root.height.baseVal.value
+		console.log(aspectRatio)
+
 		const screen = util.screenSize()
 
-		const width = 100 + 50 * util.inBetween(sdRand(), -1, 1);
+		const height = getBalloonHeight(sdRand());
+		const width = aspectRatio * height;
 		const hHalf = screen.height / 2;
 
+		console.log(width, height)
+
 		const position = {
-			top: hHalf + hHalf * util.inBetween(sdRand(), -1, 1),
-			left: screen.width + width + (50 + 50 * util.inBetween(sdRand(), -1, 1))
+			top: util.inBetween(hHalf + hHalf * sdRand(), 150, screen.height - 150),
+			left: screen.width + width
 		}
 		
 		const speed = Math.sqrt(width*width*width) / 2;
@@ -128,4 +136,8 @@ function ascend(balloon) {
 			});
 		}
 	});*/
+}
+
+function getBalloonHeight(seed) {
+	return 100 + 50 * util.inBetween(seed, -1, 1)
 }
