@@ -18,7 +18,7 @@ body {
 
 .cloud {
     border-radius: 8px;
-    background-color: rgba(255,255,255, .8);
+    background-color: rgba($cloud-color, .8);
     padding: 5%;
 }
 

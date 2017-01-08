@@ -1,9 +1,8 @@
 package handlers
 
 import (
-	"net/http"
-
 	"log"
+	"net/http"
 
 	"github.com/danield21/danield-space/server/content"
 )

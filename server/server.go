@@ -23,8 +23,12 @@ func New() http.Handler {
 	r := mux.NewRouter()
 	c := config{Templates: views.Get()}
 
-	r.HandleFunc("/", handlers.Index(c)).Methods(http.MethodGet)
 	r.HandleFunc("/", handlers.IndexHeaders(c)).Methods(http.MethodHead)
+	r.HandleFunc("/", handlers.Index(c)).Methods(http.MethodGet)
+	r.HandleFunc("/publications/{type}", handlers.PublicationsTypeHeaders(c)).Methods(http.MethodHead)
+	r.HandleFunc("/publications/{type}", handlers.PublicationsType(c)).Methods(http.MethodGet)
+	r.HandleFunc("/publications/{type}/{key}", handlers.ArticleHeaders(c)).Methods(http.MethodHead)
+	r.HandleFunc("/publications/{type}/{key}", handlers.Article(c)).Methods(http.MethodGet)
 	r.NotFoundHandler = handlers.NotFound(c)
 
 	return r

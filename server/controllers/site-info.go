@@ -3,10 +3,12 @@ package controllers
 import (
 	"regexp"
 	"strings"
+	"time"
 )
 
 //SiteInfo is a struct containing information about the website
 type SiteInfo struct {
+	DataElement
 	Title       string
 	Link        string
 	Owner       string
@@ -53,6 +55,13 @@ type SiteInfoController struct {
 //TODO create database connection to get this.
 func (c SiteInfoController) Get() SiteInfo {
 	return SiteInfo{
+		DataElement: DataElement{
+			UUID:       "1",
+			CreatedBy:  "Daniel J Dominguez",
+			CreatedOn:  time.Now(),
+			ModifiedBy: "Daniel J Dominguez",
+			ModifiedOn: time.Now(),
+		},
 		Title:       "Ballooneer's Code",
 		Link:        "http://danield.space",
 		Owner:       "Daniel J Dominguez",

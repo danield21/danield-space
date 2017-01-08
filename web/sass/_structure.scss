@@ -1,10 +1,11 @@
 body > .cloud {
     width: 80%;
     margin: 20px auto 0 auto;
+    position: relative;
 }
 
 footer > .sand {
-    min-height: 100px;
+    height: 100px;
     position: relative;
     z-index: 5;
 }

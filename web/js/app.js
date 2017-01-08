@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	const easel = Bliss("#sky-easel")
 	easel.style.position = 'fixed'
 	easel.style.top = 0
-	const getBalloon = Bliss.fetch("dist/svg/balloon.svg")
+	const getBalloon = Bliss.fetch("/dist/svg/balloon.svg")
 	setInterval(() => {
 		if(easel.childNodes.length >= balloons.MAX || (document.hidden || document.msHidden || document.webkitHidden)) {
 			return

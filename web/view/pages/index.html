@@ -3,7 +3,7 @@
 {{template "core/head" .}}
 <body>
         <div id="sky-easel"></div>
-	<div class="cloud" style="position: relative">
+	<div class="cloud">
                 <header>
         		{{template "core/navigation" .}}
                 </header>
@@ -11,33 +11,17 @@
                         <div class="cloud">
                                 {{ .SiteInfo.Description }}
                         </div>
+                        {{range .Articles}}
                         <article class="cloud">
-                                <a href="/blog/ttc-web-development">
-                                        <h1>Blog: Things to consider - Web Development</h1>
-                                        <span class="published">Published by Daniel J Dominguez <time datetime="2017-01-10T12:34">2017-1-10</time></span>
+                                <a href="/publications{{ .Path }}">
+                                        <h1>{{ .Heading }}</h1>
+                                        <span class="published">Published by {{ .CreatedBy }} <time datetime="{{ machineTime .CreatedOn}}">{{ humanTime .CreatedOn}}</time></span>
                                         <p>
-                                                Brings up things to consider, like accessibility, progressive enchancements, and performance.
+                                                {{ .Abstract }}
                                         </p>
                                 </a>
                         </article>
-                        <article class="cloud">
-                                <a href="/projects/this-website">
-                                        <h1>Project: This Website</h1>
-                                        <span class="published">Published by Daniel J Dominguez <time datetime="2017-01-10T12:34">2017-1-10</time></span>
-                                        <p>
-                                                Built on the idea of progressive enchancements
-                                        </p>
-                                </a>
-                        </article>
-                        <article class="cloud">
-                                <a href="/projects/swau-app">
-                                        <h1>Project: SWAU App</h1>
-                                        <span class="published">Published by Daniel J Dominguez <time datetime="2017-01-10T12:34">2017-1-10</time></span>
-                                        <p>
-                                                First major project
-                                        </p>
-                                </a>
-                        </article>
+                        {{end}}
                 </main>
 	</div>
         <footer>
