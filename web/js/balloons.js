@@ -19,7 +19,6 @@ exports.prepare = (svg) => {
 		const root = dom.documentElement
 
 		const aspectRatio = root.width.baseVal.value / root.height.baseVal.value
-		console.log(aspectRatio)
 
 		const screen = util.screenSize()
 
@@ -140,5 +139,5 @@ function ascend(balloon) {
 
 const MAX_HEIGHT_N = 2
 function getBalloonHeight(seed) {
-	return 100 + 25 * util.inBetween(seed, -MAX_HEIGHT_N, MAX_HEIGHT_N)
+	return 150 + 50 * util.inBetween(seed, -MAX_HEIGHT_N, MAX_HEIGHT_N)
 }
