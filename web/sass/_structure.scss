@@ -26,11 +26,16 @@ main > a, article > a {
     display: block;
 }
 
-a:hover > h1 {
+a:hover > h1, a:hover > h2 {
     text-decoration: underline;
 }
 
 article h1 {
     font-size: 2rem;
+    margin: 0 0 10px 0;
+}
+
+article h2 {
+    font-size: 1.8rem;
     margin: 0 0 10px 0;
 }

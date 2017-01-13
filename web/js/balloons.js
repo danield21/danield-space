@@ -139,5 +139,5 @@ function ascend(balloon) {
 
 const MAX_HEIGHT_N = 2
 function getBalloonHeight(seed) {
-	return 150 + 50 * util.inBetween(seed, -MAX_HEIGHT_N, MAX_HEIGHT_N)
+	return 100 + 40 * util.inBetween(seed, -MAX_HEIGHT_N, MAX_HEIGHT_N)
 }

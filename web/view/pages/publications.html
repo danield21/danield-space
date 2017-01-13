@@ -11,7 +11,7 @@
 			{{ range $type, $articles := .ArticleMap }}
 				<a href="/publications/{{ $type }}"><h1>{{ asTitle $type }}</h1></a>
 				{{range $articles}}
-					{{ template "templates/article-heading" . }}
+					{{ template "templates/article-heading-2" . }}
 				{{end}}
 			{{end}}
                 </main>

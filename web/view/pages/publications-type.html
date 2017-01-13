@@ -12,7 +12,7 @@
                                 {{ asTitle .Type }}
 			</h1>
                         {{range .Articles}}
-                                {{ template "templates/article-heading" . }}
+                                {{ template "templates/article-heading-2" . }}
 			{{else}}
 				There are no articles of type {{ asTitle .Type }}
                         {{end}}
