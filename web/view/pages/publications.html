@@ -9,10 +9,11 @@
                 </header>
                 <main>
 			{{ range $type, $articles := .ArticleMap }}
-				<a href="/publications/{{ $type }}"><h1>{{ asTitle $type }}</h1></a>
+				<h1>{{ asTitle $type }}</h1>
 				{{range $articles}}
 					{{ template "templates/article-heading-2" . }}
 				{{end}}
+				<a href="/publications/{{ $type }}">See more {{ asTitle $type }} articles</a>
 			{{end}}
                 </main>
 	</div>
