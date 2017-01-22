@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/danield21/danield-space/server/config"
 	"github.com/danield21/danield-space/server/content"
 	"github.com/danield21/danield-space/server/controllers"
 	"github.com/gorilla/mux"
@@ -14,15 +15,15 @@ type articlesModel struct {
 	Articles []controllers.Article
 }
 
-//ArticlesHeaders contains the headers for index
-func ArticleHeaders(c Config) http.HandlerFunc {
+//ArticleHeaders contains the headers for index
+func ArticleHeaders(c config.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", content.HTML.AddCharset("utf-8").String())
 	}
 }
 
-//Articles handles the index page
-func Article(c Config) http.HandlerFunc {
+//Article handles the index page
+func Article(c config.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -34,8 +35,10 @@ func Article(c Config) http.HandlerFunc {
 			Articles: articles.GetType(vars["type"]),
 		}
 
-		PublicationsTypeHeaders(c)(w, r)
-		err := c.View(w, "pages/index", pageData)
+		theme := config.GetTheme(r)
+
+		ArticleHeaders(c)(w, r)
+		err := c.View(w, theme, "page/index", pageData)
 		if err != nil {
 			log.Print(err)
 		}

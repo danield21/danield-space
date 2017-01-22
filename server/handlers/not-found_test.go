@@ -7,16 +7,23 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/danield21/danield-space/server/config"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNotFound(t *testing.T) {
 	client := &http.Client{}
 
-	view := template.New("pages/not-found")
-	view.Parse("Hello, World!")
+	view := template.New("page/not-found")
+	view.Parse(", ")
+	head := template.New("")
+	head.Parse("Hello")
+	view.AddParseTree("theme/balloon/head", head.Tree)
+	foot := template.New("")
+	foot.Parse("World")
+	view.AddParseTree("theme/balloon/footer", foot.Tree)
 
-	settings := config{Templates: view}
+	settings := config.MockConfig{Templates: view}
 
 	server := httptest.NewServer(NotFound(settings))
 	defer server.Close()
@@ -33,4 +40,5 @@ func TestNotFound(t *testing.T) {
 	assert.Equal(t, "text/html; charset=utf-8", response.Header.Get("Content-Type"))
 
 	assert.NotEmpty(t, response.ContentLength)
+	assert.Equal(t, len("Hello, World"), int(response.ContentLength))
 }

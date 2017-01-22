@@ -5,23 +5,24 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/danield21/danield-space/server/config"
 	"github.com/danield21/danield-space/server/handlers"
 	"github.com/danield21/danield-space/server/views"
 	"github.com/gorilla/mux"
 )
 
-type config struct {
+type settings struct {
 	Templates *template.Template
 }
 
-func (c config) View(w io.Writer, view string, data interface{}) error {
-	return c.Templates.ExecuteTemplate(w, view, data)
+func (c settings) View(w io.Writer, theme, view string, data interface{}) error {
+	return config.RenderTemplateWithTheme(c.Templates, w, theme, view, data)
 }
 
 //New creates a new server instance to run
 func New() http.Handler {
 	r := mux.NewRouter()
-	c := config{Templates: views.Get()}
+	c := settings{Templates: views.Get()}
 
 	r.HandleFunc("/", handlers.IndexHeaders(c)).Methods(http.MethodHead)
 	r.HandleFunc("/", handlers.Index(c)).Methods(http.MethodGet)

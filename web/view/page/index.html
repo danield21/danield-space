@@ -1,0 +1,6 @@
+<div class="cloud">
+	{{ .SiteInfo.Description }}
+</div>
+{{range .Articles}}
+	{{ template "templates/article-heading" . }}
+{{end}}

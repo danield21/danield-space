@@ -1,11 +1,16 @@
 require("./shim")
 
-const imports = exports.imports = {}
-
-const Coordinates = imports.Coordinates = require('./coordinate')
-const Balloons = imports.Balloons = require('./balloons')
-const Stick = imports.Stick = require('./stick')
+const Anime = require("animejs")
+const Coordinates = require('./coordinate')
+const Balloons =  require('./balloons')
+const Stick = require('./stick')
 const util = require("./util")
+const router = require("./router")
+
+exports.imports = {
+	Coordinates,
+	Anime
+}
 
 const balloons = exports.balloons = {}
 balloons.MAX = 20
@@ -23,8 +28,11 @@ function styleDesert(mainCloud) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+	router.init()
 
+	const main = Bliss("main")
 	const easel = Bliss("#sky-easel")
+
 	easel.style.position = 'fixed'
 	easel.style.top = 0
 	const getBalloon = Bliss.fetch("/dist/svg/balloon.svg")
@@ -82,4 +90,30 @@ document.addEventListener('DOMContentLoaded', () => {
 	document.addEventListener('scroll', () => {
 		stickFunc().then(raiseEasel)
 	})
+	window.addEventListener('click', e => {
+		if(e.defaultPrevented) {
+			return;
+		}
+
+		let a = router.firstA(e.target)
+		if(a != null && router.meetRequirements()) {
+			e.preventDefault()
+			const cleanUp = new Promise((resolve, reject) => {
+				Array.from(main.children).forEach(child => main.removeChild(child))
+				resolve()
+			})
+			Promise.all([
+				cleanUp,
+				router.next(a)
+			]).then(([_, content]) => {
+				main.innerHTML = content
+			})
+		}
+	})
+	window.addEventListener("popstate", e => main.innerHTML = e.state)
 })
+
+const pushState = window.history.pushState
+window.history.pushState = (...args) => {
+	pushState.apply(window.history, args)
+}

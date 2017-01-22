@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Ballooneer's Code</title>
+	<meta charset="UTF-8">
+	<meta name="theme-color" content="#222222">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="author" content="{{ .SiteInfo.Owner }}">
+	<meta name="description" content="{{ .SiteInfo.ShortDescription }}">
+	<link href="/dist/css/styles.css" rel="stylesheet"/>
+	<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+	<script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=blissfuljs" defer></script>
+	<script src="/dist/js/bliss.min.js" defer></script>
+	<script src="/dist/js/app.js" defer></script>
+</head>
+<body>
+        <div id="sky-easel"></div>
+	<div class="cloud">
+                <header>
+        		{{template "core/navigation" .}}
+                </header>
+                <main>

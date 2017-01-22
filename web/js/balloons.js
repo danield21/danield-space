@@ -26,8 +26,6 @@ exports.prepare = (svg) => {
 		const width = aspectRatio * height;
 		const hHalf = screen.height / 2;
 
-		console.log(width, height)
-
 		const position = {
 			top: util.inBetween(hHalf + hHalf * sdRand(), 150, screen.height - 150),
 			left: screen.width + width

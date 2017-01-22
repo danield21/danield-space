@@ -7,16 +7,23 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/danield21/danield-space/server/config"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestIndex(t *testing.T) {
 	client := &http.Client{}
 
-	view := template.New("pages/index")
+	view := template.New("page/index")
 	view.Parse("Hello, World!")
+	head := template.New("")
+	head.Parse("Foo\n")
+	view.AddParseTree("theme/balloon/head", head.Tree)
+	foot := template.New("")
+	foot.Parse("Foo\n")
+	view.AddParseTree("theme/balloon/footer", foot.Tree)
 
-	settings := config{Templates: view}
+	settings := config.MockConfig{Templates: view}
 
 	server := httptest.NewServer(Index(settings))
 	defer server.Close()
@@ -41,7 +48,7 @@ func TestIndexHead(t *testing.T) {
 	view := template.New("pages/index")
 	view.Parse("Hello, World!")
 
-	settings := config{Templates: view}
+	settings := config.MockConfig{Templates: view}
 
 	server := httptest.NewServer(IndexHeaders(settings))
 	defer server.Close()
