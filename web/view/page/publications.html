@@ -1,4 +1,6 @@
 {{ range .Publications }}
-	{{ template "templates/article-list" . }}
-	<a href="/publications/{{ .Type }}">See more {{ asTitle .Type }} articles</a>
+	<section>
+		{{ template "templates/article-list" . }}
+		<a href="/publications/{{ .Type }}">See more {{ asTitle .Type }} articles</a>
+	</section>
 {{end}}

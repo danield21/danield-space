@@ -19,7 +19,11 @@ function firstA(element) {
 function next(a) {
 	return getRoute(a).then(text => {
 		window.history.pushState(text, window.document.title, a.href)
-		return Promise.resolve(text)
+		const doc = document.implementation.createHTMLDocument("")
+		doc.body.innerHTML = text;
+		const frag = document.createDocumentFragment()
+		Array.from(doc.body.children).forEach(c => frag.appendChild(c))
+		return Promise.resolve(frag)
 	})
 }
 
@@ -39,5 +43,11 @@ function init() {
 }
 
 function meetRequirements() {
-	return !!(DOMParser && window.history && window.history.pushState)
+	return !!(
+		DOMParser &&
+		window.history &&
+		window.history.pushState &&
+		document.implementation &&
+		document.implementation.createHTMLDocument
+	)
 }

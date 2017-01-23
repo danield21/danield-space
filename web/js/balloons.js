@@ -117,22 +117,6 @@ function ascend(balloon) {
 		duration: 4000,
 		complete: () => descend(balloon)
 	});
-
-	/*var flame = balloon.ids.get("flame");
-	anime({
-		targets: flame,
-		opacity: 1,
-		easing: 'easeInQuad',
-		duration: 4000,
-		complete: () => {
-			anime({
-				targets: flame,
-				opacity: 0,
-				easing: 'easeInQuad',
-				duration: 2000
-			});
-		}
-	});*/
 }
 
 const MAX_HEIGHT_N = 2

@@ -6,15 +6,11 @@ const Balloons =  require('./balloons')
 const Stick = require('./stick')
 const util = require("./util")
 const router = require("./router")
+const Sun = require("./sun")
 
-exports.imports = {
-	Coordinates,
+exports.debug = {
 	Anime
 }
-
-const balloons = exports.balloons = {}
-balloons.MAX = 20
-balloons.EVERY = 5000
 
 function styleDesert(mainCloud) {
 	mainCloud.style.marginBottom = 0
@@ -33,31 +29,11 @@ document.addEventListener('DOMContentLoaded', () => {
 	const main = Bliss("main")
 	const easel = Bliss("#sky-easel")
 
-	easel.style.position = 'fixed'
-	easel.style.top = 0
-	const getBalloon = Bliss.fetch("/dist/svg/balloon.svg")
-	setInterval(() => {
-		if(easel.childNodes.length >= balloons.MAX || (document.hidden || document.msHidden || document.webkitHidden)) {
-			return
-		}
-		getBalloon.then(Balloons.prepare)
-			.then(Balloons.drawOn(easel))
-			.then(Balloons.fly)
-	}, balloons.EVERY)
+	initEasel(easel)
 
-	;(() => {
-		let sun = document.createElement("div")
-		const size = 1000;
-		const radius = size/2;
-		sun.style.position = 'fixed'
-		sun.style.top = 0
-		sun.style.left = 0
-		sun.style.margin = `-${radius}px 0 0 -${radius}px`
-		sun.style.background = 'radial-gradient(circle closest-side at center, #FFFF00 0%, #FFFFFF 10%, transparent 100%)'
-		sun.style.height = `${size}px`
-		sun.style.width = `${size}px`
-		easel.appendChild(sun);
-	})();
+	initBalloons(easel)
+
+	initSun(easel)
 
 	let mainCloud = Bliss("body > .cloud")
 	let styleFunc = styleDesert.bind(null, mainCloud)
@@ -96,24 +72,76 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 
 		let a = router.firstA(e.target)
-		if(a != null && router.meetRequirements()) {
-			e.preventDefault()
-			const cleanUp = new Promise((resolve, reject) => {
-				Array.from(main.children).forEach(child => main.removeChild(child))
-				resolve()
-			})
-			Promise.all([
-				cleanUp,
-				router.next(a)
-			]).then(([_, content]) => {
-				main.innerHTML = content
-			})
+
+		if(a == null || !router.meetRequirements()) {
+			return;
 		}
+
+		e.preventDefault()
+
+		const cleanUp = new Promise((resolve, reject) => {
+			Anime({
+				targets: main.children,
+				duration: 500,
+				easing: "linear",
+				translateY: (_, i) => `-${(i+1) * 100}px`,
+				opacity: 0,
+				complete: () => {
+					Array.from(main.children).forEach(child => main.removeChild(child))
+					window.dispatchEvent(new Event("resize"))
+					resolve()
+				}
+			})
+		})
+
+		Promise.all([
+			cleanUp,
+			router.next(a)
+		]).then(([_, frag]) => {
+			Array.from(frag.children).forEach((c, i) => {
+				c.style.transform = `translateY(-${(i+1) * 100}px)`
+				c.style.opacity = "0"
+			})
+			Anime({
+				targets: frag.children,
+				duration: 1000,
+				easing: "linear",
+				translateY: "0",
+				opacity: 1,
+			})
+			main.appendChild(frag)
+		})
 	})
-	window.addEventListener("popstate", e => main.innerHTML = e.state)
+	window.addEventListener("popstate", e => {
+		main.innerHTML = e.state
+		window.dispatchEvent(new Event("resize"))
+	})
 })
 
-const pushState = window.history.pushState
-window.history.pushState = (...args) => {
-	pushState.apply(window.history, args)
+function initEasel(easel) {
+	easel.style.position = 'fixed'
+	easel.style.top = 0
+}
+
+function initSun(easel) {
+	const sun = Sun.create(1000)
+	Sun.setColor(sun, "#FFFF00", "#FFFFFF")
+	easel.appendChild(sun)
+}
+
+
+const balloons = {
+	MAX: 20,
+	EVERY: 5000
+}
+function initBalloons(easel) {
+	const getBalloon = Bliss.fetch("/dist/svg/balloon.svg")
+	setInterval(() => {
+		if(easel.childNodes.length >= balloons.MAX || (document.hidden || document.msHidden || document.webkitHidden)) {
+			return
+		}
+		getBalloon.then(Balloons.prepare)
+			.then(Balloons.drawOn(easel))
+			.then(Balloons.fly)
+	}, balloons.EVERY)
 }
