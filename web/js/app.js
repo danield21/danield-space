@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			})
 			Anime({
 				targets: frag.children,
-				duration: 1000,
+				duration: 500,
 				easing: "linear",
 				translateY: "0",
 				opacity: 1,
@@ -125,7 +125,7 @@ function initEasel(easel) {
 
 function initSun(easel) {
 	const sun = Sun.create(1000)
-	Sun.setColor(sun, "#FFFF00", "#FFFFFF")
+	Sun.setColor(sun, "#FFF250", "#FFFFFF")
 	easel.appendChild(sun)
 }
 

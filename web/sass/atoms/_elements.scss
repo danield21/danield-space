@@ -1,4 +1,6 @@
 html, body {
+    font-family: 'Raleway', sans-serif;
+    color: $font-color;
     margin: 0;
 }
 
@@ -12,7 +14,6 @@ body {
 }
 
 .mountain {
-    background-color: $mountain-color;
     width: 100%;
 }
 
@@ -28,5 +29,5 @@ body {
 
 a {
     text-decoration: underline;
-    color: currentColor;
+    color: $link-color;
 }

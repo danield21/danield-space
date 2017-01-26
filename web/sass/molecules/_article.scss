@@ -1,0 +1,32 @@
+article {
+	& > a {
+		color: initial;
+		text-decoration: none;
+		display: block;
+
+		&:hover > h1, &:hover > h2 {
+    			text-decoration: underline;
+		}
+	}
+
+	h1, h2, h3, h4, h5, h6 {
+		color: $fire-color;
+		margin: 0 0 10px 0;
+	}
+}
+
+article h1 {
+    color: $fire-color;
+    font-size: 2rem;
+    margin: 0 0 10px 0;
+}
+
+article h2 {
+    color: $fire-color;
+    font-size: 1.8rem;
+    margin: 0 0 10px 0;
+}
+
+section {
+	margin: 10px;
+}
