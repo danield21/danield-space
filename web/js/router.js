@@ -17,23 +17,25 @@ function firstA(element) {
 }
 
 function next(a) {
-	return getRoute(a).then(text => {
-		window.history.pushState(text, window.document.title, a.href)
-		const doc = document.implementation.createHTMLDocument("")
-		doc.body.innerHTML = text;
+	return getRoute(a).then(html => {
+		window.history.pushState(html.body.innerHTML, window.document.title, a.href)
 		const frag = document.createDocumentFragment()
-		Array.from(doc.body.children).forEach(c => frag.appendChild(c))
+		Array.from(html.body.children).forEach(c => frag.appendChild(c))
 		return Promise.resolve(frag)
+	}, e => {
+		return Promise.reject(e)
 	})
 }
 
 function getRoute(a) {
-	if(a && a.tagName.toUpperCase() != "A") {
-		return Promise.reject("Provided value is not an A element")
+	if(a && a.tagName.toUpperCase() != "A" && a.href) {
+		return Promise.reject(new Error("Provided value is not an A element with an href"))
 	}
 
-	return Bliss.fetch(a.href + "?theme=none").then(response => {
-		return Promise.resolve(response.responseText)
+	return Bliss.fetch(a.href + "?theme=none", { responseType: "document"}).then(response => {
+		return response.responseXML ? Promise.resolve(response.responseXML) : Promise.reject(new Error("Did not get a document back from " + a.href))
+	}, e => {
+		return e.xhr.responseXML ? Promise.resolve(e.xhr.responseXML) : Promise.reject(new Error("Did not get a document back from " + a.href))
 	})
 }
 
