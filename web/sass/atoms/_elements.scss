@@ -31,3 +31,28 @@ a {
     text-decoration: underline;
     color: $link-color;
 }
+
+input[type="text"], input[type="password"], input[type="datetime-local"], textarea {
+    border: $fire-color 1px solid;
+    background-color: $cloud-color;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+}
+
+button, input[type="button"] {
+    border: 0;
+    color: $cloud-color;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: $fire-color;
+    transition-property: background-color;
+    transition-duration: 0.2s;
+
+    &:hover {
+        background-color: lighten($fire-color, 5);
+    }
+
+    &:active {
+        background-color: darken($fire-color, 5);
+    }
+}

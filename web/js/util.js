@@ -13,7 +13,13 @@ function screenSize() {
 	}
 }
 
+function setDateTimeInputToNow(input) {
+	var now = new Date();
+	input.value = new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString().substring(0,19)
+}
+
 module.exports = {
 	inBetween,
-	screenSize
+	screenSize,
+	setDateTimeInputToNow
 }

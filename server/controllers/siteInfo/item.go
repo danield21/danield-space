@@ -1,14 +1,12 @@
-package controllers
+package siteInfo
 
 import (
 	"regexp"
 	"strings"
-	"time"
 )
 
 //SiteInfo is a struct containing information about the website
 type SiteInfo struct {
-	DataElement
 	Title       string
 	Link        string
 	Owner       string
@@ -45,26 +43,4 @@ func generateShortDescriptionUsing(breaks []string, seperator string, max int) s
 		short = tempShort
 	}
 	return strings.TrimSpace(short)
-}
-
-//SiteInfoController is a controller for getting/setting SiteInfo
-type SiteInfoController struct {
-}
-
-//Get gets SiteInfo currently from source code.
-//TODO create database connection to get this.
-func (c SiteInfoController) Get() SiteInfo {
-	return SiteInfo{
-		DataElement: DataElement{
-			UUID:       "1",
-			CreatedBy:  "Daniel J Dominguez",
-			CreatedOn:  time.Now(),
-			ModifiedBy: "Daniel J Dominguez",
-			ModifiedOn: time.Now(),
-		},
-		Title:       "Ballooneer's Code",
-		Link:        "http://danield.space",
-		Owner:       "Daniel J Dominguez",
-		Description: "Sometimes, having a lofty head is necessary. This is a site is dedicated to having an overview discussion to code, without worrying too much about implementation. Of course, we will be touching the ground to get a better view of what may need to happen, but for the most part we will care about the overall look and feel.",
-	}
 }

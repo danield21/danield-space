@@ -50,6 +50,14 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	}
 
+	Bliss.$(".js-fillNow").forEach(button => {
+		button.addEventListener('click', e => {
+			var id = e.target.dataset.target
+			var input = document.getElementById(id)
+			util.setDateTimeInputToNow(input)
+		})
+	})
+
 	styleFunc()
 		.then(stickFunc)
 		.then(raiseEasel)
