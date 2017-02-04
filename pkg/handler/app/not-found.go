@@ -15,7 +15,7 @@ func NotFound(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 
 	theme := e.Theme(r)
 
-	err := e.View(w, theme, "page/not-found", nil)
+	err := e.View(w, theme, "page/app/not-found", nil)
 	if err != nil {
 		log.Print(err)
 	}

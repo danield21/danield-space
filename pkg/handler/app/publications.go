@@ -52,7 +52,7 @@ func Publications(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	theme := e.Theme(r)
 
 	PublicationsTypeHeaders(e, w, r)
-	err = e.View(w, theme, "page/publications", pageData)
+	err = e.View(w, theme, "page/app/publications", pageData)
 	if err != nil {
 		log.Errorf(ctx, "Unable to generate publications page:\n%v", err)
 	}

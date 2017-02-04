@@ -41,7 +41,7 @@ func Article(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	theme := e.Theme(r)
 
 	ArticleHeaders(e, w, r)
-	err = e.View(w, theme, "page/index", pageData)
+	err = e.View(w, theme, "page/app/index", pageData)
 	if err != nil {
 		log.Errorf(ctx, "Unable to generate articles page:\n%v", err)
 	}

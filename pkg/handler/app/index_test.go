@@ -53,7 +53,7 @@ func TestIndex(t *testing.T) {
 func TestIndexHead(t *testing.T) {
 	client := &http.Client{}
 
-	view := template.New("pages/index")
+	view := template.New("pages/app/index")
 	view.Parse("Hello, World!")
 
 	ctx, done, err := aetest.NewContext()
