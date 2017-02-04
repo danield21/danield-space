@@ -4,7 +4,6 @@ var webpack = require('webpack'),
 	ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
-	debug: true,
 	entry: {
 		app: './web/js/app.js',
 		styles: './web/sass/app.scss'
@@ -15,17 +14,27 @@ module.exports = {
 		library: '[name]'
 	},
 	module: {
-		loaders: [
+		rules: [
 			{
 				test: /\.js$/,
-				loader: "babel-loader",
-				query: {
-					presets: ['es2015']
-				}
+				use: [
+					{
+						loader: "babel-loader",
+						options: {
+							presets: ['es2015']
+						}
+					}
+				]
 			},
 			{
 				test: /\.scss$/,
-				loader: ExtractTextPlugin.extract("style-loader", "css-loader!sass-loader")
+				use: ExtractTextPlugin.extract({
+					fallback: "style-loader",
+					use: [
+						"css-loader",
+						"sass-loader"
+					]
+				})
 			}
 		]
 	},
