@@ -16,6 +16,8 @@ const bucketPrefix = "theme-"
 const appSuffix = "app"
 const adminSuffix = "admin"
 
+//GetApp returns the default theme for the public section of the site
+//If unable to get theme from database, it will default to DefaultAppTheme
 func GetApp(c context.Context) (theme string) {
 	var ok bool
 	theme, ok = get(c, appSuffix)
@@ -31,6 +33,8 @@ func GetApp(c context.Context) (theme string) {
 	return
 }
 
+//GetAdmin returns the default theme for the admin section of the site
+//If unable to get theme from database, it will default to DefaultAdminTheme
 func GetAdmin(c context.Context) (theme string) {
 	var ok bool
 	theme, ok = get(c, adminSuffix)
