@@ -1,6 +1,9 @@
 package siteInfo
 
 import (
+	"errors"
+	"regexp"
+
 	"github.com/danield21/danield-space/pkg/controllers/bucket"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
@@ -11,6 +14,9 @@ const DefaultAppTheme = "balloon"
 
 //DefaultAdminTheme is the default theme for the admin section of the site
 const DefaultAdminTheme = "balloon-admin"
+
+//ErrInvalidTheme is the error returned when theme doesn't pass validation
+var ErrInvalidTheme = errors.New("Theme can only have letters and \"-\"")
 
 const bucketPrefix = "theme-"
 const appSuffix = "app"
@@ -65,6 +71,11 @@ func get(c context.Context, section string) (theme string, ok bool) {
 }
 
 func set(c context.Context, section string, theme string) (err error) {
+	if !ValidTheme(theme) {
+		err = ErrInvalidTheme
+		return
+	}
+
 	item := bucket.Item{
 		Field: bucketPrefix + section,
 		Value: theme,
@@ -72,4 +83,10 @@ func set(c context.Context, section string, theme string) (err error) {
 	}
 	err = bucket.Set(c, item)
 	return
+}
+
+//ValidTheme is a helper function to determine if a entered theme can be valid
+func ValidTheme(theme string) bool {
+	var valid = regexp.MustCompile("^([a-z]+(-[a-z]+)?)+$")
+	return valid.MatchString(theme)
 }
