@@ -1,6 +1,9 @@
 package bucket
 
 import (
+	"time"
+
+	"github.com/danield21/danield-space/pkg/controllers"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"
@@ -52,8 +55,16 @@ func Set(c context.Context, item Item) (err error) {
 
 	if dErr != nil || len(keys) == 0 {
 		key = datastore.NewIncompleteKey(c, entity, nil)
+		item.DataElement = controllers.DataElement{
+			CreatedOn:  time.Now(),
+			CreatedBy:  "site",
+			ModifiedOn: time.Now(),
+			ModifiedBy: "site",
+		}
 	} else {
 		key = keys[0]
+		item.ModifiedBy = "site"
+		item.ModifiedOn = time.Now()
 	}
 
 	_, err = datastore.Put(c, key, &item)
