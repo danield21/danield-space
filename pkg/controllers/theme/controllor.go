@@ -1,4 +1,4 @@
-package siteInfo
+package theme
 
 import (
 	"errors"
