@@ -41,6 +41,7 @@ func GetAll(c context.Context, fields ...string) (items []Item, err error) {
 	return
 }
 
+//Set sets the field with item
 func Set(c context.Context, item Item) (err error) {
 	var key *datastore.Key
 	q := datastore.NewQuery(entity).Filter("Field =", item.Field).Limit(1)
