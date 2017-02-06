@@ -1,4 +1,4 @@
-<form action="/rest/admin/authenticate" method="post" class="cloud">
+<form action="/rest/admin/authenticate{{if .Redirect }}?redirect={{ .Redirect }}{{ end }}" method="post" class="cloud">
 	<div>
 		<label>
 			Username

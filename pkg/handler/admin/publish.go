@@ -23,6 +23,12 @@ func PublishHeaders(e envir.Environment, w http.ResponseWriter, r *http.Request)
 
 //Publish handles the index page
 func Publish(e envir.Environment, w http.ResponseWriter, r *http.Request) {
+	session := e.Session(r)
+	_, signedIn := session.Values["user"]
+	if !signedIn {
+		NotAuthorized(e, w, r)
+		return
+	}
 
 	ctx := e.Context(r)
 

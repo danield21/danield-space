@@ -7,13 +7,14 @@ import (
 	"github.com/danield21/danield-space/pkg/envir"
 	"github.com/danield21/danield-space/pkg/handler"
 
+	"github.com/danield21/danield-space/pkg/handler/rest"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/log"
 )
 
 type signinModel struct {
 	SiteInfo siteInfo.SiteInfo
-	Types    []string
+	Redirect string
 }
 
 //SignInHeaders contains the headers for index
@@ -30,6 +31,7 @@ func SignIn(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 
 	pageData := signinModel{
 		SiteInfo: info,
+		Redirect: rest.GetRedirect(r),
 	}
 
 	SignInHeaders(e, w, r)

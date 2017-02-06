@@ -1,13 +1,15 @@
 package account
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"golang.org/x/crypto/bcrypt"
+)
 
 type Account struct {
 	Username string
 	Hashword []byte
 }
 
-func (a Account) Password(password []byte) (err error) {
+func (a *Account) Password(password []byte) (err error) {
 	a.Hashword, err = bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
 	return
 }

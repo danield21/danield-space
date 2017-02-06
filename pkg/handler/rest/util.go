@@ -11,6 +11,7 @@ import (
 const unlimited = -1
 
 func GetRedirect(r *http.Request) (redirect string) {
+	r.ParseForm()
 	if redirects, ok := r.Form["redirect"]; ok {
 		redirect = redirects[0]
 	}

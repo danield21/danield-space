@@ -11,14 +11,7 @@ import (
 var Default = Account{Username: "Root", Hashword: nil}
 
 func init() {
-	Default.Password([]byte{
-		'T', 'h', 'i', 's',
-		'I', 's',
-		'A',
-		'V', 'e', 'r', 'y',
-		'S', 'i', 'm', 'p', 'l', 'e',
-		'P', 'a', 's', 's', 'w', 'o', 'r', 'd', '!',
-	})
+	Default.Password([]byte("ThisIsAVerySimplePassword!"))
 }
 
 func GetAll(c context.Context) (admins []Account, err error) {
@@ -39,7 +32,7 @@ func IsAdmin(c context.Context, username string, password []byte) bool {
 	log.Warningf(c, "admin.IsAdmin - Unable to retrieve Admin accounts from database, using default\n%v", err)
 
 	key := datastore.NewIncompleteKey(c, "Admin", nil)
-	_, err = datastore.Put(c, key, Default)
+	_, err = datastore.Put(c, key, &Default)
 
 	if err != nil {
 		log.Warningf(c, "admin.IsAdmin - Unable to put default account into database\n%v", err)

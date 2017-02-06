@@ -54,11 +54,11 @@ func New() http.Handler {
 	r.HandleFunc("/", handler.Prepare(app.IndexHeaders, e)).Methods(http.MethodHead)
 	r.HandleFunc("/", handler.Prepare(app.Index, e)).Methods(http.MethodGet)
 	r.HandleFunc("/publications", handler.Prepare(app.PublicationsHeaders, e)).Methods(http.MethodHead)
-	r.HandleFunc("/publications", handler.Prepare(app.Publications, e)).Methods(http.MethodGet)
+	r.HandleFunc("/publications", handler.Prepare(app.Publications, e)).Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/publications/{type}", handler.Prepare(app.PublicationsTypeHeaders, e)).Methods(http.MethodHead)
-	r.HandleFunc("/publications/{type}", handler.Prepare(app.PublicationsType, e)).Methods(http.MethodGet)
+	r.HandleFunc("/publications/{type}", handler.Prepare(app.PublicationsType, e)).Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/publications/{type}/{key}", handler.Prepare(app.ArticleHeaders, e)).Methods(http.MethodHead)
-	r.HandleFunc("/publications/{type}/{key}", handler.Prepare(app.Article, e)).Methods(http.MethodGet)
+	r.HandleFunc("/publications/{type}/{key}", handler.Prepare(app.Article, e)).Methods(http.MethodGet, http.MethodPost)
 	r.NotFoundHandler = handler.Prepare(app.NotFound, e)
 
 	Admin(r.PathPrefix("/admin").Subrouter(), e)
@@ -71,12 +71,15 @@ func New() http.Handler {
 func Rest(r *mux.Router, e ProductionEnvironment) {
 	r.HandleFunc("/article", handler.Prepare(article.Get, e)).Methods(http.MethodGet)
 	r.HandleFunc("/admin/authenticate", handler.Prepare(account.Auth, e)).Methods(http.MethodPost)
+	r.HandleFunc("/admin/unauthenticate", handler.Prepare(account.Unauth, e)).Methods(http.MethodPost)
 }
 
 //Admin configures the handlers for admin services
 func Admin(r *mux.Router, e ProductionEnvironment) {
+	r.HandleFunc("/", handler.Prepare(admin.IndexHeaders, e)).Methods(http.MethodHead)
+	r.HandleFunc("/", handler.Prepare(admin.Index, e)).Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/publish", handler.Prepare(admin.PublishHeaders, e)).Methods(http.MethodHead)
-	r.HandleFunc("/publish", handler.Prepare(admin.Publish, e)).Methods(http.MethodGet)
+	r.HandleFunc("/publish", handler.Prepare(admin.Publish, e)).Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/signin", handler.Prepare(admin.SignInHeaders, e)).Methods(http.MethodHead)
-	r.HandleFunc("/signin", handler.Prepare(admin.SignIn, e)).Methods(http.MethodGet)
+	r.HandleFunc("/signin", handler.Prepare(admin.SignIn, e)).Methods(http.MethodGet, http.MethodPost)
 }
