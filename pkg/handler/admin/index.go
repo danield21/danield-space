@@ -4,14 +4,14 @@ import (
 	"net/http"
 
 	"github.com/danield21/danield-space/pkg/controllers/siteInfo"
+	"github.com/danield21/danield-space/pkg/controllers/theme"
 	"github.com/danield21/danield-space/pkg/envir"
 	"github.com/danield21/danield-space/pkg/handler"
 	"google.golang.org/appengine/log"
 )
 
 type indexModel struct {
-	SiteInfo siteInfo.SiteInfo
-	User     string
+	handler.BaseModel
 }
 
 //IndexHeaders contains the headers for index
@@ -21,14 +21,15 @@ func IndexHeaders(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 
 //Index handles the index page
 func Index(e envir.Environment, w http.ResponseWriter, r *http.Request) {
+	ctx := e.Context(r)
+	useTheme := e.Theme(r, theme.GetAdmin(ctx))
 	session := e.Session(r)
+
 	user, signedIn := session.Values["user"]
 	if !signedIn {
 		NotAuthorized(e, w, r)
 		return
 	}
-
-	ctx := e.Context(r)
 	info, err := siteInfo.Get(ctx)
 
 	if err != nil {
@@ -36,14 +37,14 @@ func Index(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	}
 
 	pageData := indexModel{
-		SiteInfo: info,
-		User:     user.(string),
+		BaseModel: handler.BaseModel{
+			SiteInfo: info,
+			User:     user.(string),
+		},
 	}
 
-	theme := e.Theme(r)
-
 	IndexHeaders(e, w, r)
-	err = e.View(w, theme, "page/admin/index", pageData)
+	err = e.View(w, useTheme, "page/admin/index", pageData)
 	if err != nil {
 		log.Errorf(ctx, "Unable to generate index page:\n%v", err)
 	}

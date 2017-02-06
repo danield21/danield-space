@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/danield21/danield-space/pkg/controllers/siteInfo"
+	"github.com/danield21/danield-space/pkg/controllers/theme"
 	"github.com/danield21/danield-space/pkg/envir"
 	"github.com/danield21/danield-space/pkg/handler"
 )
@@ -15,17 +16,18 @@ func NotAuthorized(e envir.Environment, w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusUnauthorized)
 
 	ctx := e.Context(r)
+	useTheme := e.Theme(r, theme.GetAdmin(ctx))
 
 	info, _ := siteInfo.Get(ctx)
 
 	pageData := signinModel{
-		SiteInfo: info,
+		BaseModel: handler.BaseModel{
+			SiteInfo: info,
+		},
 		Redirect: r.URL.Path,
 	}
 
-	theme := e.Theme(r)
-
-	err := e.View(w, theme, "page/admin/not-authorized", pageData)
+	err := e.View(w, useTheme, "page/admin/not-authorized", pageData)
 	if err != nil {
 		log.Print(err)
 	}

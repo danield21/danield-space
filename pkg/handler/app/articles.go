@@ -5,6 +5,7 @@ import (
 
 	"github.com/danield21/danield-space/pkg/controllers/articles"
 	"github.com/danield21/danield-space/pkg/controllers/siteInfo"
+	"github.com/danield21/danield-space/pkg/controllers/theme"
 	"github.com/danield21/danield-space/pkg/envir"
 	"github.com/danield21/danield-space/pkg/handler"
 	"github.com/gorilla/mux"
@@ -12,7 +13,7 @@ import (
 )
 
 type articlesModel struct {
-	SiteInfo siteInfo.SiteInfo
+	handler.BaseModel
 	Articles []articles.Article
 }
 
@@ -24,6 +25,7 @@ func ArticleHeaders(e envir.Environment, w http.ResponseWriter, r *http.Request)
 //Article handles the index page
 func Article(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	ctx := e.Context(r)
+	useTheme := e.Theme(r, theme.GetApp(ctx))
 	vars := mux.Vars(r)
 
 	info, _ := siteInfo.Get(ctx)
@@ -33,15 +35,15 @@ func Article(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 		log.Errorf(ctx, "%v", err)
 	}
 
-	pageData := indexModel{
-		SiteInfo: info,
+	pageData := articlesModel{
+		BaseModel: handler.BaseModel{
+			SiteInfo: info,
+		},
 		Articles: a,
 	}
 
-	theme := e.Theme(r)
-
 	ArticleHeaders(e, w, r)
-	err = e.View(w, theme, "page/app/index", pageData)
+	err = e.View(w, useTheme, "page/app/index", pageData)
 	if err != nil {
 		log.Errorf(ctx, "Unable to generate articles page:\n%v", err)
 	}

@@ -2,28 +2,22 @@ package envir
 
 import (
 	"bytes"
-	"errors"
 	"html/template"
 	"io"
 	"net/http"
-	"regexp"
+
+	"github.com/danield21/danield-space/pkg/controllers/theme"
 )
 
-//DefaultTheme is the theme if no theme is specified
-const DefaultTheme = "balloon"
-
-//ErrInvalidTheme is the error returned when theme doesn't pass validation
-var ErrInvalidTheme = errors.New("Theme only has letters and \"-\"")
-
 //RenderTemplateWithTheme is a helper function to render golang templates with a theme
-func RenderTemplateWithTheme(t *template.Template, w io.Writer, theme, view string, data interface{}) error {
-	if !ValidTheme(theme) {
-		return ErrInvalidTheme
+func RenderTemplateWithTheme(t *template.Template, w io.Writer, useTheme, view string, data interface{}) error {
+	if !theme.ValidTheme(useTheme) {
+		return theme.ErrInvalidTheme
 	}
 
 	var buffer = new(bytes.Buffer)
 
-	err := t.ExecuteTemplate(buffer, "theme/"+theme+"/head", data)
+	err := t.ExecuteTemplate(buffer, "theme/"+useTheme+"/head", data)
 	if err != nil {
 		return err
 	}
@@ -31,7 +25,7 @@ func RenderTemplateWithTheme(t *template.Template, w io.Writer, theme, view stri
 	if err != nil {
 		return err
 	}
-	err = t.ExecuteTemplate(buffer, "theme/"+theme+"/footer", data)
+	err = t.ExecuteTemplate(buffer, "theme/"+useTheme+"/footer", data)
 	if err != nil {
 		return err
 	}
@@ -39,25 +33,18 @@ func RenderTemplateWithTheme(t *template.Template, w io.Writer, theme, view stri
 	_, err = buffer.WriteTo(w)
 
 	return err
-
-}
-
-//ValidTheme is a helper function to determine if a entered theme can be valid
-func ValidTheme(theme string) bool {
-	var valid = regexp.MustCompile("^([a-z]+(-[a-z]+)?)+$")
-	return valid.MatchString(theme)
 }
 
 //GetTheme gets the theme. If no theme was specified, then the default theme is given
-func GetTheme(r *http.Request) (theme string) {
+func GetTheme(r *http.Request, defaultTheme string) string {
 	err := r.ParseForm()
 	if err != nil {
-		return DefaultTheme
+		return defaultTheme
 	}
 
 	if theme, ok := r.Form["theme"]; ok {
 		return theme[0]
 	}
 
-	return DefaultTheme
+	return defaultTheme
 }

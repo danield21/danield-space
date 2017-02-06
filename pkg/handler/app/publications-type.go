@@ -5,6 +5,7 @@ import (
 
 	"github.com/danield21/danield-space/pkg/controllers/articles"
 	"github.com/danield21/danield-space/pkg/controllers/siteInfo"
+	"github.com/danield21/danield-space/pkg/controllers/theme"
 	"github.com/danield21/danield-space/pkg/envir"
 	"github.com/danield21/danield-space/pkg/handler"
 	"github.com/gorilla/mux"
@@ -12,7 +13,7 @@ import (
 )
 
 type publicationsTypeModel struct {
-	SiteInfo siteInfo.SiteInfo
+	handler.BaseModel
 	Articles []articles.Article
 	Type     string
 }
@@ -25,6 +26,7 @@ func PublicationsTypeHeaders(e envir.Environment, w http.ResponseWriter, r *http
 //PublicationsType handles the index page
 func PublicationsType(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	ctx := e.Context(r)
+	useTheme := e.Theme(r, theme.GetApp(ctx))
 	vars := mux.Vars(r)
 
 	info, _ := siteInfo.Get(ctx)
@@ -35,15 +37,15 @@ func PublicationsType(e envir.Environment, w http.ResponseWriter, r *http.Reques
 	}
 
 	pageData := publicationsTypeModel{
-		SiteInfo: info,
+		BaseModel: handler.BaseModel{
+			SiteInfo: info,
+		},
 		Articles: a,
 		Type:     vars["type"],
 	}
 
-	theme := e.Theme(r)
-
 	PublicationsTypeHeaders(e, w, r)
-	err = e.View(w, theme, "page/app/publications-type", pageData)
+	err = e.View(w, useTheme, "page/app/publications-type", pageData)
 	if err != nil {
 		log.Errorf(ctx, "Unable to generate publications type page:\n%v", err)
 	}

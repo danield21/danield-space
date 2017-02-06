@@ -5,13 +5,14 @@ import (
 
 	"github.com/danield21/danield-space/pkg/controllers/articles"
 	"github.com/danield21/danield-space/pkg/controllers/siteInfo"
+	"github.com/danield21/danield-space/pkg/controllers/theme"
 	"github.com/danield21/danield-space/pkg/envir"
 	"github.com/danield21/danield-space/pkg/handler"
 	"google.golang.org/appengine/log"
 )
 
 type indexModel struct {
-	SiteInfo siteInfo.SiteInfo
+	handler.BaseModel
 	Articles []articles.Article
 }
 
@@ -23,6 +24,8 @@ func IndexHeaders(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 //Index handles the index page
 func Index(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	ctx := e.Context(r)
+	useTheme := e.Theme(r, theme.GetApp(ctx))
+
 	info, _ := siteInfo.Get(ctx)
 
 	a, err := articles.GetAll(ctx, 10)
@@ -31,14 +34,14 @@ func Index(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	}
 
 	pageData := indexModel{
-		SiteInfo: info,
+		BaseModel: handler.BaseModel{
+			SiteInfo: info,
+		},
 		Articles: a,
 	}
 
-	theme := e.Theme(r)
-
 	IndexHeaders(e, w, r)
-	err = e.View(w, theme, "page/app/index", pageData)
+	err = e.View(w, useTheme, "page/app/index", pageData)
 	if err != nil {
 		log.Errorf(ctx, "Unable to generate index page:\n%v", err)
 	}

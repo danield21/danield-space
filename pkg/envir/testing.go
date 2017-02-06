@@ -27,8 +27,8 @@ func (t TestingEnvironment) Session(r *http.Request) (session *sessions.Session)
 }
 
 //Theme gets a mock theme
-func (t TestingEnvironment) Theme(r *http.Request) (theme string) {
-	theme = GetTheme(r)
+func (t TestingEnvironment) Theme(r *http.Request, defaultTheme string) (theme string) {
+	theme = GetTheme(r, defaultTheme)
 	return
 }
 

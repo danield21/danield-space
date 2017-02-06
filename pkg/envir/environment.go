@@ -12,6 +12,6 @@ import (
 type Environment interface {
 	View(w io.Writer, theme, view string, data interface{}) error
 	Session(r *http.Request) (session *sessions.Session)
-	Theme(r *http.Request) string
+	Theme(r *http.Request, defaultTheme string) string
 	Context(r *http.Request) context.Context
 }

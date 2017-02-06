@@ -35,8 +35,8 @@ func (p ProductionEnvironment) Session(r *http.Request) (session *sessions.Sessi
 }
 
 //Theme gets the requested theme
-func (p ProductionEnvironment) Theme(r *http.Request) (theme string) {
-	theme = envir.GetTheme(r)
+func (p ProductionEnvironment) Theme(r *http.Request, defaultTheme string) (theme string) {
+	theme = envir.GetTheme(r, defaultTheme)
 	return
 }
 

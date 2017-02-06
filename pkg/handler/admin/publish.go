@@ -5,6 +5,7 @@ import (
 
 	"github.com/danield21/danield-space/pkg/controllers/articles"
 	"github.com/danield21/danield-space/pkg/controllers/siteInfo"
+	"github.com/danield21/danield-space/pkg/controllers/theme"
 	"github.com/danield21/danield-space/pkg/envir"
 	"github.com/danield21/danield-space/pkg/handler"
 
@@ -12,8 +13,8 @@ import (
 )
 
 type publishModel struct {
-	SiteInfo siteInfo.SiteInfo
-	Types    []string
+	handler.BaseModel
+	Types []string
 }
 
 //PublishHeaders contains the headers for index
@@ -23,14 +24,15 @@ func PublishHeaders(e envir.Environment, w http.ResponseWriter, r *http.Request)
 
 //Publish handles the index page
 func Publish(e envir.Environment, w http.ResponseWriter, r *http.Request) {
+	ctx := e.Context(r)
+	useTheme := e.Theme(r, theme.GetAdmin(ctx))
 	session := e.Session(r)
+
 	_, signedIn := session.Values["user"]
 	if !signedIn {
 		NotAuthorized(e, w, r)
 		return
 	}
-
-	ctx := e.Context(r)
 
 	info, _ := siteInfo.Get(ctx)
 	types, err := articles.GetTypes(ctx)
@@ -39,13 +41,14 @@ func Publish(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	}
 
 	pageData := publishModel{
-		SiteInfo: info,
-		Types:    types,
+		BaseModel: handler.BaseModel{
+			SiteInfo: info,
+		},
+		Types: types,
 	}
 
 	PublishHeaders(e, w, r)
-	theme := e.Theme(r)
-	err = e.View(w, theme, "page/admin/publish", pageData)
+	err = e.View(w, useTheme, "page/admin/publish", pageData)
 	if err != nil {
 		log.Errorf(ctx, "Unable to generate Publish page:\n%v", err)
 	}
