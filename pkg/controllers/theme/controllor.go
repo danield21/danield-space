@@ -28,6 +28,7 @@ func GetApp(c context.Context) (theme string) {
 	if err != nil {
 		log.Warningf(c, "theme.GetApp - Unable to put theme for app into database\n%v", err)
 	}
+	return
 }
 
 func GetAdmin(c context.Context) (theme string) {
@@ -42,6 +43,7 @@ func GetAdmin(c context.Context) (theme string) {
 	if err != nil {
 		log.Warningf(c, "theme.GetAdmin - Unable to put theme for admin into database\n%v", err)
 	}
+	return
 }
 
 //Get gets all information about the site
