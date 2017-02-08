@@ -21,7 +21,7 @@ func Unauthorized(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusUnauthorized)
 
 	ctx := e.Context(r)
-	useTheme := e.Theme(r, theme.GetAdmin(ctx))
+	useTheme := e.Theme(r, theme.GetApp(ctx))
 
 	info, _ := siteInfo.Get(ctx)
 
@@ -32,7 +32,7 @@ func Unauthorized(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 		Redirect: r.URL.Path,
 	}
 
-	err := e.View(w, useTheme, "page/status/not-authorized", pageData)
+	err := e.View(w, useTheme, "page/status/unauthorized", pageData)
 	if err != nil {
 		log.Print(err)
 	}
