@@ -10,9 +10,9 @@ module.exports = {
 }
 
 function meetsRequirements() {
-	return Modernizr.history &&
-	Modernizr.documentfragment &&
-	Modernizr.xhrresponsetypedocument
+	return Modernizr.documentfragment &&
+	Modernizr.xhrresponsetypedocument &&
+	Modernizr.history
 }
 
 function init() {
