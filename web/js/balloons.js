@@ -13,7 +13,8 @@ module.exports = {
 }
 
 function meetsRequirements() {
-	return Modernizr.requestanimationframe &&
+	return Modernizr.inlinesvg &&
+	Modernizr.requestanimationframe &&
 	Modernizr.classlist &&
 	window.DOMParser
 }
