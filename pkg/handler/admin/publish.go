@@ -8,6 +8,7 @@ import (
 	"github.com/danield21/danield-space/pkg/controllers/theme"
 	"github.com/danield21/danield-space/pkg/envir"
 	"github.com/danield21/danield-space/pkg/handler"
+	"github.com/danield21/danield-space/pkg/handler/status"
 
 	"google.golang.org/appengine/log"
 )
@@ -30,7 +31,7 @@ func Publish(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 
 	_, signedIn := session.Values["user"]
 	if !signedIn {
-		NotAuthorized(e, w, r)
+		status.Unauthorized(e, w, r)
 		return
 	}
 

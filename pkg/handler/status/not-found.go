@@ -1,4 +1,4 @@
-package app
+package status
 
 import (
 	"log"
@@ -24,7 +24,7 @@ func NotFound(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 		SiteInfo: info,
 	}
 
-	err := e.View(w, useTheme, "page/app/not-found", pageData)
+	err := e.View(w, useTheme, "page/status/not-found", pageData)
 	if err != nil {
 		log.Print(err)
 	}

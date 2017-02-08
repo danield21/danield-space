@@ -11,6 +11,7 @@ import (
 	"github.com/danield21/danield-space/pkg/handler/app"
 	"github.com/danield21/danield-space/pkg/handler/rest/account"
 	"github.com/danield21/danield-space/pkg/handler/rest/article"
+	"github.com/danield21/danield-space/pkg/handler/status"
 	"github.com/danield21/danield-space/pkg/views"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -59,7 +60,7 @@ func New() http.Handler {
 	r.HandleFunc("/publications/{type}", handler.Prepare(app.PublicationsType, e)).Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/publications/{type}/{key}", handler.Prepare(app.ArticleHeaders, e)).Methods(http.MethodHead)
 	r.HandleFunc("/publications/{type}/{key}", handler.Prepare(app.Article, e)).Methods(http.MethodGet, http.MethodPost)
-	r.NotFoundHandler = handler.Prepare(app.NotFound, e)
+	r.NotFoundHandler = handler.Prepare(status.NotFound, e)
 
 	Admin(r.PathPrefix("/admin").Subrouter(), e)
 	Rest(r.PathPrefix("/rest").Subrouter(), e)

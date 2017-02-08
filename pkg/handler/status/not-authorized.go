@@ -1,4 +1,4 @@
-package admin
+package status
 
 import (
 	"log"
@@ -10,8 +10,13 @@ import (
 	"github.com/danield21/danield-space/pkg/handler"
 )
 
-//NotAuthorized handles the unauthorized page
-func NotAuthorized(e envir.Environment, w http.ResponseWriter, r *http.Request) {
+type unauthorizedModel struct {
+	handler.BaseModel
+	Redirect string
+}
+
+//Unauthorized handles the unauthorized page
+func Unauthorized(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", handler.HTML.AddCharset("utf-8").String())
 	w.WriteHeader(http.StatusUnauthorized)
 
@@ -20,14 +25,14 @@ func NotAuthorized(e envir.Environment, w http.ResponseWriter, r *http.Request) 
 
 	info, _ := siteInfo.Get(ctx)
 
-	pageData := signinModel{
+	pageData := unauthorizedModel{
 		BaseModel: handler.BaseModel{
 			SiteInfo: info,
 		},
 		Redirect: r.URL.Path,
 	}
 
-	err := e.View(w, useTheme, "page/admin/not-authorized", pageData)
+	err := e.View(w, useTheme, "page/status/not-authorized", pageData)
 	if err != nil {
 		log.Print(err)
 	}

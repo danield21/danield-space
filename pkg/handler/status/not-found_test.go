@@ -1,4 +1,4 @@
-package app_test
+package status_test
 
 import (
 	"bytes"
@@ -19,7 +19,7 @@ import (
 func TestNotFound(t *testing.T) {
 	client := &http.Client{}
 
-	view := template.New("page/app/not-found")
+	view := template.New("page/status/not-found")
 	view.Parse(", ")
 	head := template.New("")
 	head.Parse("Hello")
