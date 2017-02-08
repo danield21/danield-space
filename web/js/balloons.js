@@ -1,16 +1,25 @@
 const Please = require('pleasejs')
 const sdRand = require('gauss-random')
 const anime = require('animejs')
+const Modernizr = require("modernizr")
 
 const util = require("./util")
 
-exports.prepare = (svg) => {
-	return new Promise((resolve, reject) => {
-		if(DOMParser == null) {
-			reject("DOMParser unavailable")
-			return
-		}
+module.exports = {
+	prepare,
+	drawOn,
+	fly,
+	meetsRequirements
+}
 
+function meetsRequirements() {
+	return Modernizr.requestanimationframe &&
+	Modernizr.classlist &&
+	window.DOMParser
+}
+
+function prepare (svg) {
+	return new Promise((resolve, reject) => {
 		const MAX_HEIGHT = getBalloonHeight(MAX_HEIGHT_N)
 
 		const parser = new DOMParser()
@@ -69,7 +78,7 @@ exports.prepare = (svg) => {
 	})
 }
 
-exports.drawOn = function (easel) {
+function drawOn(easel) {
 	return (balloon) => {
 		return new Promise((resolve, reject) => {
 			easel.appendChild(balloon.root)
@@ -78,7 +87,7 @@ exports.drawOn = function (easel) {
 	}
 }
 
-exports.fly = function (balloon) {
+function fly(balloon) {
 	ascend(balloon)
 }
 

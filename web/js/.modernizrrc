@@ -1,0 +1,15 @@
+{
+  "minify": true,
+  "options": [],
+  "feature-detects": [
+    "test/eventlistener",
+    "test/queryselector",
+    "test/es5/specification",
+    "test/es6/promises",
+    "test/requestanimationframe",
+    "test/dom/classlist",
+    "test/history",
+    "test/dom/documentfragment",
+    "test/network/xhr-responsetype-document"
+  ]
+}

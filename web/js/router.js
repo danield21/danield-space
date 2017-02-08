@@ -1,9 +1,23 @@
+const Modernizr = require("modernizr")
+
 module.exports = {
 	firstA,
 	getRoute,
 	init,
 	next,
-	meetRequirements
+	meetsRequirements,
+	handleRouting
+}
+
+function meetsRequirements() {
+	return Modernizr.history &&
+	Modernizr.documentfragment &&
+	Modernizr.xhrresponsetypedocument
+}
+
+function init() {
+	const page = window.location.origin + window.location.pathname
+	window.history.replaceState(Bliss("main").innerHTML, window.document.title, page)
 }
 
 function firstA(element) {
@@ -39,17 +53,23 @@ function getRoute(a) {
 	})
 }
 
-function init() {
-	const page = window.location.origin + window.location.pathname
-	window.history.replaceState(Bliss("main").innerHTML, window.document.title, page)
-}
+function handleRouting(transitionOut, transitionIn) {
+	return e => {
+		if(e.defaultPrevented) {
+			return;
+		}
 
-function meetRequirements() {
-	return !!(
-		DOMParser &&
-		window.history &&
-		window.history.pushState &&
-		document.implementation &&
-		document.implementation.createHTMLDocument
-	)
+		let a = firstA(e.target)
+
+		if(a == null) {
+			return;
+		}
+
+		e.preventDefault()
+
+		Promise.all([
+			transitionOut(),
+			next(a)
+		]).then(transitionIn)
+	}
 }

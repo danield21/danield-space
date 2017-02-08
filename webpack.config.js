@@ -16,6 +16,13 @@ module.exports = {
 	module: {
 		rules: [
 			{
+				test: /\.modernizrrc(\.json)?$/,
+				use: [
+					"modernizr-loader",
+					"json-loader"
+				]
+			},
+			{
 				test: /\.js$/,
 				use: [
 					{
@@ -45,5 +52,10 @@ module.exports = {
 			{from: path.join("web", "lib"), to: path.join("js")}
 		]),
 		new ExtractTextPlugin("css/[name].css")
-	]
+	],
+	resolve: {
+		alias: {
+			modernizr$: path.resolve(__dirname, "web/js/.modernizrrc")
+		}
+	}
 };
