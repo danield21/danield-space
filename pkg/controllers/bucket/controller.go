@@ -10,7 +10,7 @@ import (
 	"google.golang.org/appengine/log"
 )
 
-const entity = "bucket"
+const entity = "Bucket"
 
 //Get gets an item from the bucket with the same field
 func Get(c context.Context, field string) (item Item, err error) {
