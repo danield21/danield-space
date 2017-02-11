@@ -1,6 +1,7 @@
 package bucket
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/danield21/danield-space/pkg/controllers"
@@ -17,7 +18,7 @@ func Get(c context.Context, field string) (item Item, err error) {
 
 	q := datastore.NewQuery(entity).Filter("Field =", field).Limit(1)
 
-	_, err = q.GetAll(c, items)
+	_, err = q.GetAll(c, &items)
 
 	if err != nil {
 		return
@@ -25,6 +26,8 @@ func Get(c context.Context, field string) (item Item, err error) {
 
 	if len(items) == 0 {
 		err = ErrFieldNotFound
+	} else {
+		item = items[0]
 	}
 
 	return
@@ -33,10 +36,15 @@ func Get(c context.Context, field string) (item Item, err error) {
 //GetAll gets all items with the fields listed
 func GetAll(c context.Context, fields ...string) (items []Item, err error) {
 	for _, f := range fields {
-		var item Item
-		item, err = Get(c, f)
-		if err != nil {
-			return
+		item, dErr := Get(c, f)
+		if dErr != nil {
+			if err != nil {
+				err = fmt.Errorf("%v\n%v", err, dErr)
+			} else {
+				err = dErr
+			}
+
+			continue
 		}
 		items = append(items, item)
 	}
@@ -74,5 +82,25 @@ func Set(c context.Context, item Item) (err error) {
 	}
 
 	_, err = datastore.Put(c, key, &item)
+	return
+}
+
+//SetAll sets all items
+//No logic is put in place for items with duplicate field,
+//so field will be overwritten as it loops through.
+//Latest value survives
+//No transaction, so if any fail, it will not rollback any successful
+func SetAll(c context.Context, items ...Item) (err error) {
+	for _, item := range items {
+		dErr := Set(c, item)
+		if dErr != nil {
+			if err != nil {
+				err = fmt.Errorf("%v\n%v", err, dErr)
+			} else {
+				err = dErr
+			}
+		}
+	}
+
 	return
 }

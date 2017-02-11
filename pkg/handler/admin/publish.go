@@ -35,10 +35,7 @@ func Publish(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	info, err := siteInfo.Get(ctx)
-	if err != nil {
-		log.Errorf(ctx, "admin.Publish - Unable to get site information\n%v", err)
-	}
+	info := siteInfo.Get(ctx)
 
 	types, err := articles.GetTypes(ctx)
 	if err != nil {

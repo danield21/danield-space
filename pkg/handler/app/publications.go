@@ -31,10 +31,7 @@ func Publications(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	ctx := e.Context(r)
 	useTheme := e.Theme(r, theme.GetApp(ctx))
 
-	info, err := siteInfo.Get(ctx)
-	if err != nil {
-		log.Errorf(ctx, "app.Publications - Unable to get site information\n%v", err)
-	}
+	info := siteInfo.Get(ctx)
 
 	articleMap, err := articles.GetMapKeyedByTypes(ctx, 10)
 	if err != nil {

@@ -28,10 +28,7 @@ func Article(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	useTheme := e.Theme(r, theme.GetApp(ctx))
 	vars := mux.Vars(r)
 
-	info, err := siteInfo.Get(ctx)
-	if err != nil {
-		log.Errorf(ctx, "app.Article - Unable to get site information\n%v", err)
-	}
+	info := siteInfo.Get(ctx)
 
 	a, err := articles.GetAllByType(ctx, vars["type"], 10)
 	if err != nil {

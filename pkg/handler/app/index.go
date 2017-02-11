@@ -26,10 +26,7 @@ func Index(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	ctx := e.Context(r)
 	useTheme := e.Theme(r, theme.GetApp(ctx))
 
-	info, err := siteInfo.Get(ctx)
-	if err != nil {
-		log.Errorf(ctx, "app.Index - Unable to get site information\n%v", err)
-	}
+	info := siteInfo.Get(ctx)
 
 	a, err := articles.GetAll(ctx, 10)
 	if err != nil {

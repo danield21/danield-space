@@ -27,10 +27,7 @@ func SignIn(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	ctx := e.Context(r)
 	useTheme := e.Theme(r, theme.GetAdmin(ctx))
 
-	info, err := siteInfo.Get(ctx)
-	if err != nil {
-		log.Errorf(ctx, "admin.SignIn - Unable to get site information\n%v", err)
-	}
+	info := siteInfo.Get(ctx)
 
 	pageData := signinModel{
 		BaseModel: handler.BaseModel{
@@ -40,7 +37,7 @@ func SignIn(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	}
 
 	SignInHeaders(e, w, r)
-	err = e.View(w, useTheme, "page/admin/signin", pageData)
+	err := e.View(w, useTheme, "page/admin/signin", pageData)
 	if err != nil {
 		log.Errorf(ctx, "admin.SignIn - Unable to generate page:\n%v", err)
 	}

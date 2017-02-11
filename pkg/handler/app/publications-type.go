@@ -29,10 +29,7 @@ func PublicationsType(e envir.Environment, w http.ResponseWriter, r *http.Reques
 	useTheme := e.Theme(r, theme.GetApp(ctx))
 	vars := mux.Vars(r)
 
-	info, err := siteInfo.Get(ctx)
-	if err != nil {
-		log.Errorf(ctx, "app.PublicationsType - Unable to get site information\n%v", err)
-	}
+	info := siteInfo.Get(ctx)
 
 	a, err := articles.GetAllByType(ctx, vars["type"], 1)
 	if err != nil {
