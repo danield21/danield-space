@@ -35,10 +35,14 @@ func Publish(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	info, _ := siteInfo.Get(ctx)
+	info, err := siteInfo.Get(ctx)
+	if err != nil {
+		log.Errorf(ctx, "admin.Publish - Unable to get site information\n%v", err)
+	}
+
 	types, err := articles.GetTypes(ctx)
 	if err != nil {
-		log.Warningf(ctx, "Unable to get types of articles in Publish handler")
+		log.Warningf(ctx, "admin.Publish - Unable to get types of articles\n%v", err)
 	}
 
 	pageData := publishModel{
@@ -51,6 +55,6 @@ func Publish(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	PublishHeaders(e, w, r)
 	err = e.View(w, useTheme, "page/admin/publish", pageData)
 	if err != nil {
-		log.Errorf(ctx, "Unable to generate Publish page:\n%v", err)
+		log.Errorf(ctx, "admin.Publish - Unable to generate page:\n%v", err)
 	}
 }

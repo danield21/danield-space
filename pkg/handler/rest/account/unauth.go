@@ -21,7 +21,11 @@ func Unauth(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	for key := range session.Values {
 		delete(session.Values, key)
 	}
-	session.Save(r, w)
+
+	err := session.Save(r, w)
+	if err != nil {
+		log.Errorf(ctx, "account.Auth - Unable to save new session\n%v", err)
+	}
 
 	if redirect == "" {
 		w.Header().Set("Location", "/")

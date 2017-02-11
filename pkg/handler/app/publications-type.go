@@ -29,11 +29,14 @@ func PublicationsType(e envir.Environment, w http.ResponseWriter, r *http.Reques
 	useTheme := e.Theme(r, theme.GetApp(ctx))
 	vars := mux.Vars(r)
 
-	info, _ := siteInfo.Get(ctx)
+	info, err := siteInfo.Get(ctx)
+	if err != nil {
+		log.Errorf(ctx, "app.PublicationsType - Unable to get site information\n%v", err)
+	}
 
 	a, err := articles.GetAllByType(ctx, vars["type"], 1)
 	if err != nil {
-		log.Errorf(ctx, "%v", err)
+		log.Errorf(ctx, "app.PublicationsType - Unable to get articles by type\n%v", err)
 	}
 
 	pageData := publicationsTypeModel{
@@ -47,6 +50,6 @@ func PublicationsType(e envir.Environment, w http.ResponseWriter, r *http.Reques
 	PublicationsTypeHeaders(e, w, r)
 	err = e.View(w, useTheme, "page/app/publications-type", pageData)
 	if err != nil {
-		log.Errorf(ctx, "Unable to generate publications type page:\n%v", err)
+		log.Errorf(ctx, "app.PublicationsType - Unable to generate page\n%v", err)
 	}
 }

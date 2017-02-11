@@ -16,7 +16,7 @@ func GetSession(r *http.Request) (session *sessions.Session) {
 	session, err = store.Get(r, "danield-space")
 	if err != nil {
 		ctx := appengine.NewContext(r)
-		log.Warningf(ctx, "GetSessionValue - Unable to get session")
+		log.Warningf(ctx, "envir.GetSession - Unable to get session")
 	}
 	return
 }

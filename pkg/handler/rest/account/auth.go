@@ -48,7 +48,10 @@ func Auth(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	log.Infof(ctx, "account.Auth - %s logged in", username)
 	session := e.Session(r)
 	session.Values["user"] = username
-	session.Save(r, w)
+	err = session.Save(r, w)
+	if err != nil {
+		log.Errorf(ctx, "account.Auth - Unable to save new session\n%v", err)
+	}
 	if redirect == "" {
 		w.Header().Set("Location", "/admin/")
 		w.WriteHeader(http.StatusFound)

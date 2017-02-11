@@ -21,7 +21,7 @@ func Get(c context.Context) (info SiteInfo, err error) {
 	if dErr != nil {
 		err = ErrSiteInfo
 		info = Default
-		log.Warningf(c, "Unable to get site information from database, switching to default")
+		log.Warningf(c, "siteInfo.Get - Unable to get site information from database, switching to default")
 		return
 	}
 

@@ -1,13 +1,13 @@
 package status
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/danield21/danield-space/pkg/controllers/siteInfo"
 	"github.com/danield21/danield-space/pkg/controllers/theme"
 	"github.com/danield21/danield-space/pkg/envir"
 	"github.com/danield21/danield-space/pkg/handler"
+	"google.golang.org/appengine/log"
 )
 
 type unauthorizedModel struct {
@@ -23,7 +23,10 @@ func Unauthorized(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	ctx := e.Context(r)
 	useTheme := e.Theme(r, theme.GetApp(ctx))
 
-	info, _ := siteInfo.Get(ctx)
+	info, err := siteInfo.Get(ctx)
+	if err != nil {
+		log.Errorf(ctx, "status.Unauthorized - Unable to save new session\n%v", err)
+	}
 
 	pageData := unauthorizedModel{
 		BaseModel: handler.BaseModel{
@@ -32,8 +35,8 @@ func Unauthorized(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 		Redirect: r.URL.Path,
 	}
 
-	err := e.View(w, useTheme, "page/status/unauthorized", pageData)
+	err = e.View(w, useTheme, "page/status/unauthorized", pageData)
 	if err != nil {
-		log.Print(err)
+		log.Errorf(ctx, "status.Unauthorized - Unable to generate page\n%v", err)
 	}
 }

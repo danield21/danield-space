@@ -23,7 +23,7 @@ func Get() *template.Template {
 
 	err := filepath.Walk("view", addTo(views, funcs))
 	if err != nil {
-		log.Printf("[ERROR] Error occured in initizing views: %v", err)
+		log.Printf("ERROR: Error occured in initizing views: %v", err)
 	}
 
 	return views
@@ -32,7 +32,7 @@ func Get() *template.Template {
 func addTo(views *template.Template, funcs template.FuncMap) func(string, os.FileInfo, error) error {
 	return func(path string, f os.FileInfo, err error) error {
 		if err != nil {
-			log.Printf("[ERROR] Errror occured in walking to %s: %v", path, err)
+			log.Printf("ERROR: Errror occured in walking to %s: %v", path, err)
 			return err
 		}
 
@@ -41,28 +41,28 @@ func addTo(views *template.Template, funcs template.FuncMap) func(string, os.Fil
 		}
 
 		if err != nil {
-			log.Printf("[ERROR] Error occured in opening %s: %v", path, err)
+			log.Printf("ERROR: Error occured in opening %s: %v", path, err)
 			return err
 		}
 
 		contents, err := ioutil.ReadFile(path)
 
 		if err != nil {
-			log.Printf("[ERROR] Error occured in reading %s: %v", path, err)
+			log.Printf("ERROR: Error occured in reading %s: %v", path, err)
 			return err
 		}
 
 		view, err := template.New("").Funcs(funcs).Parse(string(contents))
 
 		if err != nil {
-			log.Printf("[ERROR] Error occured in parsing %s: %v", path, err)
+			log.Printf("ERROR: Error occured in parsing %s: %v", path, err)
 			return err
 		}
 
 		viewName := getViewName(path)
 
 		views.AddParseTree(viewName, view.Tree)
-		log.Printf("[INFO] Adding to view [%s]", viewName)
+		log.Printf("INFO: Adding to view [%s]", viewName)
 
 		return nil
 	}

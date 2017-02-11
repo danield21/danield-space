@@ -26,11 +26,14 @@ func Index(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	ctx := e.Context(r)
 	useTheme := e.Theme(r, theme.GetApp(ctx))
 
-	info, _ := siteInfo.Get(ctx)
+	info, err := siteInfo.Get(ctx)
+	if err != nil {
+		log.Errorf(ctx, "app.Index - Unable to get site information\n%v", err)
+	}
 
 	a, err := articles.GetAll(ctx, 10)
 	if err != nil {
-		log.Errorf(ctx, "%v", err)
+		log.Errorf(ctx, "app.Index - Unable to get last 10 articles\n%v", err)
 	}
 
 	pageData := indexModel{
@@ -43,6 +46,6 @@ func Index(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	IndexHeaders(e, w, r)
 	err = e.View(w, useTheme, "page/app/index", pageData)
 	if err != nil {
-		log.Errorf(ctx, "Unable to generate index page:\n%v", err)
+		log.Errorf(ctx, "app.Index - Unable to generate page\n%v", err)
 	}
 }

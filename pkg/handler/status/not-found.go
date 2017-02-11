@@ -1,13 +1,13 @@
 package status
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/danield21/danield-space/pkg/controllers/siteInfo"
 	"github.com/danield21/danield-space/pkg/controllers/theme"
 	"github.com/danield21/danield-space/pkg/envir"
 	"github.com/danield21/danield-space/pkg/handler"
+	"google.golang.org/appengine/log"
 )
 
 //NotFound handles the not found page
@@ -18,14 +18,17 @@ func NotFound(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	ctx := e.Context(r)
 	useTheme := e.Theme(r, theme.GetApp(ctx))
 
-	info, _ := siteInfo.Get(ctx)
+	info, err := siteInfo.Get(ctx)
+	if err != nil {
+		log.Errorf(ctx, "status.NotFound - Unable to save new session\n%v", err)
+	}
 
 	pageData := handler.BaseModel{
 		SiteInfo: info,
 	}
 
-	err := e.View(w, useTheme, "page/status/not-found", pageData)
+	err = e.View(w, useTheme, "page/status/not-found", pageData)
 	if err != nil {
-		log.Print(err)
+		log.Errorf(ctx, "status.NotFound - Unable to generate page\n%v", err)
 	}
 }

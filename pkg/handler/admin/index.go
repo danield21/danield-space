@@ -31,10 +31,10 @@ func Index(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 		status.Unauthorized(e, w, r)
 		return
 	}
-	info, err := siteInfo.Get(ctx)
 
+	info, err := siteInfo.Get(ctx)
 	if err != nil {
-		log.Errorf(ctx, "%v", err)
+		log.Errorf(ctx, "admin.Index - Unable to get site information\n%v", err)
 	}
 
 	pageData := indexModel{
@@ -47,6 +47,6 @@ func Index(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	IndexHeaders(e, w, r)
 	err = e.View(w, useTheme, "page/admin/index", pageData)
 	if err != nil {
-		log.Errorf(ctx, "Unable to generate index page:\n%v", err)
+		log.Errorf(ctx, "admin.Index - Unable to generate page:\n%v", err)
 	}
 }

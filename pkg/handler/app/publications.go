@@ -31,11 +31,14 @@ func Publications(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	ctx := e.Context(r)
 	useTheme := e.Theme(r, theme.GetApp(ctx))
 
-	info, _ := siteInfo.Get(ctx)
+	info, err := siteInfo.Get(ctx)
+	if err != nil {
+		log.Errorf(ctx, "app.Publications - Unable to get site information\n%v", err)
+	}
 
 	articleMap, err := articles.GetMapKeyedByTypes(ctx, 10)
 	if err != nil {
-		log.Errorf(ctx, "%v", err)
+		log.Errorf(ctx, "app.Publications - Unable to get articles organized by their type\n%v", err)
 	}
 
 	var publications []publicationList
@@ -57,6 +60,6 @@ func Publications(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	PublicationsTypeHeaders(e, w, r)
 	err = e.View(w, useTheme, "page/app/publications", pageData)
 	if err != nil {
-		log.Errorf(ctx, "Unable to generate publications page:\n%v", err)
+		log.Errorf(ctx, "app.Publications - Unable to generate page\n%v", err)
 	}
 }
