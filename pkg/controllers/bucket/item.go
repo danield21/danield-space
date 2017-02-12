@@ -8,5 +8,5 @@ type Item struct {
 	controllers.DataElement
 	Field string
 	Value string
-	Type string
+	Type  string
 }

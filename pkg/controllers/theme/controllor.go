@@ -6,7 +6,6 @@ import (
 
 	"github.com/danield21/danield-space/pkg/controllers/bucket"
 	"golang.org/x/net/context"
-	"google.golang.org/appengine/log"
 )
 
 //DefaultAppTheme is the default theme for the public section of the site
@@ -25,48 +24,24 @@ const adminSuffix = "admin"
 //GetApp returns the default theme for the public section of the site
 //If unable to get theme from database, it will default to DefaultAppTheme
 func GetApp(c context.Context) (theme string) {
-	var ok bool
-	theme, ok = get(c, appSuffix)
-	if ok {
-		return
-	}
-
-	theme = DefaultAppTheme
-	err := set(c, appSuffix, theme)
-	if err != nil {
-		log.Warningf(c, "theme.GetApp - Unable to put theme for app into database\n%v", err)
-	}
+	theme = getWithDefault(c, appSuffix, DefaultAppTheme)
 	return
 }
 
 //GetAdmin returns the default theme for the admin section of the site
 //If unable to get theme from database, it will default to DefaultAdminTheme
 func GetAdmin(c context.Context) (theme string) {
-	var ok bool
-	theme, ok = get(c, adminSuffix)
-	if ok {
-		return
-	}
-
-	theme = DefaultAdminTheme
-	err := set(c, adminSuffix, theme)
-	if err != nil {
-		log.Warningf(c, "theme.GetAdmin - Unable to put theme for admin into database\n%v", err)
-	}
+	theme = getWithDefault(c, adminSuffix, DefaultAdminTheme)
 	return
 }
 
-//Get gets all information about the site
-func get(c context.Context, section string) (theme string, ok bool) {
-	field, err := bucket.Get(c, bucketPrefix+section)
+func getWithDefault(c context.Context, section, defaultTheme string) (theme string) {
+	item := themeToItem(section, defaultTheme)
 
-	if err != nil {
-		log.Warningf(c, "theme.get - Unable to get default from database\n%v", err)
-		return
-	}
+	field := bucket.Default(c, item)
 
-	theme = field.Value
-	ok = true
+	theme = itemsToTheme(field)
+
 	return
 }
 
@@ -76,11 +51,7 @@ func set(c context.Context, section string, theme string) (err error) {
 		return
 	}
 
-	item := bucket.Item{
-		Field: bucketPrefix + section,
-		Value: theme,
-		Type:  "string",
-	}
+	item := themeToItem(section, theme)
 	err = bucket.Set(c, item)
 	return
 }
@@ -89,4 +60,17 @@ func set(c context.Context, section string, theme string) (err error) {
 func ValidTheme(theme string) bool {
 	var valid = regexp.MustCompile("^([a-z]+(-[a-z]+)?)+$")
 	return valid.MatchString(theme)
+}
+
+func themeToItem(section, theme string) bucket.Item {
+	return bucket.Item{
+		Field: bucketPrefix + section,
+		Value: theme,
+		Type:  "string",
+	}
+}
+
+func itemsToTheme(item bucket.Item) (theme string) {
+	theme = item.Value
+	return
 }

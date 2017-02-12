@@ -1,11 +1,8 @@
 package siteInfo
 
 import (
-	"reflect"
-
 	"github.com/danield21/danield-space/pkg/controllers/bucket"
 	"golang.org/x/net/context"
-	"google.golang.org/appengine/log"
 )
 
 const bucketPrefix = "siteInfo-"
@@ -24,45 +21,25 @@ var Default = SiteInfo{
 
 //Get gets all information about the site
 func Get(c context.Context) (info SiteInfo) {
-	info = Default
+	items := siteInfoToItems(Default)
 
-	fields, err := bucket.GetAll(c,
-		titleField,
-		linkField,
-		ownerField,
-		descriptionField,
-	)
+	fields := bucket.DefaultAll(c, items...)
 
-	if err != nil {
-		log.Warningf(c, "siteInfo.Get - Unable to get site information from database, switching to default")
-		err = Set(c, Default)
-		if err != nil {
-			log.Warningf(c, "siteInfo.Get - Unable to set default site information")
-		}
-		return
-
-	} else if len(fields) > reflect.TypeOf(info).NumField() {
-		log.Warningf(c, "siteInfo.Get - Missing a few fields, will be using default values for those instead")
-	}
-
-	for _, f := range fields {
-		switch f.Field {
-		case titleField:
-			info.Title = f.Value
-		case linkField:
-			info.Link = f.Value
-		case ownerField:
-			info.Owner = f.Value
-		case descriptionField:
-			info.Description = f.Value
-		}
-	}
+	info = itemsToSiteInfo(fields)
 
 	return
 }
 
 func Set(c context.Context, info SiteInfo) (err error) {
-	items := []bucket.Item{
+	items := siteInfoToItems(info)
+
+	err = bucket.SetAll(c, items...)
+
+	return
+}
+
+func siteInfoToItems(info SiteInfo) []bucket.Item {
+	return []bucket.Item{
 		bucket.Item{
 			Field: titleField,
 			Value: info.Title,
@@ -84,8 +61,20 @@ func Set(c context.Context, info SiteInfo) (err error) {
 			Type:  "string",
 		},
 	}
+}
 
-	err = bucket.SetAll(c, items...)
-
+func itemsToSiteInfo(items []bucket.Item) (info SiteInfo) {
+	for _, item := range items {
+		switch item.Field {
+		case titleField:
+			info.Title = item.Value
+		case linkField:
+			info.Link = item.Value
+		case ownerField:
+			info.Owner = item.Value
+		case descriptionField:
+			info.Description = item.Value
+		}
+	}
 	return
 }
