@@ -79,8 +79,14 @@ func Rest(r *mux.Router, e ProductionEnvironment) {
 func Admin(r *mux.Router, e ProductionEnvironment) {
 	r.HandleFunc("/", handler.Prepare(admin.IndexHeaders, e)).Methods(http.MethodHead)
 	r.HandleFunc("/", handler.Prepare(admin.Index, e)).Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/article/publish", handler.Prepare(admin.PublishHeaders, e)).Methods(http.MethodHead)
-	r.HandleFunc("/article/publish", handler.Prepare(admin.Publish, e)).Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/signin", handler.Prepare(admin.SignInHeaders, e)).Methods(http.MethodHead)
 	r.HandleFunc("/signin", handler.Prepare(admin.SignIn, e)).Methods(http.MethodGet, http.MethodPost)
+	r.HandleFunc("/article/", handler.Prepare(admin.ShowPageHeaders, e)).Methods(http.MethodHead)
+	r.HandleFunc("/article/", handler.Prepare(admin.ShowPage("article"), e)).Methods(http.MethodGet, http.MethodPost)
+	r.HandleFunc("/article/publish", handler.Prepare(admin.PublishHeaders, e)).Methods(http.MethodHead)
+	r.HandleFunc("/article/publish", handler.Prepare(admin.Publish, e)).Methods(http.MethodGet, http.MethodPost)
+	r.HandleFunc("/account/", handler.Prepare(admin.ShowPageHeaders, e)).Methods(http.MethodHead)
+	r.HandleFunc("/account/", handler.Prepare(admin.ShowPage("account"), e)).Methods(http.MethodGet, http.MethodPost)
+	r.HandleFunc("/site-info/", handler.Prepare(admin.ShowPageHeaders, e)).Methods(http.MethodHead)
+	r.HandleFunc("/site-info/", handler.Prepare(admin.ShowPage("site-info"), e)).Methods(http.MethodGet, http.MethodPost)
 }
