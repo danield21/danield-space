@@ -10,5 +10,4 @@ import (
 //This is to ensue that any theme will work
 type BaseModel struct {
 	SiteInfo siteInfo.SiteInfo
-	User     string
 }

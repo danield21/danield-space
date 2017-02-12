@@ -25,7 +25,7 @@ func SignInHeaders(e envir.Environment, w http.ResponseWriter, r *http.Request) 
 //SignIn handles the index page
 func SignIn(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	ctx := e.Context(r)
-	useTheme := e.Theme(r, theme.GetAdmin(ctx))
+	useTheme := e.Theme(r, theme.GetApp(ctx))
 
 	info := siteInfo.Get(ctx)
 

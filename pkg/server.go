@@ -79,8 +79,8 @@ func Rest(r *mux.Router, e ProductionEnvironment) {
 func Admin(r *mux.Router, e ProductionEnvironment) {
 	r.HandleFunc("/", handler.Prepare(admin.IndexHeaders, e)).Methods(http.MethodHead)
 	r.HandleFunc("/", handler.Prepare(admin.Index, e)).Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/publish", handler.Prepare(admin.PublishHeaders, e)).Methods(http.MethodHead)
-	r.HandleFunc("/publish", handler.Prepare(admin.Publish, e)).Methods(http.MethodGet, http.MethodPost)
+	r.HandleFunc("/article/publish", handler.Prepare(admin.PublishHeaders, e)).Methods(http.MethodHead)
+	r.HandleFunc("/article/publish", handler.Prepare(admin.Publish, e)).Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/signin", handler.Prepare(admin.SignInHeaders, e)).Methods(http.MethodHead)
 	r.HandleFunc("/signin", handler.Prepare(admin.SignIn, e)).Methods(http.MethodGet, http.MethodPost)
 }

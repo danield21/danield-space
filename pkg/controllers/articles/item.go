@@ -3,6 +3,7 @@ package articles
 import (
 	"log"
 	"strings"
+	"time"
 
 	"html/template"
 
@@ -15,6 +16,7 @@ type Article struct {
 	Type        string
 	Key         string
 	Title       string
+	PublishDate time.Time
 	Abstract    string `datastore:"noindex"`
 	HTMLContent []byte `datastore:"noindex"`
 }
@@ -35,7 +37,7 @@ func (a Article) Content() (content template.HTML) {
 
 	content, err = controllers.CleanHTML(a.HTMLContent)
 	if err != nil {
-		log.Printf("article.Content - Unable to clean HTML\n%v", err)
+		log.Printf("WARNING: article.Content - Unable to clean HTML\n%v", err)
 	}
 	return
 }

@@ -11,10 +11,6 @@ import (
 	"google.golang.org/appengine/log"
 )
 
-type indexModel struct {
-	handler.BaseModel
-}
-
 //IndexHeaders contains the headers for index
 func IndexHeaders(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", handler.HTML.AddCharset("utf-8").String())
@@ -23,10 +19,10 @@ func IndexHeaders(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 //Index handles the index page
 func Index(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	ctx := e.Context(r)
-	useTheme := e.Theme(r, theme.GetAdmin(ctx))
+	useTheme := e.Theme(r, theme.GetApp(ctx))
 	session := e.Session(r)
 
-	user, signedIn := session.Values["user"]
+	user, signedIn := GetUser(session)
 	if !signedIn {
 		status.Unauthorized(e, w, r)
 		return
@@ -34,10 +30,14 @@ func Index(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 
 	info := siteInfo.Get(ctx)
 
-	pageData := indexModel{
-		BaseModel: handler.BaseModel{
-			SiteInfo: info,
-			User:     user.(string),
+	pageData := struct {
+		AdminModel
+	}{
+		AdminModel: AdminModel{
+			BaseModel: handler.BaseModel{
+				SiteInfo: info,
+			},
+			User: user,
 		},
 	}
 

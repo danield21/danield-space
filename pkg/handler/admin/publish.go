@@ -13,11 +13,6 @@ import (
 	"google.golang.org/appengine/log"
 )
 
-type publishModel struct {
-	handler.BaseModel
-	Types []string
-}
-
 //PublishHeaders contains the headers for index
 func PublishHeaders(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", handler.HTML.AddCharset("utf-8").String())
@@ -26,10 +21,10 @@ func PublishHeaders(e envir.Environment, w http.ResponseWriter, r *http.Request)
 //Publish handles the index page
 func Publish(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	ctx := e.Context(r)
-	useTheme := e.Theme(r, theme.GetAdmin(ctx))
+	useTheme := e.Theme(r, theme.GetApp(ctx))
 	session := e.Session(r)
 
-	_, signedIn := session.Values["user"]
+	user, signedIn := GetUser(session)
 	if !signedIn {
 		status.Unauthorized(e, w, r)
 		return
@@ -42,9 +37,15 @@ func Publish(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 		log.Warningf(ctx, "admin.Publish - Unable to get types of articles\n%v", err)
 	}
 
-	pageData := publishModel{
-		BaseModel: handler.BaseModel{
-			SiteInfo: info,
+	pageData := struct {
+		AdminModel
+		Types []string
+	}{
+		AdminModel: AdminModel{
+			BaseModel: handler.BaseModel{
+				SiteInfo: info,
+			},
+			User: user,
 		},
 		Types: types,
 	}
