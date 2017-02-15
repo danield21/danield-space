@@ -25,3 +25,5 @@ article h2 {
 section {
 	margin: 10px;
 }
+
+main > p { @extend .cloud }

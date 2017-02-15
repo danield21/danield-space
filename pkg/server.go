@@ -71,6 +71,7 @@ func New() http.Handler {
 //Rest configures the handlers for rest services
 func Rest(r *mux.Router, e ProductionEnvironment) {
 	r.HandleFunc("/article", handler.Prepare(article.Get, e)).Methods(http.MethodGet)
+	r.HandleFunc("/article", handler.Prepare(article.Post, e)).Methods(http.MethodPost)
 	r.HandleFunc("/admin/authenticate", handler.Prepare(account.Auth, e)).Methods(http.MethodPost)
 	r.HandleFunc("/admin/unauthenticate", handler.Prepare(account.Unauth, e)).Methods(http.MethodPost)
 }

@@ -14,7 +14,7 @@ import (
 
 type articlesModel struct {
 	handler.BaseModel
-	Articles []articles.Article
+	Article articles.Article
 }
 
 //ArticleHeaders contains the headers for index
@@ -30,7 +30,7 @@ func Article(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 
 	info := siteInfo.Get(ctx)
 
-	a, err := articles.GetAllByType(ctx, vars["type"], 10)
+	a, _, err := articles.Get(ctx, vars["type"], vars["key"])
 	if err != nil {
 		log.Errorf(ctx, "app.Article - Unable to get articles by type\n%v", err)
 	}
@@ -39,11 +39,11 @@ func Article(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 		BaseModel: handler.BaseModel{
 			SiteInfo: info,
 		},
-		Articles: a,
+		Article: a,
 	}
 
 	ArticleHeaders(e, w, r)
-	err = e.View(w, useTheme, "page/app/index", pageData)
+	err = e.View(w, useTheme, "page/app/article", pageData)
 	if err != nil {
 		log.Errorf(ctx, "app.Article - Unable to generate page:\n%v", err)
 	}

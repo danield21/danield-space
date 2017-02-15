@@ -1,0 +1,6 @@
+<div class="cloud">
+    <h1>{{ .Article.Title }}</h1>
+    <span class="published">Published by {{ .Article.CreatedBy }} <time datetime="{{ machineTime .Article.CreatedOn}}">{{ humanTime .Article.CreatedOn}}</time></span>
+</div>
+<p>{{ .Article.Abstract }}</p>
+{{ .Article.Content }}
