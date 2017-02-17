@@ -7,7 +7,6 @@ import (
 	"github.com/danield21/danield-space/pkg/controllers/theme"
 	"github.com/danield21/danield-space/pkg/envir"
 	"github.com/danield21/danield-space/pkg/handler"
-	"github.com/danield21/danield-space/pkg/handler/status"
 	"google.golang.org/appengine/log"
 )
 
@@ -23,11 +22,7 @@ func ShowPage(page string) handler.Handler {
 		useTheme := e.Theme(r, theme.GetApp(ctx))
 		session := e.Session(r)
 
-		user, signedIn := GetUser(session)
-		if !signedIn {
-			status.Unauthorized(e, w, r)
-			return
-		}
+		user, _ := GetUser(session)
 
 		info := siteInfo.Get(ctx)
 

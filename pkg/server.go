@@ -11,6 +11,7 @@ import (
 	"github.com/danield21/danield-space/pkg/handler/app"
 	"github.com/danield21/danield-space/pkg/handler/rest/account"
 	"github.com/danield21/danield-space/pkg/handler/rest/article"
+	"github.com/danield21/danield-space/pkg/handler/rest/category"
 	"github.com/danield21/danield-space/pkg/handler/status"
 	"github.com/danield21/danield-space/pkg/views"
 	"github.com/gorilla/mux"
@@ -71,23 +72,47 @@ func New() http.Handler {
 //Rest configures the handlers for rest services
 func Rest(r *mux.Router, e ProductionEnvironment) {
 	r.HandleFunc("/article", handler.Prepare(article.Get, e)).Methods(http.MethodGet)
-	r.HandleFunc("/article", handler.Prepare(article.Post, e)).Methods(http.MethodPost)
+	r.HandleFunc("/article/{category}/{url}", handler.Prepare(article.Put, e)).Methods(http.MethodPut)
+	r.HandleFunc("/category", handler.Prepare(article.Get, e)).Methods(http.MethodGet)
+	r.HandleFunc("/category/{category}", handler.Prepare(category.Put, e)).Methods(http.MethodPut)
 	r.HandleFunc("/admin/authenticate", handler.Prepare(account.Auth, e)).Methods(http.MethodPost)
 	r.HandleFunc("/admin/unauthenticate", handler.Prepare(account.Unauth, e)).Methods(http.MethodPost)
 }
 
 //Admin configures the handlers for admin services
 func Admin(r *mux.Router, e ProductionEnvironment) {
-	r.HandleFunc("/", handler.Prepare(admin.IndexHeaders, e)).Methods(http.MethodHead)
-	r.HandleFunc("/", handler.Prepare(admin.Index, e)).Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/signin", handler.Prepare(admin.SignInHeaders, e)).Methods(http.MethodHead)
-	r.HandleFunc("/signin", handler.Prepare(admin.SignIn, e)).Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/article/", handler.Prepare(admin.ShowPageHeaders, e)).Methods(http.MethodHead)
-	r.HandleFunc("/article/", handler.Prepare(admin.ShowPage("article"), e)).Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/article/publish", handler.Prepare(admin.PublishHeaders, e)).Methods(http.MethodHead)
-	r.HandleFunc("/article/publish", handler.Prepare(admin.Publish, e)).Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/account/", handler.Prepare(admin.ShowPageHeaders, e)).Methods(http.MethodHead)
-	r.HandleFunc("/account/", handler.Prepare(admin.ShowPage("account"), e)).Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/site-info/", handler.Prepare(admin.ShowPageHeaders, e)).Methods(http.MethodHead)
-	r.HandleFunc("/site-info/", handler.Prepare(admin.ShowPage("site-info"), e)).Methods(http.MethodGet, http.MethodPost)
+	r.HandleFunc("/", handler.Prepare(admin.IndexHeaders, e)).
+		Methods(http.MethodHead)
+	r.HandleFunc("/", handler.Prepare(admin.Authorized(admin.Index), e)).
+		Methods(http.MethodGet, http.MethodPost)
+	r.HandleFunc("/signin", handler.Prepare(admin.SignInHeaders, e)).
+		Methods(http.MethodHead)
+	r.HandleFunc("/signin", handler.Prepare(admin.SignIn, e)).
+		Methods(http.MethodGet, http.MethodPost)
+	r.HandleFunc("/article/", handler.Prepare(admin.ShowPageHeaders, e)).
+		Methods(http.MethodHead)
+	r.HandleFunc("/article/", handler.Prepare(admin.Authorized(admin.ShowPage("article")), e)).
+		Methods(http.MethodGet, http.MethodPost)
+	r.HandleFunc("/article/publish", handler.Prepare(admin.PublishHeaders, e)).
+		Methods(http.MethodHead)
+	r.HandleFunc("/article/publish", handler.Prepare(admin.Authorized(admin.Publish), e)).
+		Methods(http.MethodGet, http.MethodPost)
+	r.HandleFunc("/account/", handler.Prepare(admin.ShowPageHeaders, e)).
+		Methods(http.MethodHead)
+	r.HandleFunc("/account/", handler.Prepare(admin.Authorized(admin.ShowPage("account")), e)).
+		Methods(http.MethodGet, http.MethodPost)
+	r.HandleFunc("/site-info/", handler.Prepare(admin.ShowPageHeaders, e)).
+		Methods(http.MethodHead)
+	r.HandleFunc("/site-info/", handler.Prepare(admin.Authorized(admin.ShowPage("site-info")), e)).
+		Methods(http.MethodGet, http.MethodPost)
+	r.HandleFunc("/category/", handler.Prepare(admin.ShowPageHeaders, e)).
+		Methods(http.MethodHead)
+	r.HandleFunc("/category/", handler.Prepare(admin.Authorized(admin.ShowPage("category")), e)).
+		Methods(http.MethodGet, http.MethodPost)
+	r.HandleFunc("/category/create", handler.Prepare(admin.ShowPageHeaders, e)).
+		Methods(http.MethodHead)
+	r.HandleFunc("/category/create", handler.Prepare(admin.Authorized(admin.ShowPage("category-create")), e)).
+		Methods(http.MethodGet)
+	r.HandleFunc("/category/create", handler.Prepare(admin.Authorized(admin.CategoryCreate), e)).
+		Methods(http.MethodPost)
 }

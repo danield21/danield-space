@@ -2,8 +2,8 @@ package theme
 
 import (
 	"errors"
-	"regexp"
 
+	"github.com/danield21/danield-space/pkg/controllers"
 	"github.com/danield21/danield-space/pkg/controllers/bucket"
 	"golang.org/x/net/context"
 )
@@ -50,8 +50,7 @@ func set(c context.Context, section string, theme string) (err error) {
 
 //ValidTheme is a helper function to determine if a entered theme can be valid
 func ValidTheme(theme string) bool {
-	var valid = regexp.MustCompile("^([a-z]+(-[a-z]+)?)+$")
-	return valid.MatchString(theme)
+	return controllers.ValidUrlPart(theme)
 }
 
 func themeToItem(section, theme string) bucket.Item {

@@ -1,7 +1,10 @@
 package articles
 
 import (
+	"time"
+
 	"github.com/danield21/danield-space/pkg/controllers"
+	"github.com/danield21/danield-space/pkg/controllers/categories"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
 )
@@ -10,27 +13,39 @@ const entity = "Articles"
 
 //GetAll gets all articles written for this website.
 func GetAll(c context.Context, limit int) (articles []Article, err error) {
-	q := datastore.NewQuery(entity).Order("ModifiedOn").Limit(limit)
+	q := datastore.NewQuery(entity).Order("Publish").Limit(limit)
 	_, err = q.GetAll(c, &articles)
 	return
 }
 
 //GetAllByType gets all articles of the same type.
-func GetAllByType(c context.Context, Type string, limit int) (articles []Article, err error) {
-	q := datastore.NewQuery(entity).Filter("Type =", Type).Order("ModifiedOn").Limit(limit)
-	_, err = q.GetAll(c, &articles)
+func GetAllByType(ctx context.Context, category string, limit int) (articles []Article, err error) {
+	cat, key, err := categories.Get(ctx, category)
+	if err != nil {
+		return
+	}
+	q := datastore.NewQuery(entity).Filter("Publish <", time.Now()).Order("Publish").Ancestor(key).Limit(limit)
+	_, err = q.GetAll(ctx, &articles)
+	if err != nil {
+		return
+	}
+	for i := range articles {
+		articles[i].Category = cat
+	}
 	return
 }
 
 //Get gets a single article with the same type and key.
 //Returns a error if there is no match.
-func Get(c context.Context, Type, Key string) (article Article, key *datastore.Key, err error) {
+func Get(ctx context.Context, category, url string) (article Article, key *datastore.Key, err error) {
 	var articles []Article
 	var keys []*datastore.Key
 
-	q := datastore.NewQuery(entity).Filter("Type =", Type).Filter("Key =", Key).Limit(1)
+	cat, catkey, err := categories.Get(ctx, category)
 
-	keys, err = q.GetAll(c, &articles)
+	q := datastore.NewQuery(entity).Filter("Url =", url).Ancestor(catkey).Limit(1)
+
+	keys, err = q.GetAll(ctx, &articles)
 	if err != nil {
 		return
 	}
@@ -42,23 +57,24 @@ func Get(c context.Context, Type, Key string) (article Article, key *datastore.K
 
 	key = keys[0]
 	article = articles[0]
+	article.Category = cat
 
 	return
 }
 
 //GetMapKeyedByTypes gets a map of articles with the key being the article type.
 //Map returns an array of article with the same type limited by Limit.
-func GetMapKeyedByTypes(c context.Context, Limit int) (articleMap map[string][]Article, err error) {
+func GetMapKeyedByTypes(ctx context.Context, Limit int) (articleMap map[string][]Article, err error) {
 	articleMap = make(map[string][]Article)
 
 	var types []string
-	types, err = GetTypes(c)
+	types, err = GetTypes(ctx)
 	if err != nil {
 		return
 	}
 
 	for _, t := range types {
-		articles, aErr := GetAllByType(c, t, Limit)
+		articles, aErr := GetAllByType(ctx, t, Limit)
 
 		if aErr != nil {
 			err = aErr
@@ -71,10 +87,10 @@ func GetMapKeyedByTypes(c context.Context, Limit int) (articleMap map[string][]A
 }
 
 //GetTypes gets a list of article types that are in the database
-func GetTypes(c context.Context) (types []string, err error) {
+func GetTypes(ctx context.Context) (types []string, err error) {
 	var typesStruct []map[string]string
 	q := datastore.NewQuery(entity).Project("Type").Distinct()
-	_, err = q.GetAll(c, &types)
+	_, err = q.GetAll(ctx, &types)
 
 	for _, t := range typesStruct {
 		types = append(types, t["Type"])
@@ -83,17 +99,17 @@ func GetTypes(c context.Context) (types []string, err error) {
 	return
 }
 
-func Set(c context.Context, article Article) (err error) {
-	oldArticle, key, dErr := Get(c, article.Type, article.Key)
+func Set(ctx context.Context, article Article) (err error) {
+	oldArticle, key, dErr := Get(ctx, article.Category.Url, article.Url)
 
 	if dErr != nil {
-		key = datastore.NewIncompleteKey(c, entity, nil)
+		key = datastore.NewIncompleteKey(ctx, entity, nil)
 		article.DataElement = controllers.WithNew("site")
 	} else {
 		article.DataElement = controllers.WithOld(oldArticle.DataElement, "site")
 	}
 
-	_, err = datastore.Put(c, key, &article)
+	_, err = datastore.Put(ctx, key, &article)
 
 	return
 }
