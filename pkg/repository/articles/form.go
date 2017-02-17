@@ -4,9 +4,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/danield21/danield-space/pkg/controllers"
-	"github.com/danield21/danield-space/pkg/controllers/categories"
-	"github.com/danield21/danield-space/pkg/controllers/theme"
+	"github.com/danield21/danield-space/pkg/repository"
+	"github.com/danield21/danield-space/pkg/repository/categories"
+	"github.com/danield21/danield-space/pkg/repository/theme"
 	"golang.org/x/net/context"
 )
 
@@ -94,6 +94,6 @@ func parsePublish(publish string) (publishDate time.Time, err error) {
 }
 
 func parseContent(content string) ([]byte, error) {
-	html, err := controllers.CleanHTML([]byte(content))
+	html, err := repository.CleanHTML([]byte(content))
 	return []byte(html), err
 }

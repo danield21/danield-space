@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/danield21/danield-space/pkg/controllers/articles"
 	"github.com/danield21/danield-space/pkg/envir"
 	"github.com/danield21/danield-space/pkg/handler/rest"
+	"github.com/danield21/danield-space/pkg/repository/articles"
 	"google.golang.org/appengine/log"
 )
 

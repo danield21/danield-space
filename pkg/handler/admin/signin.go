@@ -3,10 +3,10 @@ package admin
 import (
 	"net/http"
 
-	"github.com/danield21/danield-space/pkg/controllers/siteInfo"
-	"github.com/danield21/danield-space/pkg/controllers/theme"
 	"github.com/danield21/danield-space/pkg/envir"
 	"github.com/danield21/danield-space/pkg/handler"
+	"github.com/danield21/danield-space/pkg/repository/siteInfo"
+	"github.com/danield21/danield-space/pkg/repository/theme"
 
 	"github.com/danield21/danield-space/pkg/handler/rest"
 	"google.golang.org/appengine/log"

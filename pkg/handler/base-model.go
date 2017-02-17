@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/danield21/danield-space/pkg/controllers/siteInfo"
+	"github.com/danield21/danield-space/pkg/repository/siteInfo"
 )
 
 //BaseModel is the minimun model for any theme to work

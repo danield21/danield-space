@@ -3,7 +3,7 @@ package bucket
 import (
 	"fmt"
 
-	"github.com/danield21/danield-space/pkg/controllers"
+	"github.com/danield21/danield-space/pkg/repository"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"
@@ -63,9 +63,9 @@ func Set(c context.Context, item Item) (err error) {
 		log.Warningf(c, "bucket.Set - Unable to get previous item, creating new\n%v", dErr)
 
 		key = datastore.NewIncompleteKey(c, entity, nil)
-		item.DataElement = controllers.WithNew("site")
+		item.DataElement = repository.WithNew("site")
 	} else {
-		item.DataElement = controllers.WithOld(oldItem.DataElement, "site")
+		item.DataElement = repository.WithOld(oldItem.DataElement, "site")
 	}
 
 	key, err = datastore.Put(c, key, &item)
@@ -103,7 +103,7 @@ CheckingForNew:
 
 	for _, needItem := range needKeys {
 		keys = append(keys, datastore.NewIncompleteKey(c, entity, nil))
-		needItem.DataElement = controllers.WithNew("site")
+		needItem.DataElement = repository.WithNew("site")
 		haveKeys = append(haveKeys, needItem)
 	}
 
@@ -126,7 +126,7 @@ func Default(c context.Context, defaultItem Item) (appliedItem Item) {
 
 	log.Infof(c, "Field %s missing, using default %s", defaultItem.Field, defaultItem.Value)
 	key := datastore.NewIncompleteKey(c, entity, nil)
-	defaultItem.DataElement = controllers.WithNew("site")
+	defaultItem.DataElement = repository.WithNew("site")
 	appliedItem = defaultItem
 
 	datastore.Put(c, key, &appliedItem)
@@ -161,7 +161,7 @@ CheckingForNew:
 	for i := range needKeys {
 		log.Infof(c, "Field %s missing, using default %s", needKeys[i].Field, needKeys[i].Value)
 		keys = append(keys, datastore.NewIncompleteKey(c, entity, nil))
-		needKeys[i].DataElement = controllers.WithNew("site")
+		needKeys[i].DataElement = repository.WithNew("site")
 		appliedItems = append(appliedItems, needKeys[i])
 	}
 

@@ -3,8 +3,8 @@ package theme
 import (
 	"errors"
 
-	"github.com/danield21/danield-space/pkg/controllers"
-	"github.com/danield21/danield-space/pkg/controllers/bucket"
+	"github.com/danield21/danield-space/pkg/repository"
+	"github.com/danield21/danield-space/pkg/repository/bucket"
 	"golang.org/x/net/context"
 )
 
@@ -50,7 +50,7 @@ func set(c context.Context, section string, theme string) (err error) {
 
 //ValidTheme is a helper function to determine if a entered theme can be valid
 func ValidTheme(theme string) bool {
-	return controllers.ValidUrlPart(theme)
+	return repository.ValidUrlPart(theme)
 }
 
 func themeToItem(section, theme string) bucket.Item {

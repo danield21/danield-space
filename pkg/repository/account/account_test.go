@@ -5,7 +5,7 @@ package account_test
 import (
 	"testing"
 
-	"github.com/danield21/danield-space/pkg/controllers/account"
+	"github.com/danield21/danield-space/pkg/repository/account"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/appengine/aetest"

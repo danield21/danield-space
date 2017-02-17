@@ -3,8 +3,8 @@ package articles
 import (
 	"time"
 
-	"github.com/danield21/danield-space/pkg/controllers"
-	"github.com/danield21/danield-space/pkg/controllers/categories"
+	"github.com/danield21/danield-space/pkg/repository"
+	"github.com/danield21/danield-space/pkg/repository/categories"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
 )
@@ -104,9 +104,9 @@ func Set(ctx context.Context, article Article) (err error) {
 
 	if dErr != nil {
 		key = datastore.NewIncompleteKey(ctx, entity, nil)
-		article.DataElement = controllers.WithNew("site")
+		article.DataElement = repository.WithNew("site")
 	} else {
-		article.DataElement = controllers.WithOld(oldArticle.DataElement, "site")
+		article.DataElement = repository.WithOld(oldArticle.DataElement, "site")
 	}
 
 	_, err = datastore.Put(ctx, key, &article)

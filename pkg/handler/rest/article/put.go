@@ -3,9 +3,9 @@ package article
 import (
 	"net/http"
 
-	"github.com/danield21/danield-space/pkg/controllers/articles"
 	"github.com/danield21/danield-space/pkg/envir"
 	"github.com/danield21/danield-space/pkg/handler/admin"
+	"github.com/danield21/danield-space/pkg/repository/articles"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/schema"
 	"google.golang.org/appengine/log"

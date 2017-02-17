@@ -1,4 +1,4 @@
-package controllers
+package repository
 
 import "time"
 

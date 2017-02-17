@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/danield21/danield-space/pkg/controllers/theme"
+	"github.com/danield21/danield-space/pkg/repository/theme"
 )
 
 //RenderTemplateWithTheme is a helper function to render golang templates with a theme

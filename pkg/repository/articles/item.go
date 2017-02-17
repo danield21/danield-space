@@ -7,13 +7,13 @@ import (
 
 	"html/template"
 
-	"github.com/danield21/danield-space/pkg/controllers"
-	"github.com/danield21/danield-space/pkg/controllers/categories"
+	"github.com/danield21/danield-space/pkg/repository"
+	"github.com/danield21/danield-space/pkg/repository/categories"
 )
 
 //Article contains information about articles written on this website.
 type Article struct {
-	controllers.DataElement
+	repository.DataElement
 	Url         string
 	Title       string
 	PublishDate time.Time
@@ -36,7 +36,7 @@ func (a Article) Heading() string {
 func (a Article) Content() (content template.HTML) {
 	var err error
 
-	content, err = controllers.CleanHTML(a.HTMLContent)
+	content, err = repository.CleanHTML(a.HTMLContent)
 	if err != nil {
 		log.Printf("WARNING: article.Content - Unable to clean HTML\n%v", err)
 	}

@@ -1,7 +1,7 @@
 package siteInfo
 
 import (
-	"github.com/danield21/danield-space/pkg/controllers/bucket"
+	"github.com/danield21/danield-space/pkg/repository/bucket"
 	"golang.org/x/net/context"
 )
 
