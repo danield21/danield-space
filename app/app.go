@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	server "github.com/danield21/danield-space/pkg"
+	"github.com/danield21/danield-space/server"
 )
 
 func init() {

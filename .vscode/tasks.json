@@ -4,6 +4,6 @@
 	"version": "0.1.0",
 	"command": "go test",
 	"isShellCommand": true,
-	"args": ["github.com/danield21/danield-space/pkg/..."],
+	"args": ["github.com/danield21/danield-space/server/..."],
 	"showOutput": "always"
 }
