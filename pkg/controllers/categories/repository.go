@@ -52,7 +52,7 @@ func Set(c context.Context, category Category) (err error) {
 		category.DataElement = controllers.WithOld(oldCategory.DataElement, "site")
 	}
 
-	_, err = datastore.Put(c, key, category)
+	_, err = datastore.Put(c, key, &category)
 
 	return
 }

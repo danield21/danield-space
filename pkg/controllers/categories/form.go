@@ -15,7 +15,7 @@ type FormCategory struct {
 var ErrInvalidUrl = errors.New("Url is not in a proper format")
 
 func (f FormCategory) Unpack() (category Category, err error) {
-	if controllers.ValidUrlPart(f.Url) {
+	if !controllers.ValidUrlPart(f.Url) {
 		err = ErrInvalidUrl
 		return
 	}

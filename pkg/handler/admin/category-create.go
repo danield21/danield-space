@@ -22,17 +22,17 @@ func CategoryCreate(e envir.Environment, w http.ResponseWriter, r *http.Request)
 	decoder := schema.NewDecoder()
 	err = decoder.Decode(&form, r.PostForm)
 	if err != nil {
-		log.Warningf(ctx, "category.Put - Unable to decode form", err)
+		log.Warningf(ctx, "category.Put - Unable to decode form\n%v", err)
 	}
 
 	category, err := form.Unpack()
 	if err != nil {
-		log.Warningf(ctx, "category.Put - Unable unpack form", err)
+		log.Warningf(ctx, "category.Put - Unable unpack form\n%v", err)
 	}
 
 	err = categories.Set(ctx, category)
 	if err != nil {
-		log.Warningf(ctx, "category.Put - Unable to place category into database", err)
+		log.Warningf(ctx, "category.Put - Unable to place category into database\n%v", err)
 	}
 
 	ShowPage("category-create")(e, w, r)
