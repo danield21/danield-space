@@ -11,7 +11,7 @@ import (
 
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/handler/app"
+	"github.com/danield21/danield-space/server/handler/status"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -33,15 +33,15 @@ func TestNotFound(t *testing.T) {
 	e := envir.TestingEnvironment{Templates: view, Ctx: ctx}
 	defer done()
 
-	server := httptest.NewServer(handler.Prepare(app.NotFound, e))
+	server := httptest.NewServer(handler.Prepare(e, status.NotFound))
 	defer server.Close()
 
 	request, err := http.NewRequest(http.MethodGet, server.URL, bytes.NewBuffer(nil))
-	assert.NoError(t, err, "Error in creating GET request for Index: %v", err)
+	require.NoError(t, err, "Error in creating GET request for Index: %v", err)
 	request.Header.Add("Content-Type", "text/html")
 
 	response, err := client.Do(request)
-	assert.NoError(t, err, "Error in creating GET request for Index: %v", err)
+	require.NoError(t, err, "Error in creating GET request for Index: %v", err)
 	defer response.Body.Close()
 
 	assert.Equal(t, http.StatusNotFound, response.StatusCode, "Expected response status 404, received %s", response.Status)

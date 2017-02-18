@@ -19,7 +19,7 @@ import (
 func TestIndex(t *testing.T) {
 	client := &http.Client{}
 
-	view := template.New("page/index")
+	view := template.New("page/app/index")
 	view.Parse("Hello, World!")
 	head := template.New("")
 	head.Parse("Foo\n")
@@ -33,15 +33,15 @@ func TestIndex(t *testing.T) {
 	e := envir.TestingEnvironment{Templates: view, Ctx: ctx}
 	defer done()
 
-	server := httptest.NewServer(handler.Prepare(app.Index, e))
+	server := httptest.NewServer(handler.Prepare(e, app.Index))
 	defer server.Close()
 
 	request, err := http.NewRequest(http.MethodGet, server.URL, bytes.NewBuffer(nil))
-	assert.NoError(t, err, "Error in creating GET request for Index: %v", err)
+	require.NoError(t, err, "Error in creating GET request for Index: %v", err)
 	request.Header.Add("Content-Type", "text/html")
 
 	response, err := client.Do(request)
-	assert.NoError(t, err, "Error in creating GET request for Index: %v", err)
+	require.NoError(t, err, "Error in creating GET request for Index: %v", err)
 	defer response.Body.Close()
 
 	assert.Equal(t, http.StatusOK, response.StatusCode, "Expected response status 200, received %s", response.Status)
@@ -61,7 +61,7 @@ func TestIndexHead(t *testing.T) {
 	e := envir.TestingEnvironment{Templates: view, Ctx: ctx}
 	defer done()
 
-	server := httptest.NewServer(handler.Prepare(app.IndexHeaders, e))
+	server := httptest.NewServer(handler.Prepare(e, app.IndexHeaders))
 	defer server.Close()
 
 	request, err := http.NewRequest(http.MethodOptions, server.URL, bytes.NewBuffer(nil))

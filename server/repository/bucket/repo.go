@@ -180,9 +180,9 @@ CheckingForNew:
 			if m != i.Field {
 				continue
 			}
-			log.Infof(ctx, "Field %s missing, using default %s", m, i.Value)
+			log.Infof(ctx, "Field %s missing, using default \"%s\"", m, i.Value)
 
-			var newItem *Item
+			newItem := new(Item)
 			*newItem = *i
 
 			newItem.DataElement = repository.WithNew("site")
