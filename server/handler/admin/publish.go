@@ -5,7 +5,7 @@ import (
 
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/repository/articles"
+	"github.com/danield21/danield-space/server/repository/categories"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"github.com/danield21/danield-space/server/repository/theme"
 
@@ -27,14 +27,14 @@ func Publish(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 
 	info := siteInfo.Get(ctx)
 
-	types, err := articles.GetTypes(ctx)
+	cats, err := categories.GetAll(ctx)
 	if err != nil {
 		log.Warningf(ctx, "admin.Publish - Unable to get types of articles\n%v", err)
 	}
 
 	pageData := struct {
 		AdminModel
-		Types []string
+		Categories []categories.Category
 	}{
 		AdminModel: AdminModel{
 			BaseModel: handler.BaseModel{
@@ -42,7 +42,7 @@ func Publish(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 			},
 			User: user,
 		},
-		Types: types,
+		Categories: cats,
 	}
 
 	PublishHeaders(e, w, r)

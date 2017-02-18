@@ -1,8 +1,8 @@
 <section>
-	<h1>{{asTitle .Type}}</h1>
+	<h1>{{asTitle .Category.Title}}</h1>
 	{{range .Articles}}
 		{{ template "templates/article-heading-2" . }}
 	{{else}}
-		There are no articles of type {{ asTitle .Type }}
+		There are no articles of type {{ asTitle .Category.Title }}
 	{{end}}
 </section>

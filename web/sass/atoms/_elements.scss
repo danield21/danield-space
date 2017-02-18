@@ -32,11 +32,15 @@ a {
     color: $link-color;
 }
 
-input[type="text"], input[type="password"], input[type="datetime-local"], textarea {
+input[type="text"], input[type="password"], input[type="datetime-local"], textarea, select {
     border: $fire-color 1px solid;
     background-color: $cloud-color;
     padding: 0.5rem;
     border-radius: 0.5rem;
+}
+
+select {
+    background: linear-gradient(to bottom, $cloud-color 0%,darken($cloud-color, 4) 100%);
 }
 
 button, input[type="button"] {

@@ -6,6 +6,7 @@ import (
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/articles"
+	"github.com/danield21/danield-space/server/repository/categories"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"github.com/danield21/danield-space/server/repository/theme"
 	"google.golang.org/appengine/log"
@@ -17,7 +18,7 @@ type publicationsModel struct {
 }
 
 type publicationList struct {
-	Type     string
+	Category categories.Category
 	Articles []articles.Article
 }
 
@@ -33,16 +34,16 @@ func Publications(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 
 	info := siteInfo.Get(ctx)
 
-	articleMap, err := articles.GetMapKeyedByTypes(ctx, 10)
+	articleMap, err := articles.GetMapKeyedByCategory(ctx, 10)
 	if err != nil {
 		log.Errorf(ctx, "app.Publications - Unable to get articles organized by their type\n%v", err)
 	}
 
 	var publications []publicationList
 
-	for t, a := range articleMap {
+	for cat, a := range articleMap {
 		publications = append(publications, publicationList{
-			Type:     t,
+			Category: cat,
 			Articles: a,
 		})
 	}

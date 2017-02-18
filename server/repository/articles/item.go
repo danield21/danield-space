@@ -14,8 +14,9 @@ import (
 //Article contains information about articles written on this website.
 type Article struct {
 	repository.DataElement
-	Url         string
 	Title       string
+	Author      string
+	Url         string
 	PublishDate time.Time
 	Abstract    string              `datastore:",noindex"`
 	HTMLContent []byte              `datastore:",noindex"`

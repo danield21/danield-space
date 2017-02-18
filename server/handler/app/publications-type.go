@@ -6,6 +6,7 @@ import (
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/articles"
+	"github.com/danield21/danield-space/server/repository/categories"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"github.com/danield21/danield-space/server/repository/theme"
 	"github.com/gorilla/mux"
@@ -15,7 +16,7 @@ import (
 type publicationsTypeModel struct {
 	handler.BaseModel
 	Articles []articles.Article
-	Type     string
+	Category categories.Category
 }
 
 //PublicationsTypeHeaders contains the headers for index
@@ -31,9 +32,14 @@ func PublicationsType(e envir.Environment, w http.ResponseWriter, r *http.Reques
 
 	info := siteInfo.Get(ctx)
 
-	a, err := articles.GetAllByType(ctx, vars["type"], 1)
+	cat, _, err := categories.Get(ctx, vars["category"])
 	if err != nil {
-		log.Errorf(ctx, "app.PublicationsType - Unable to get articles by type\n%v", err)
+		log.Errorf(ctx, "app.PublicationsType - Unable to get category\n%v", err)
+	}
+
+	a, err := articles.GetAllByCategory(ctx, vars["category"], 1)
+	if err != nil {
+		log.Errorf(ctx, "app.PublicationsType - Unable to get articles by category\n%v", err)
 	}
 
 	pageData := publicationsTypeModel{
@@ -41,7 +47,7 @@ func PublicationsType(e envir.Environment, w http.ResponseWriter, r *http.Reques
 			SiteInfo: info,
 		},
 		Articles: a,
-		Type:     vars["type"],
+		Category: cat,
 	}
 
 	PublicationsTypeHeaders(e, w, r)

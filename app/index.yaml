@@ -11,6 +11,6 @@ indexes:
 # your application using appcfg.py.
 
 - kind: Articles
+  ancestor: yes
   properties:
-  - name: Type
-  - name: ModifiedOn
+  - name: PublishDate

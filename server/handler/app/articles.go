@@ -30,7 +30,7 @@ func Article(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 
 	info := siteInfo.Get(ctx)
 
-	a, _, err := articles.Get(ctx, vars["type"], vars["key"])
+	a, _, err := articles.Get(ctx, vars["category"], vars["key"])
 	if err != nil {
 		log.Errorf(ctx, "app.Article - Unable to get articles by type\n%v", err)
 	}

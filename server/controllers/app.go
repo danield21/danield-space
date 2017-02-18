@@ -16,9 +16,9 @@ func App(e envir.Environment, r *mux.Router) {
 	r.HandleFunc("/", handler.Prepare(e, app.Index)).Methods(http.MethodGet)
 	r.HandleFunc("/publications", handler.Prepare(e, app.PublicationsHeaders)).Methods(http.MethodHead)
 	r.HandleFunc("/publications", handler.Prepare(e, app.Publications)).Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/publications/{type}", handler.Prepare(e, app.PublicationsTypeHeaders)).Methods(http.MethodHead)
-	r.HandleFunc("/publications/{type}", handler.Prepare(e, app.PublicationsType)).Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/publications/{type}/{key}", handler.Prepare(e, app.ArticleHeaders)).Methods(http.MethodHead)
-	r.HandleFunc("/publications/{type}/{key}", handler.Prepare(e, app.Article)).Methods(http.MethodGet, http.MethodPost)
+	r.HandleFunc("/publications/{category}", handler.Prepare(e, app.PublicationsTypeHeaders)).Methods(http.MethodHead)
+	r.HandleFunc("/publications/{category}", handler.Prepare(e, app.PublicationsType)).Methods(http.MethodGet, http.MethodPost)
+	r.HandleFunc("/publications/{category}/{key}", handler.Prepare(e, app.ArticleHeaders)).Methods(http.MethodHead)
+	r.HandleFunc("/publications/{category}/{key}", handler.Prepare(e, app.Article)).Methods(http.MethodGet, http.MethodPost)
 	r.NotFoundHandler = handler.Prepare(e, status.NotFound)
 }

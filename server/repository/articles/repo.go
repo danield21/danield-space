@@ -12,19 +12,29 @@ import (
 const entity = "Articles"
 
 //GetAll gets all articles written for this website.
-func GetAll(c context.Context, limit int) (articles []Article, err error) {
-	q := datastore.NewQuery(entity).Order("Publish").Limit(limit)
-	_, err = q.GetAll(c, &articles)
+func GetAll(ctx context.Context, limit int) (articles []Article, err error) {
+	var keys []*datastore.Key
+	q := datastore.NewQuery(entity).Order("PublishDate").Limit(limit)
+	keys, err = q.GetAll(ctx, &articles)
+
+	if err != nil {
+		return
+	}
+
+	for i, key := range keys {
+		datastore.Get(ctx, key.Parent(), &articles[i].Category)
+	}
+
 	return
 }
 
-//GetAllByType gets all articles of the same type.
-func GetAllByType(ctx context.Context, category string, limit int) (articles []Article, err error) {
+//GetAllByCategory gets all articles of the same category.
+func GetAllByCategory(ctx context.Context, category string, limit int) (articles []Article, err error) {
 	cat, key, err := categories.Get(ctx, category)
 	if err != nil {
 		return
 	}
-	q := datastore.NewQuery(entity).Filter("Publish <", time.Now()).Order("Publish").Ancestor(key).Limit(limit)
+	q := datastore.NewQuery(entity).Filter("PublishDate <", time.Now()).Order("PublishDate").Ancestor(key).Limit(limit)
 	_, err = q.GetAll(ctx, &articles)
 	if err != nil {
 		return
@@ -62,40 +72,31 @@ func Get(ctx context.Context, category, url string) (article Article, key *datas
 	return
 }
 
-//GetMapKeyedByTypes gets a map of articles with the key being the article type.
+//GetMapKeyedByCategory gets a map of articles with the key being the article type.
 //Map returns an array of article with the same type limited by Limit.
-func GetMapKeyedByTypes(ctx context.Context, Limit int) (articleMap map[string][]Article, err error) {
-	articleMap = make(map[string][]Article)
+func GetMapKeyedByCategory(ctx context.Context, Limit int) (articleMap map[categories.Category][]Article, err error) {
+	articleMap = make(map[categories.Category][]Article)
 
-	var types []string
-	types, err = GetTypes(ctx)
+	var cats []categories.Category
+	cats, err = categories.GetAll(ctx)
 	if err != nil {
 		return
 	}
 
-	for _, t := range types {
-		articles, aErr := GetAllByType(ctx, t, Limit)
+	for _, cat := range cats {
+		articles, aErr := GetAllByCategory(ctx, cat.Url, Limit)
 
 		if aErr != nil {
 			err = aErr
 			return
 		}
 
-		articleMap[t] = articles
+		if len(articles) == 0 {
+			continue
+		}
+
+		articleMap[cat] = articles
 	}
-	return
-}
-
-//GetTypes gets a list of article types that are in the database
-func GetTypes(ctx context.Context) (types []string, err error) {
-	var typesStruct []map[string]string
-	q := datastore.NewQuery(entity).Project("Type").Distinct()
-	_, err = q.GetAll(ctx, &types)
-
-	for _, t := range typesStruct {
-		types = append(types, t["Type"])
-	}
-
 	return
 }
 
@@ -103,7 +104,8 @@ func Set(ctx context.Context, article Article) (err error) {
 	oldArticle, key, dErr := Get(ctx, article.Category.Url, article.Url)
 
 	if dErr != nil {
-		key = datastore.NewIncompleteKey(ctx, entity, nil)
+		_, catKey, _ := categories.Get(ctx, article.Category.Url)
+		key = datastore.NewIncompleteKey(ctx, entity, catKey)
 		article.DataElement = repository.WithNew("site")
 	} else {
 		article.DataElement = repository.WithOld(oldArticle.DataElement, "site")

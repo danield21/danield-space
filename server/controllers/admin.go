@@ -26,7 +26,9 @@ func Admin(e envir.Environment, r *mux.Router) {
 	r.HandleFunc("/article/publish", handler.Prepare(e, admin.PublishHeaders)).
 		Methods(http.MethodHead)
 	r.HandleFunc("/article/publish", handler.Prepare(e, admin.Publish, admin.Authorized)).
-		Methods(http.MethodGet, http.MethodPost)
+		Methods(http.MethodGet)
+	r.HandleFunc("/article/publish", handler.Prepare(e, admin.ArticlePublish, admin.Authorized)).
+		Methods(http.MethodPost)
 	r.HandleFunc("/account/", handler.Prepare(e, admin.ShowPageHeaders)).
 		Methods(http.MethodHead)
 	r.HandleFunc("/account/", handler.Prepare(e, admin.ShowPage("account"), admin.Authorized)).

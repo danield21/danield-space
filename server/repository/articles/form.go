@@ -12,12 +12,13 @@ import (
 
 //FormArticle contains information about articles written on this website.
 type FormArticle struct {
-	Title       string
-	Url         string
-	PublishDate string
-	Abstract    string
-	Content     string
-	Category    string
+	Title       string `schema:"title"`
+	Author      string `schema:"author"`
+	Url         string `schema:"url"`
+	PublishDate string `schema:"publish"`
+	Abstract    string `schema:"abstract"`
+	Content     string `schema:"content"`
+	Category    string `schema:"category"`
 }
 
 var ErrNoTitle = errors.New("No title")
@@ -60,6 +61,7 @@ func (f FormArticle) Unpack(ctx context.Context) (a Article, err error) {
 
 	a = Article{
 		Title:       f.Title,
+		Author:      f.Author,
 		Url:         f.Url,
 		PublishDate: publish,
 		Abstract:    f.Abstract,
