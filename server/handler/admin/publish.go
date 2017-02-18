@@ -34,7 +34,7 @@ func Publish(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 
 	pageData := struct {
 		AdminModel
-		Categories []categories.Category
+		Categories []*categories.Category
 	}{
 		AdminModel: AdminModel{
 			BaseModel: handler.BaseModel{

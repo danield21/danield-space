@@ -14,15 +14,14 @@ type FormCategory struct {
 
 var ErrInvalidUrl = errors.New("Url is not in a proper format")
 
-func (f FormCategory) Unpack() (category Category, err error) {
+func (f FormCategory) Unpack() (*Category, error) {
 	if !repository.ValidUrlPart(f.Url) {
-		err = ErrInvalidUrl
-		return
+		return nil, ErrInvalidUrl
 	}
 
-	category = Category{
-		Title: f.Title,
-		Url:   f.Url,
-	}
-	return
+	category := new(Category)
+	category.Title = f.Title
+	category.Url = f.Url
+	category.Description = f.Description
+	return category, nil
 }

@@ -28,71 +28,55 @@ var ErrNoPublishDate = errors.New("No publish date")
 var ErrNoAbstract = errors.New("No abstract")
 var ErrNoContent = errors.New("No content")
 
-func (f FormArticle) Unpack(ctx context.Context) (a Article, err error) {
-	var (
-		category categories.Category
-		publish  time.Time
-		content  []byte
-	)
-
-	if err != nil {
-		return
-	}
+func (f FormArticle) Unpack(ctx context.Context) (*Article, error) {
 
 	if !theme.ValidTheme(f.Url) {
-		err = ErrUrlBadFormat
-		return
+		return nil, ErrUrlBadFormat
 	}
 
-	category, err = parseCategory(ctx, f.Category)
+	category, err := parseCategory(ctx, f.Category)
 	if err != nil {
-		return
+		return nil, err
 	}
 
-	publish, err = parsePublish(f.PublishDate)
+	publish, err := parsePublish(f.PublishDate)
 	if err != nil {
-		return
+		return nil, err
 	}
 
-	content, err = parseContent(f.Content)
+	content, err := parseContent(f.Content)
 	if err != nil {
-		return
+		return nil, err
 	}
 
-	a = Article{
-		Title:       f.Title,
-		Author:      f.Author,
-		Url:         f.Url,
-		PublishDate: publish,
-		Abstract:    f.Abstract,
-		HTMLContent: content,
-		Category:    category,
-	}
+	a := new(Article)
+	a.Title = f.Title
+	a.Author = f.Author
+	a.Url = f.Url
+	a.PublishDate = publish
+	a.Abstract = f.Abstract
+	a.HTMLContent = content
+	a.Category = category
 
-	return
+	return a, nil
 }
 
-func parseUrl(url string) (cleanUrl string, err error) {
+func parseUrl(url string) (string, error) {
 	if !theme.ValidTheme(url) {
-		err = ErrUrlBadFormat
-		return
+		return "", ErrUrlBadFormat
 	}
-	cleanUrl = url
-	return
+	return url, nil
 }
 
-func parseCategory(ctx context.Context, catUrl string) (category categories.Category, err error) {
+func parseCategory(ctx context.Context, catUrl string) (*categories.Category, error) {
 	if !theme.ValidTheme(catUrl) {
-		err = ErrCategoryBadFormat
-		return
+		return nil, ErrCategoryBadFormat
 	}
-	category, _, err = categories.Get(ctx, catUrl)
-	return
+	return categories.Get(ctx, catUrl)
 }
 
-func parsePublish(publish string) (publishDate time.Time, err error) {
-	publishDate, err = time.Parse("2006-01-02T15:04", publish)
-	return
+func parsePublish(publish string) (time.Time, error) {
+	return time.Parse("2006-01-02T15:04", publish)
 }
 
 func parseContent(content string) ([]byte, error) {

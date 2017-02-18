@@ -20,50 +20,33 @@ var Default = SiteInfo{
 }
 
 //Get gets all information about the site
-func Get(c context.Context) (info SiteInfo) {
+func Get(c context.Context) SiteInfo {
 	items := siteInfoToItems(Default)
 
 	fields := bucket.DefaultAll(c, items...)
 
-	info = itemsToSiteInfo(fields)
-
-	return
+	return itemsToSiteInfo(fields)
 }
 
-func Set(c context.Context, info SiteInfo) (err error) {
+func Set(c context.Context, info SiteInfo) error {
 	items := siteInfoToItems(info)
 
-	err = bucket.SetAll(c, items...)
+	err := bucket.SetAll(c, items...)
 
-	return
+	return err
 }
 
-func siteInfoToItems(info SiteInfo) []bucket.Item {
-	return []bucket.Item{
-		bucket.Item{
-			Field: titleField,
-			Value: info.Title,
-			Type:  "string",
-		},
-		bucket.Item{
-			Field: linkField,
-			Value: info.Link,
-			Type:  "string",
-		},
-		bucket.Item{
-			Field: ownerField,
-			Value: info.Owner,
-			Type:  "string",
-		},
-		bucket.Item{
-			Field: descriptionField,
-			Value: info.Description,
-			Type:  "string",
-		},
+func siteInfoToItems(info SiteInfo) []*bucket.Item {
+	return []*bucket.Item{
+		bucket.NewItem(titleField, info.Title, "string"),
+		bucket.NewItem(linkField, info.Link, "string"),
+		bucket.NewItem(ownerField, info.Owner, "string"),
+		bucket.NewItem(descriptionField, info.Description, "string"),
 	}
 }
 
-func itemsToSiteInfo(items []bucket.Item) (info SiteInfo) {
+func itemsToSiteInfo(items []*bucket.Item) SiteInfo {
+	var info SiteInfo
 	for _, item := range items {
 		switch item.Field {
 		case titleField:
@@ -76,5 +59,5 @@ func itemsToSiteInfo(items []bucket.Item) (info SiteInfo) {
 			info.Description = item.Value
 		}
 	}
-	return
+	return info
 }

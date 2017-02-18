@@ -10,3 +10,11 @@ type Item struct {
 	Value string
 	Type  string
 }
+
+func NewItem(Field, Value, Type string) *Item {
+	item := new(Item)
+	item.Field = Field
+	item.Value = Value
+	item.Type = Type
+	return item
+}

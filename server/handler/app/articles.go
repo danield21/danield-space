@@ -6,6 +6,7 @@ import (
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/articles"
+	"github.com/danield21/danield-space/server/repository/categories"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"github.com/danield21/danield-space/server/repository/theme"
 	"github.com/gorilla/mux"
@@ -14,7 +15,7 @@ import (
 
 type articlesModel struct {
 	handler.BaseModel
-	Article articles.Article
+	Article *articles.Article
 }
 
 //ArticleHeaders contains the headers for index
@@ -29,8 +30,9 @@ func Article(e envir.Environment, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	info := siteInfo.Get(ctx)
+	cat := categories.EmptyCategory(vars["category"])
 
-	a, _, err := articles.Get(ctx, vars["category"], vars["key"])
+	a, err := articles.Get(ctx, cat, vars["key"])
 	if err != nil {
 		log.Errorf(ctx, "app.Article - Unable to get articles by type\n%v", err)
 	}

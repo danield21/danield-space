@@ -15,8 +15,8 @@ import (
 
 type publicationsTypeModel struct {
 	handler.BaseModel
-	Articles []articles.Article
-	Category categories.Category
+	Articles []*articles.Article
+	Category *categories.Category
 }
 
 //PublicationsTypeHeaders contains the headers for index
@@ -32,12 +32,12 @@ func PublicationsType(e envir.Environment, w http.ResponseWriter, r *http.Reques
 
 	info := siteInfo.Get(ctx)
 
-	cat, _, err := categories.Get(ctx, vars["category"])
+	cat, err := categories.Get(ctx, vars["category"])
 	if err != nil {
 		log.Errorf(ctx, "app.PublicationsType - Unable to get category\n%v", err)
 	}
 
-	a, err := articles.GetAllByCategory(ctx, vars["category"], 1)
+	a, err := articles.GetAllByCategory(ctx, cat, 1)
 	if err != nil {
 		log.Errorf(ctx, "app.PublicationsType - Unable to get articles by category\n%v", err)
 	}

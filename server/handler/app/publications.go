@@ -18,8 +18,8 @@ type publicationsModel struct {
 }
 
 type publicationList struct {
-	Category categories.Category
-	Articles []articles.Article
+	Category *categories.Category
+	Articles []*articles.Article
 }
 
 //PublicationsHeaders contains the headers for index

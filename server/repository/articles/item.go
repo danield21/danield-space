@@ -18,9 +18,9 @@ type Article struct {
 	Author      string
 	Url         string
 	PublishDate time.Time
-	Abstract    string              `datastore:",noindex"`
-	HTMLContent []byte              `datastore:",noindex"`
-	Category    categories.Category `datastore:"-"`
+	Abstract    string               `datastore:",noindex"`
+	HTMLContent []byte               `datastore:",noindex"`
+	Category    *categories.Category `datastore:"-"`
 }
 
 //Path returns the path for a article.

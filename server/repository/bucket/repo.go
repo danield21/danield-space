@@ -1,8 +1,6 @@
 package bucket
 
 import (
-	"fmt"
-
 	"github.com/danield21/danield-space/server/repository"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
@@ -12,64 +10,59 @@ import (
 const entity = "Bucket"
 
 //Get gets an item from the bucket with the same field
-func Get(c context.Context, field string) (item Item, key *datastore.Key, err error) {
-	var (
-		items []Item
-		keys  []*datastore.Key
-	)
+func Get(ctx context.Context, field string) (*Item, error) {
+	var items []*Item
 
 	q := datastore.NewQuery(entity).Filter("Field =", field).Limit(1)
 
-	keys, err = q.GetAll(c, &items)
+	keys, err := q.GetAll(ctx, &items)
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	if len(items) == 0 {
-		err = ErrFieldNotFound
-	} else {
-		item = items[0]
-		key = keys[0]
+		return nil, ErrFieldNotFound
 	}
 
-	return
+	items[0].Key = keys[0]
+	return items[0], nil
 }
 
-//GetAll gets all items with the fields listed
-func GetAll(c context.Context, fields ...string) (items []Item, keys []*datastore.Key, err error) {
-	for _, f := range fields {
-		item, key, dErr := Get(c, f)
-		if dErr != nil {
-			if err != nil {
-				err = fmt.Errorf("%v\n%v", err, dErr)
-			} else {
-				err = dErr
-			}
+//GetAll gets all items with the fields listed.
+//If there are fields missing, then
+func GetAll(ctx context.Context, fields ...string) (have []*Item, missing []string) {
 
-			continue
+	for _, f := range fields {
+		item, err := Get(ctx, f)
+		if err != nil {
+			missing = append(missing, f)
+		} else {
+			have = append(have, item)
 		}
-		items = append(items, item)
-		keys = append(keys, key)
 	}
 
 	return
 }
 
 //Set sets the field with item
-func Set(c context.Context, item Item) (err error) {
-	oldItem, key, dErr := Get(c, item.Field)
-
-	if dErr != nil {
-		log.Warningf(c, "bucket.Set - Unable to get previous item, creating new\n%v", dErr)
-
-		key = datastore.NewIncompleteKey(c, entity, nil)
-		item.DataElement = repository.WithNew("site")
-	} else {
-		item.DataElement = repository.WithOld(oldItem.DataElement, "site")
+func Set(ctx context.Context, item *Item) error {
+	if item == nil {
+		return ErrNilItem
 	}
 
-	key, err = datastore.Put(c, key, &item)
-	return
+	oldItem, err := Get(ctx, item.Field)
+
+	if err != nil {
+		log.Warningf(ctx, "bucket.Set - Unable to get previous item, creating new\n%v", err)
+
+		item.Key = datastore.NewIncompleteKey(ctx, entity, nil)
+		item.DataElement = repository.WithNew("site")
+	} else {
+		item.DataElement = repository.WithOld(repository.WithPerson(ctx), oldItem.DataElement)
+	}
+
+	item.Key, err = datastore.Put(ctx, item.Key, item)
+	return err
 }
 
 //SetAll sets all items
@@ -77,98 +70,131 @@ func Set(c context.Context, item Item) (err error) {
 //so field will be overwritten as it loops through.
 //Latest value survives
 //No transaction, so if any fail, it will not rollback any successful
-func SetAll(c context.Context, newItems ...Item) (err error) {
+func SetAll(ctx context.Context, items ...*Item) error {
 	var (
-		fields   []string
-		needKeys []Item
-		haveKeys []Item
+		fields []string
+		keys   []*datastore.Key
+		err    error
 	)
 
-	for _, item := range newItems {
+	if items == nil {
+		return nil
+	}
+
+	for _, item := range items {
+		if item == nil {
+			return nil
+		}
 		fields = append(fields, item.Field)
 	}
 
-	oldItems, keys, _ := GetAll(c, fields...)
+	have, missing := GetAll(ctx, fields...)
 
 CheckingForNew:
-	for _, newI := range newItems {
-		for _, oldI := range oldItems {
-			if newI.Field == oldI.Field {
-				haveKeys = append(haveKeys, newI)
-				continue CheckingForNew
+	for _, m := range missing {
+		for _, i := range items {
+			if m != i.Field {
+				continue
 			}
+
+			i.DataElement = repository.WithNew("site")
+			i.Key = datastore.NewIncompleteKey(ctx, entity, nil)
+			have = append(have, i)
+
+			continue CheckingForNew
 		}
-		needKeys = append(needKeys, newI)
 	}
 
-	for _, needItem := range needKeys {
-		keys = append(keys, datastore.NewIncompleteKey(c, entity, nil))
-		needItem.DataElement = repository.WithNew("site")
-		haveKeys = append(haveKeys, needItem)
+	for _, i := range have {
+		keys = append(keys, i.Key)
 	}
 
-	_, err = datastore.PutMulti(c, keys, haveKeys)
+	keys, err = datastore.PutMulti(ctx, keys, have)
+	if err != nil {
+		return err
+	}
 
-	return
+	for i, k := range keys {
+		have[i].Key = k
+	}
+
+	return nil
 }
 
-func Default(c context.Context, defaultItem Item) (appliedItem Item) {
-	var items []Item
+func Default(ctx context.Context, defaultItem *Item) *Item {
+	var items []*Item
+
+	if defaultItem == nil {
+		return nil
+	}
 
 	q := datastore.NewQuery(entity).Filter("Field =", defaultItem.Field).Limit(1)
-
-	_, err := q.GetAll(c, &items)
-
+	_, err := q.GetAll(ctx, &items)
 	if err != nil || len(items) > 0 {
-		appliedItem = items[0]
-		return
+		return items[0]
 	}
 
-	log.Infof(c, "Field %s missing, using default %s", defaultItem.Field, defaultItem.Value)
-	key := datastore.NewIncompleteKey(c, entity, nil)
+	log.Infof(ctx, "Field %s missing, using default %s", defaultItem.Field, defaultItem.Value)
+	key := datastore.NewIncompleteKey(ctx, entity, nil)
 	defaultItem.DataElement = repository.WithNew("site")
-	appliedItem = defaultItem
 
-	datastore.Put(c, key, &appliedItem)
+	if key, err := datastore.Put(ctx, key, defaultItem); err != nil {
+		defaultItem.Key = key
+	}
 
-	return
+	return defaultItem
 }
 
-func DefaultAll(c context.Context, defaultItems ...Item) (appliedItems []Item) {
+func DefaultAll(ctx context.Context, defaultItems ...*Item) []*Item {
+	if defaultItems == nil {
+		return nil
+	}
+
 	var (
-		fields   []string
-		needKeys []Item
-		keys     []*datastore.Key
+		fields       []string
+		missingItems []*Item
+		keys         []*datastore.Key
+		err          error
 	)
 
 	for _, item := range defaultItems {
+		if item == nil {
+			return nil
+		}
 		fields = append(fields, item.Field)
 	}
 
-	oldItems, _, _ := GetAll(c, fields...)
+	have, missing := GetAll(ctx, fields...)
 
 CheckingForNew:
-	for _, defaultI := range defaultItems {
-		for _, oldI := range oldItems {
-			if defaultI.Field == oldI.Field {
-				appliedItems = append(appliedItems, oldI)
-				continue CheckingForNew
+	for _, m := range missing {
+		for _, i := range defaultItems {
+			if m != i.Field {
+				continue
 			}
+			log.Infof(ctx, "Field %s missing, using default %s", m, i.Value)
+
+			var newItem *Item
+			*newItem = *i
+
+			newItem.DataElement = repository.WithNew("site")
+			missingItems = append(missingItems, newItem)
+			have = append(have, newItem)
+			keys = append(keys, datastore.NewIncompleteKey(ctx, entity, nil))
+
+			continue CheckingForNew
 		}
-		needKeys = append(needKeys, defaultI)
 	}
 
-	for i := range needKeys {
-		log.Infof(c, "Field %s missing, using default %s", needKeys[i].Field, needKeys[i].Value)
-		keys = append(keys, datastore.NewIncompleteKey(c, entity, nil))
-		needKeys[i].DataElement = repository.WithNew("site")
-		appliedItems = append(appliedItems, needKeys[i])
-	}
-
-	_, err := datastore.PutMulti(c, keys, needKeys)
+	keys, err = datastore.PutMulti(ctx, keys, missingItems)
 	if err != nil {
-		log.Infof(c, "bucket.DefaultAll - Unable to put missing info into database\n%v", err)
+		log.Infof(ctx, "bucket.DefaultAll - Unable to put missing info into database\n%v", err)
+		return have
 	}
 
-	return
+	for i, k := range keys {
+		missingItems[i].Key = k
+	}
+
+	return have
 }

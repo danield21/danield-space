@@ -10,66 +10,76 @@ import (
 
 const entity = "Categories"
 
-var ErrNoMatch = errors.New("No category found")
+var ErrNoMatch = errors.New("no category found")
+var ErrNilCategory = errors.New("category was nil")
 
-func Get(c context.Context, url string) (category Category, key *datastore.Key, err error) {
-	var (
-		categories []Category
-		keys       []*datastore.Key
-	)
+func Get(c context.Context, url string) (*Category, error) {
+	var categories []*Category
 
 	q := datastore.NewQuery(entity).Filter("Url =", url).Limit(1)
-	keys, err = q.GetAll(c, &categories)
 
+	keys, err := q.GetAll(c, &categories)
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	if len(keys) == 0 {
-		err = ErrNoMatch
-		return
+		return nil, ErrNoMatch
 	}
 
-	category = categories[0]
-	key = keys[0]
-	return
+	categories[0].Key = keys[0]
+	return categories[0], nil
 }
 
-func GetAll(c context.Context) (categories []Category, err error) {
+func GetAll(c context.Context) ([]*Category, error) {
+	var categories []*Category
 	q := datastore.NewQuery(entity)
-	_, err = q.GetAll(c, &categories)
+	keys, err := q.GetAll(c, &categories)
 
-	return
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range categories {
+		categories[i].Key = keys[i]
+	}
+
+	return categories, nil
 }
 
-func Set(c context.Context, category Category) (err error) {
-	oldCategory, key, dErr := Get(c, category.Url)
+func Set(ctx context.Context, cat *Category) error {
+	if cat == nil {
+		return ErrNilCategory
+	}
+	oldCat, err := Get(ctx, cat.Url)
 
-	if dErr != nil {
-		key = datastore.NewIncompleteKey(c, entity, nil)
-		category.DataElement = repository.WithNew("site")
+	if err != nil {
+		cat.Key = datastore.NewIncompleteKey(ctx, entity, nil)
+		cat.DataElement = repository.WithNew(repository.WithPerson(ctx))
 	} else {
-		category.DataElement = repository.WithOld(oldCategory.DataElement, "site")
+		cat.DataElement = repository.WithOld(repository.WithPerson(ctx), oldCat.DataElement)
 	}
 
-	_, err = datastore.Put(c, key, &category)
+	cat.Key, err = datastore.Put(ctx, cat.Key, &cat)
 
-	return
+	return err
 }
 
-func Remove(c context.Context, category Category) (err error) {
-	_, key, dErr := Get(c, category.Url)
-
-	if dErr != nil {
-		return
+func Remove(c context.Context, cat *Category) error {
+	var err error
+	if cat == nil {
+		return ErrNilCategory
+	} else if cat.Key == nil {
+		cat, err = Get(c, cat.Url)
+		if err != nil {
+			return err
+		}
 	}
 
-	err = datastore.Delete(c, key)
-
-	return
+	return datastore.Delete(c, cat.Key)
 }
 
-func IsUnique(c context.Context, category Category) bool {
-	_, _, err := Get(c, category.Url)
+func IsUnique(c context.Context, category *Category) bool {
+	_, err := Get(c, category.Url)
 	return err == nil
 }

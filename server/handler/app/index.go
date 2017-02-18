@@ -13,7 +13,7 @@ import (
 
 type indexModel struct {
 	handler.BaseModel
-	Articles []articles.Article
+	Articles []*articles.Article
 }
 
 //IndexHeaders contains the headers for index

@@ -6,6 +6,13 @@ import (
 
 type Category struct {
 	repository.DataElement
-	Title string
-	Url   string
+	Title       string
+	Url         string
+	Description string
+}
+
+func EmptyCategory(url string) *Category {
+	cat := new(Category)
+	cat.Url = url
+	return cat
 }
