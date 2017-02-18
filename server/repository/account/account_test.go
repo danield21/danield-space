@@ -12,6 +12,14 @@ import (
 )
 
 func TestIsAdmin(t *testing.T) {
+	options := aetest.Options{
+		AppID: "danield-space",
+		StronglyConsistentDatastore: true,
+	}
+	instance, err := aetest.NewInstance(&options)
+	require.NoError(t, err, "Error in creating instance: %v", err)
+	defer instance.Close()
+
 	context, done, err := aetest.NewContext()
 	require.NoError(t, err, "Error occurred in creating mock context")
 	defer done()
