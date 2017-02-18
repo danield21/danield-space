@@ -55,8 +55,8 @@ func Set(ctx context.Context, item *Item) error {
 	if err != nil {
 		log.Warningf(ctx, "bucket.Set - Unable to get previous item, creating new\n%v", err)
 
+		item.DataElement = repository.WithNew(repository.WithPerson(ctx))
 		item.Key = datastore.NewIncompleteKey(ctx, entity, nil)
-		item.DataElement = repository.WithNew("site")
 	} else {
 		item.DataElement = repository.WithOld(repository.WithPerson(ctx), oldItem.DataElement)
 	}
@@ -91,17 +91,25 @@ func SetAll(ctx context.Context, items ...*Item) error {
 	have, missing := GetAll(ctx, fields...)
 
 CheckingForNew:
-	for _, m := range missing {
-		for _, i := range items {
+	for _, i := range items {
+		for _, m := range missing {
 			if m != i.Field {
 				continue
 			}
 
-			i.DataElement = repository.WithNew("site")
+			i.DataElement = repository.WithNew(repository.WithPerson(ctx))
 			i.Key = datastore.NewIncompleteKey(ctx, entity, nil)
 			have = append(have, i)
 
 			continue CheckingForNew
+		}
+
+		for _, h := range have {
+			if h.Field != i.Field {
+				continue
+			}
+
+			i.DataElement = repository.WithOld(repository.WithPerson(ctx), h.DataElement)
 		}
 	}
 

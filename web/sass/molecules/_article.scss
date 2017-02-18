@@ -26,4 +26,12 @@ section {
 	margin: 10px;
 }
 
-main > p { @extend .cloud }
+main {
+	& > p {
+		@extend .cloud;
+		padding: 3rem;
+	}
+	& > h1, & > h2, & > h3, & > h4, & > h5, & > h6 {
+		margin-top: 1rem;
+	}
+}

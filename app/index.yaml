@@ -13,4 +13,9 @@ indexes:
 - kind: Articles
   ancestor: yes
   properties:
+  - name: Publish
+
+- kind: Articles
+  ancestor: yes
+  properties:
   - name: PublishDate

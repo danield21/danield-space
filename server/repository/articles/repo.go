@@ -47,7 +47,10 @@ func Get(ctx context.Context, cat *categories.Category, url string) (*Article, e
 
 //GetAll gets all articles written for this website.
 func GetAll(ctx context.Context, limit int) ([]*Article, error) {
-	var articles []*Article
+	var (
+		cat      categories.Category
+		articles []*Article
+	)
 
 	q := datastore.NewQuery(entity).Order("PublishDate").Limit(limit)
 	keys, err := q.GetAll(ctx, &articles)
@@ -58,7 +61,11 @@ func GetAll(ctx context.Context, limit int) ([]*Article, error) {
 
 	for i, key := range keys {
 		articles[i].Key = key
-		datastore.Get(ctx, key.Parent(), &articles[i].Category)
+		err := datastore.Get(ctx, key.Parent(), &cat)
+		if err != nil {
+			return nil, err
+		}
+		articles[i].Category = &cat
 	}
 
 	return articles, nil
@@ -123,13 +130,13 @@ func Set(ctx context.Context, article *Article) error {
 
 	if err != nil {
 		cat, _ := categories.Get(ctx, article.Category.Url)
+		article.DataElement = repository.WithNew(repository.WithPerson(ctx))
 		article.Key = datastore.NewIncompleteKey(ctx, entity, cat.Key)
-		article.DataElement = repository.WithNew("site")
 	} else {
 		article.DataElement = repository.WithOld(repository.WithPerson(ctx), oldArticle.DataElement)
 	}
 
-	article.Key, err = datastore.Put(ctx, article.Key, &article)
+	article.Key, err = datastore.Put(ctx, article.Key, article)
 
 	return err
 }

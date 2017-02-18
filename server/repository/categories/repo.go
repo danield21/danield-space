@@ -54,13 +54,13 @@ func Set(ctx context.Context, cat *Category) error {
 	oldCat, err := Get(ctx, cat.Url)
 
 	if err != nil {
-		cat.Key = datastore.NewIncompleteKey(ctx, entity, nil)
 		cat.DataElement = repository.WithNew(repository.WithPerson(ctx))
+		cat.Key = datastore.NewIncompleteKey(ctx, entity, nil)
 	} else {
 		cat.DataElement = repository.WithOld(repository.WithPerson(ctx), oldCat.DataElement)
 	}
 
-	cat.Key, err = datastore.Put(ctx, cat.Key, &cat)
+	cat.Key, err = datastore.Put(ctx, cat.Key, cat)
 
 	return err
 }
