@@ -4,39 +4,46 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
-	"github.com/danield21/danield-space/server/repository/theme"
 	"github.com/danield21/danield-space/server/service"
+	"github.com/danield21/danield-space/server/service/view"
 	"golang.org/x/net/context"
 )
 
 var ErrUnauthorized = errors.New("unauthorized to see resource")
 
-//Unauthorized handles the unauthorized page
-func UnauthorizedHandler(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-	r := service.Request(ctx)
-	w.Header().Set("Content-Type", service.HTML.AddCharset("utf-8").String())
-	w.WriteHeader(http.StatusUnauthorized)
+//NotFoundPageHandler handles the not found page
+var UnauthorizedPageHandler service.Handler = service.Chain(NotFoundHeaderHandler, NotFoundBodyLink)
 
-	useTheme := e.Theme(r, theme.GetApp(ctx))
+var UnauthorizedHeaderHandler service.Handler = view.HeaderHandler(http.StatusUnauthorized,
+	view.Header{"Content-Type", service.HTML.AddCharset("utf-8").String()})
 
-	info := siteInfo.Get(ctx)
+func UnauthorizedBodyLink(h service.Handler) service.Handler {
+	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+		info := siteInfo.Get(ctx)
+		r := service.Request(ctx)
 
-	pageData := struct {
-		service.BaseModel
-		Redirect string
-	}{
-		BaseModel: service.BaseModel{
-			SiteInfo: info,
-		},
-		Redirect: r.URL.Path,
+		data := struct {
+			service.BaseModel
+			Redirect string `json: "-"`
+			Message  string
+		}{
+			BaseModel: service.BaseModel{
+				SiteInfo: info,
+			},
+			Redirect: r.URL.Path,
+			Message:  "unauthorized to view this resource",
+		}
+
+		newCtx := link.PageContext(ctx, "page/status/not-found", data)
+
+		return h(newCtx, e, w)
 	}
-
-	return ctx, e.View(w, useTheme, "page/status/unauthorized", pageData)
 }
 
-func UnauthorizedLink(h service.Handler) service.Handler {
+func CheckUnauthorizedLink(h service.Handler) service.Handler {
 	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
 		var err error
 		ctx, err = h(ctx, e, w)
@@ -46,6 +53,6 @@ func UnauthorizedLink(h service.Handler) service.Handler {
 			return ctx, err
 		}
 
-		return UnauthorizedHandler(ctx, e, w)
+		return UnauthorizedPageHandler(ctx, e, w)
 	}
 }
