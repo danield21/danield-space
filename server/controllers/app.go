@@ -4,13 +4,18 @@ import (
 	"net/http"
 
 	"github.com/danield21/danield-space/server/controllers/app"
+	"github.com/danield21/danield-space/server/controllers/link"
+	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/service"
+	"github.com/danield21/danield-space/server/service/view"
 	"github.com/gorilla/mux"
 )
 
 //New creates a new server instance to run
 func App(e envir.Environment, r *mux.Router) {
+	r.NotFoundHandler = service.Prepare(e, view.HTMLHandler, status.NotFoundLink, link.Theme)
+
 	r.HandleFunc("/", service.Prepare(e, app.IndexHeaders)).Methods(http.MethodHead)
 	r.HandleFunc("/", service.Prepare(e, app.Index)).Methods(http.MethodGet)
 	r.HandleFunc("/publications", service.Prepare(e, app.PublicationsHeaders)).Methods(http.MethodHead)

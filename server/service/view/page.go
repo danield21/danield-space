@@ -4,6 +4,8 @@ import (
 	"errors"
 	"net/http"
 
+	"encoding/json"
+
 	"github.com/danield21/danield-space/server/envir"
 	"golang.org/x/net/context"
 )
@@ -17,30 +19,34 @@ const pageKey = uniqueKey("page")
 const themeKey = uniqueKey("theme")
 const dataKey = uniqueKey("data")
 
-func HTMLHandler(ctx context.Context, e envir.Environment, w http.ResponseWriter) error {
+func HTMLHandler(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
 	page, err := Page(ctx)
 	if err != nil {
-		return err
+		return ctx, err
 	}
 	theme, err := Theme(ctx)
 	if err != nil {
-		return err
+		return ctx, err
 	}
 	data := Data(ctx)
 
-	return e.View(w, theme, page, data)
+	return ctx, e.View(w, theme, page, data)
 }
 
-func WithPage(ctx context.Context, page string) {
-	context.WithValue(ctx, pageKey, page)
+func JSONHandler(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+	return ctx, json.NewEncoder(w).Encode(Data(ctx))
 }
 
-func WithTheme(ctx context.Context, theme string) {
-	context.WithValue(ctx, themeKey, theme)
+func WithPage(ctx context.Context, page string) context.Context {
+	return context.WithValue(ctx, pageKey, page)
 }
 
-func WithData(ctx context.Context, data interface{}) {
-	context.WithValue(ctx, dataKey, data)
+func WithTheme(ctx context.Context, theme string) context.Context {
+	return context.WithValue(ctx, themeKey, theme)
+}
+
+func WithData(ctx context.Context, data interface{}) context.Context {
+	return context.WithValue(ctx, dataKey, data)
 }
 
 func Page(ctx context.Context) (string, error) {

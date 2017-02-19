@@ -9,5 +9,5 @@ import (
 //but themes cannot use any other fields besides these.
 //This is to ensue that any theme will work
 type BaseModel struct {
-	SiteInfo siteInfo.SiteInfo
+	SiteInfo siteInfo.SiteInfo `json:"-"`
 }

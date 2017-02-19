@@ -5,5 +5,5 @@ import (
 )
 
 func LinkAll(h service.Handler) service.Handler {
-	return service.Chain(h, UnauthorizedLink, NotFoundLink)
+	return service.Chain(h, UnauthorizedLink, CheckNotFoundLink)
 }

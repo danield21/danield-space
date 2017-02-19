@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"github.com/danield21/danield-space/server/repository/theme"
@@ -55,6 +56,26 @@ func NotFoundHandler(ctx context.Context, e envir.Environment, w http.ResponseWr
 }
 
 func NotFoundLink(h service.Handler) service.Handler {
+	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+		info := siteInfo.Get(ctx)
+
+		data := struct {
+			service.BaseModel
+			Message string
+		}{
+			service.BaseModel{
+				SiteInfo: info,
+			},
+			"could not locate resource",
+		}
+
+		newCtx := link.PageContext(ctx, "page/status/not-found", data)
+
+		return h(newCtx, e, w)
+	}
+}
+
+func CheckNotFoundLink(h service.Handler) service.Handler {
 	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
 		var err error
 		ctx, err = h(ctx, e, w)

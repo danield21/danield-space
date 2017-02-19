@@ -4,14 +4,18 @@ import (
 	"net/http"
 
 	"github.com/danield21/danield-space/server/controllers/admin"
+	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/service"
+	"github.com/danield21/danield-space/server/service/view"
 	"github.com/gorilla/mux"
 )
 
 //Admin configures the services for admin services
 func Admin(e envir.Environment, r *mux.Router) {
+	r.NotFoundHandler = service.Prepare(e, view.HTMLHandler, status.NotFoundLink, link.Theme)
+
 	r.HandleFunc("/", service.Prepare(e, admin.IndexHeaders)).
 		Methods(http.MethodHead)
 	r.HandleFunc("/", service.Prepare(e, admin.Index, status.LinkAll)).
