@@ -3,11 +3,11 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/danield21/danield-space/server/controllers/rest/account"
+	"github.com/danield21/danield-space/server/controllers/rest/article"
+	"github.com/danield21/danield-space/server/controllers/rest/category"
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/service"
-	"github.com/danield21/danield-space/server/service/rest/account"
-	"github.com/danield21/danield-space/server/service/rest/article"
-	"github.com/danield21/danield-space/server/service/rest/category"
 	"github.com/gorilla/mux"
 )
 

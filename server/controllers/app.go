@@ -3,9 +3,9 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/danield21/danield-space/server/controllers/app"
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/service"
-	"github.com/danield21/danield-space/server/service/app"
 	"github.com/gorilla/mux"
 )
 
