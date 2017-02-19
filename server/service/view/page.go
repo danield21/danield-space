@@ -21,5 +21,5 @@ func HTMLHandler(scp envir.Scope, e envir.Environment, w http.ResponseWriter) er
 		return ErrIncompatibleType
 	}
 
-	return e.View(w, html.Theme(), html.Page(), html.Data)
+	return e.View(w, html.Theme(), html.Page(), html.Data())
 }

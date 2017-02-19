@@ -9,9 +9,33 @@ import (
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"github.com/danield21/danield-space/server/repository/theme"
 	"github.com/danield21/danield-space/server/service"
+	"github.com/danield21/danield-space/server/service/view"
 )
 
 var ErrNotFound = errors.New("resource not found")
+
+type notFoundPage struct {
+	envir.Scope
+	ThemeField string
+	DataField  interface{}
+}
+
+func (p notFoundPage) Theme() string {
+	return p.ThemeField
+}
+
+func (p notFoundPage) Data() interface{} {
+	return p.DataField
+}
+
+func (p notFoundPage) Page() string {
+	return "page/status/not-found"
+}
+
+func NotFoundHeaderHandler(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+	return view.HeaderHandler(http.StatusNotFound,
+		view.Header{"Content-Type", service.HTML.AddCharset("utf-8").String()})(scp, e, w)
+}
 
 //NotFoundHandler handles the not found page
 func NotFoundHandler(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {

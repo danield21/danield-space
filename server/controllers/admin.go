@@ -14,7 +14,7 @@ import (
 func Admin(e envir.Environment, r *mux.Router) {
 	r.HandleFunc("/", service.Prepare(e, admin.IndexHeaders)).
 		Methods(http.MethodHead)
-	r.HandleFunc("/", service.Prepare(e, admin.Index, status.Link)).
+	r.HandleFunc("/", service.Prepare(e, admin.Index, status.LinkAll)).
 		Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/signin", service.Prepare(e, admin.SignInHeaders)).
 		Methods(http.MethodHead)
@@ -22,30 +22,30 @@ func Admin(e envir.Environment, r *mux.Router) {
 		Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/article/", service.Prepare(e, admin.ShowPageHeaders)).
 		Methods(http.MethodHead)
-	r.HandleFunc("/article/", service.Prepare(e, admin.ShowPage("article"), status.Link)).
+	r.HandleFunc("/article/", service.Prepare(e, admin.ShowPage("article"), status.LinkAll)).
 		Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/article/publish", service.Prepare(e, admin.PublishHeaders)).
 		Methods(http.MethodHead)
-	r.HandleFunc("/article/publish", service.Prepare(e, admin.Publish, status.Link)).
+	r.HandleFunc("/article/publish", service.Prepare(e, admin.Publish, status.LinkAll)).
 		Methods(http.MethodGet)
-	r.HandleFunc("/article/publish", service.Prepare(e, admin.ArticlePublish, status.Link)).
+	r.HandleFunc("/article/publish", service.Prepare(e, admin.ArticlePublish, status.LinkAll)).
 		Methods(http.MethodPost)
 	r.HandleFunc("/account/", service.Prepare(e, admin.ShowPageHeaders)).
 		Methods(http.MethodHead)
-	r.HandleFunc("/account/", service.Prepare(e, admin.ShowPage("account"), status.Link)).
+	r.HandleFunc("/account/", service.Prepare(e, admin.ShowPage("account"), status.LinkAll)).
 		Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/site-info/", service.Prepare(e, admin.ShowPageHeaders)).
 		Methods(http.MethodHead)
-	r.HandleFunc("/site-info/", service.Prepare(e, admin.ShowPage("site-info"), status.Link)).
+	r.HandleFunc("/site-info/", service.Prepare(e, admin.ShowPage("site-info"), status.LinkAll)).
 		Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/category/", service.Prepare(e, admin.ShowPageHeaders)).
 		Methods(http.MethodHead)
-	r.HandleFunc("/category/", service.Prepare(e, admin.ShowPage("category"), status.Link)).
+	r.HandleFunc("/category/", service.Prepare(e, admin.ShowPage("category"), status.LinkAll)).
 		Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/category/create", service.Prepare(e, admin.ShowPageHeaders)).
 		Methods(http.MethodHead)
-	r.HandleFunc("/category/create", service.Prepare(e, admin.ShowPage("category-create"), status.Link)).
+	r.HandleFunc("/category/create", service.Prepare(e, admin.ShowPage("category-create"), status.LinkAll)).
 		Methods(http.MethodGet)
-	r.HandleFunc("/category/create", service.Prepare(e, admin.CategoryCreate, status.Link)).
+	r.HandleFunc("/category/create", service.Prepare(e, admin.CategoryCreate, status.LinkAll)).
 		Methods(http.MethodPost)
 }
