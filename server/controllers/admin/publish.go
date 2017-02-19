@@ -3,53 +3,106 @@ package admin
 import (
 	"net/http"
 
+	"github.com/danield21/danield-space/server/controllers/link"
+	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/envir"
+	"github.com/danield21/danield-space/server/repository/articles"
 	"github.com/danield21/danield-space/server/repository/categories"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
-	"github.com/danield21/danield-space/server/repository/theme"
 	"github.com/danield21/danield-space/server/service"
+	"github.com/danield21/danield-space/server/service/view"
+	"github.com/gorilla/schema"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
+var PublishPageHandler service.Handler = service.Chain(
+	view.HTMLHandler,
+	service.ToLink(PublishHeadersHandler),
+	PublishPageLink,
+	link.Theme,
+)
+var PublishFormHandler service.Handler = service.Chain(
+	view.HTMLHandler,
+	service.ToLink(PublishPageHandler),
+	PublishFormLink,
+)
+
 //PublishHeaders contains the headers for index
-func PublishHeaders(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-	w.Header().Set("Content-Type", service.HTML.AddCharset("utf-8").String())
-	return ctx, nil
-}
+var PublishHeadersHandler service.Handler = view.HeaderHandler(http.StatusOK,
+	view.Header{"Content-Type", service.HTML.AddCharset("utf-8").String()})
 
 //Publish handles the index page
-func Publish(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-	r := service.Request(ctx)
-	useTheme := e.Theme(r, theme.GetApp(ctx))
-	session := e.Session(r)
+func PublishPageLink(h service.Handler) service.Handler {
+	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+		ses := service.Session(ctx)
 
-	user, _ := GetUser(session)
+		user, signedIn := GetUser(ses)
+		if !signedIn {
+			return ctx, status.ErrUnauthorized
+		}
 
-	info := siteInfo.Get(ctx)
+		info := siteInfo.Get(ctx)
 
-	cats, err := categories.GetAll(ctx)
-	if err != nil {
-		log.Warningf(ctx, "admin.Publish - Unable to get types of articles\n%v", err)
-	}
+		cats, err := categories.GetAll(ctx)
+		if err != nil {
+			log.Warningf(ctx, "admin.Publish - Unable to get types of articles\n%v", err)
+		}
 
-	pageData := struct {
-		AdminModel
-		Categories []*categories.Category
-	}{
-		AdminModel: AdminModel{
-			BaseModel: service.BaseModel{
-				SiteInfo: info,
+		data := struct {
+			AdminModel `json:"-"`
+			Categories []*categories.Category
+		}{
+			AdminModel: AdminModel{
+				BaseModel: service.BaseModel{
+					SiteInfo: info,
+				},
+				User: user,
 			},
-			User: user,
-		},
-		Categories: cats,
-	}
+			Categories: cats,
+		}
 
-	PublishHeaders(ctx, e, w)
-	err = e.View(w, useTheme, "page/admin/publish", pageData)
-	if err != nil {
-		log.Errorf(ctx, "admin.Publish - Unable to generate page:\n%v", err)
+		return h(link.PageContext(ctx, "page/admin/publish", data), e, w)
 	}
-	return ctx, err
+}
+
+func PublishFormLink(h service.Handler) service.Handler {
+	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+		r := service.Request(ctx)
+		ses := service.Session(ctx)
+
+		_, signedIn := GetUser(ses)
+		if !signedIn {
+			return ctx, status.ErrUnauthorized
+		}
+
+		err := r.ParseForm()
+		if err != nil {
+			log.Warningf(ctx, "admin.CategoryForm - Unable to parse form\n%v", err)
+			return h(ctx, e, w)
+		}
+
+		var form articles.FormArticle
+
+		decoder := schema.NewDecoder()
+		err = decoder.Decode(&form, r.PostForm)
+		if err != nil {
+			log.Warningf(ctx, "category.Put - Unable to decode form\n%v", err)
+			return h(ctx, e, w)
+		}
+
+		article, err := form.Unpack(ctx)
+		if err != nil {
+			log.Warningf(ctx, "category.Put - Unable unpack form\n%v", err)
+			return h(ctx, e, w)
+		}
+
+		err = articles.Set(ctx, article)
+		if err != nil {
+			log.Warningf(ctx, "category.Put - Unable to place category into database\n%v", err)
+			return h(ctx, e, w)
+		}
+
+		return h(ctx, e, w)
+	}
 }

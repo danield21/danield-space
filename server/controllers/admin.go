@@ -28,11 +28,11 @@ func Admin(e envir.Environment, r *mux.Router) {
 		Methods(http.MethodHead)
 	r.HandleFunc("/article/", service.Prepare(e, admin.ShowPage("article"), status.LinkAll)).
 		Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/article/publish", service.Prepare(e, admin.PublishHeaders)).
+	r.HandleFunc("/article/publish", service.Prepare(e, admin.PublishHeadersHandler)).
 		Methods(http.MethodHead)
-	r.HandleFunc("/article/publish", service.Prepare(e, admin.Publish, status.LinkAll)).
+	r.HandleFunc("/article/publish", service.Prepare(e, admin.PublishPageHandler, status.LinkAll)).
 		Methods(http.MethodGet)
-	r.HandleFunc("/article/publish", service.Prepare(e, admin.ArticlePublish, status.LinkAll)).
+	r.HandleFunc("/article/publish", service.Prepare(e, admin.PublishFormHandler, status.LinkAll)).
 		Methods(http.MethodPost)
 	r.HandleFunc("/account/", service.Prepare(e, admin.ShowPageHeaders)).
 		Methods(http.MethodHead)
