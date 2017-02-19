@@ -6,14 +6,14 @@ import (
 
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/repository/categories"
+	"github.com/danield21/danield-space/server/service"
+	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
 //Get handles get requests for articles and returns a list of JSON objects
-func Get(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
-	r := scp.Request()
-
-	ctx := e.Context(r)
+func Get(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+	r := service.Request(ctx)
 
 	err := r.ParseForm()
 	if err != nil {
@@ -29,5 +29,5 @@ func Get(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
 	if err != nil {
 		log.Warningf(ctx, "article.Get - Unable to encode articles into json\n%v", err)
 	}
-	return err
+	return ctx, err
 }

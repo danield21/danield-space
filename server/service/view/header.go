@@ -5,6 +5,7 @@ import (
 
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/service"
+	"golang.org/x/net/context"
 )
 
 type Header struct {
@@ -13,11 +14,11 @@ type Header struct {
 }
 
 func HeaderHandler(status int, headers ...Header) service.Handler {
-	return func(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
+	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
 		w.WriteHeader(status)
 		for _, h := range headers {
 			w.Header().Add(h.Header, h.Value)
 		}
-		return scp, nil
+		return ctx, nil
 	}
 }

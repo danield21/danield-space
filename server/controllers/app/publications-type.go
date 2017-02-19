@@ -10,6 +10,7 @@ import (
 	"github.com/danield21/danield-space/server/repository/theme"
 	"github.com/danield21/danield-space/server/service"
 	"github.com/gorilla/mux"
+	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
@@ -20,15 +21,14 @@ type publicationsTypeModel struct {
 }
 
 //PublicationsTypeHeaders contains the headers for index
-func PublicationsTypeHeaders(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
+func PublicationsTypeHeaders(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
 	w.Header().Set("Content-Type", service.HTML.AddCharset("utf-8").String())
-	return scp, nil
+	return ctx, nil
 }
 
 //PublicationsType handles the index page
-func PublicationsType(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
-	r := scp.Request()
-	ctx := e.Context(r)
+func PublicationsType(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+	r := service.Request(ctx)
 	useTheme := e.Theme(r, theme.GetApp(ctx))
 	vars := mux.Vars(r)
 
@@ -52,10 +52,10 @@ func PublicationsType(scp envir.Scope, e envir.Environment, w http.ResponseWrite
 		Category: cat,
 	}
 
-	PublicationsTypeHeaders(scp, e, w)
+	PublicationsTypeHeaders(ctx, e, w)
 	err = e.View(w, useTheme, "page/app/publications-type", pageData)
 	if err != nil {
 		log.Errorf(ctx, "app.PublicationsType - Unable to generate page\n%v", err)
 	}
-	return scp, err
+	return ctx, err
 }

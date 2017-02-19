@@ -10,6 +10,7 @@ import (
 	"github.com/danield21/danield-space/server/repository/theme"
 	"github.com/danield21/danield-space/server/service"
 	"github.com/gorilla/mux"
+	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
@@ -19,15 +20,14 @@ type articlesModel struct {
 }
 
 //ArticleHeaders contains the headers for index
-func ArticleHeaders(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
+func ArticleHeaders(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
 	w.Header().Set("Content-Type", service.HTML.AddCharset("utf-8").String())
-	return scp, nil
+	return ctx, nil
 }
 
 //Article handles the index page
-func Article(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
-	r := scp.Request()
-	ctx := e.Context(r)
+func Article(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+	r := service.Request(ctx)
 	useTheme := e.Theme(r, theme.GetApp(ctx))
 	vars := mux.Vars(r)
 
@@ -46,10 +46,10 @@ func Article(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir
 		Article: a,
 	}
 
-	ArticleHeaders(scp, e, w)
+	ArticleHeaders(ctx, e, w)
 	err = e.View(w, useTheme, "page/app/article", pageData)
 	if err != nil {
 		log.Errorf(ctx, "app.Article - Unable to generate page:\n%v", err)
 	}
-	return scp, err
+	return ctx, err
 }

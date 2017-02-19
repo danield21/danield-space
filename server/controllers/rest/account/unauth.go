@@ -5,13 +5,14 @@ import (
 
 	"github.com/danield21/danield-space/server/controllers/rest"
 	"github.com/danield21/danield-space/server/envir"
+	"github.com/danield21/danield-space/server/service"
+	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
-func Unauth(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
-	r := scp.Request()
-	session := scp.Session()
-	ctx := e.Context(r)
+func Unauth(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+	r := service.Request(ctx)
+	session := service.Session(ctx)
 	redirect := rest.GetRedirect(r)
 
 	user, signedIn := session.Values["user"]
@@ -35,5 +36,5 @@ func Unauth(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.
 		w.Header().Set("Location", redirect)
 		w.WriteHeader(http.StatusFound)
 	}
-	return scp, nil
+	return ctx, nil
 }

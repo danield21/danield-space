@@ -6,20 +6,21 @@ import (
 	"github.com/danield21/danield-space/server/controllers/rest"
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/repository/account"
+	"github.com/danield21/danield-space/server/service"
+	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
 const unlimited = -1
 
 //Auth checks if user has correct credentials and gives them a token
-func Auth(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
+func Auth(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
 	var (
 		username string
 		password []byte
 	)
 
-	r := scp.Request()
-	ctx := e.Context(r)
+	r := service.Request(ctx)
 	redirect := rest.GetRedirect(r)
 
 	err := r.ParseForm()
@@ -44,11 +45,11 @@ func Auth(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Sc
 		} else {
 			http.Redirect(w, r, "/admin/signin?error=no_match&redirect="+redirect, http.StatusFound)
 		}
-		return scp, nil
+		return ctx, nil
 	}
 
 	log.Infof(ctx, "account.Auth - %s logged in", username)
-	session := scp.Session()
+	session := service.Session(ctx)
 	session.Values["user"] = username
 	err = session.Save(r, w)
 	if err != nil {
@@ -61,5 +62,5 @@ func Auth(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Sc
 		w.Header().Set("Location", redirect)
 		w.WriteHeader(http.StatusFound)
 	}
-	return scp, nil
+	return ctx, nil
 }

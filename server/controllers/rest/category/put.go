@@ -7,20 +7,21 @@ import (
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/repository/categories"
+	"github.com/danield21/danield-space/server/service"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/schema"
+	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
-func Put(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
-	r := scp.Request()
-	ctx := e.Context(r)
-	session := scp.Session()
+func Put(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+	r := service.Request(ctx)
+	session := service.Session(ctx)
 	path := mux.Vars(r)
 
 	_, signed := admin.GetUser(session)
 	if !signed {
-		return scp, status.ErrUnauthorized
+		return ctx, status.ErrUnauthorized
 	}
 
 	r.ParseForm()
@@ -31,7 +32,7 @@ func Put(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Sco
 	if err != nil {
 		log.Warningf(ctx, "category.Put - Unable to decode form", err)
 		w.WriteHeader(http.StatusBadRequest)
-		return scp, err
+		return ctx, err
 	}
 
 	form.Url = path["category"]
@@ -40,7 +41,7 @@ func Put(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Sco
 	if err != nil {
 		log.Warningf(ctx, "category.Put - Unable unpack form", err)
 		w.WriteHeader(http.StatusBadRequest)
-		return scp, err
+		return ctx, err
 	}
 
 	err = categories.Set(ctx, category)
@@ -48,5 +49,5 @@ func Put(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Sco
 		log.Warningf(ctx, "category.Put - Unable to place category into database", err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-	return scp, err
+	return ctx, err
 }

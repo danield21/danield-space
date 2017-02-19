@@ -5,13 +5,14 @@ import (
 
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/repository/articles"
+	"github.com/danield21/danield-space/server/service"
 	"github.com/gorilla/schema"
+	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
-func ArticlePublish(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
-	r := scp.Request()
-	ctx := e.Context(r)
+func ArticlePublish(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+	r := service.Request(ctx)
 
 	err := r.ParseForm()
 	if err != nil {
@@ -36,5 +37,5 @@ func ArticlePublish(scp envir.Scope, e envir.Environment, w http.ResponseWriter)
 		log.Warningf(ctx, "category.Put - Unable to place category into database\n%v", err)
 	}
 
-	return Publish(scp, e, w)
+	return Publish(ctx, e, w)
 }

@@ -7,20 +7,21 @@ import (
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/repository/articles"
+	"github.com/danield21/danield-space/server/service"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/schema"
+	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
-func Put(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
-	r := scp.Request()
-	ctx := e.Context(r)
-	session := scp.Session()
+func Put(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+	r := service.Request(ctx)
+	session := service.Session(ctx)
 	path := mux.Vars(r)
 
 	_, signed := admin.GetUser(session)
 	if !signed {
-		return scp, status.ErrUnauthorized
+		return ctx, status.ErrUnauthorized
 	}
 
 	r.ParseForm()
@@ -31,7 +32,7 @@ func Put(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Sco
 	if err != nil {
 		log.Warningf(ctx, "article.Put - Unable to decode form", err)
 		w.WriteHeader(http.StatusNotAcceptable)
-		return scp, err
+		return ctx, err
 	}
 
 	form.Category = path["category"]
@@ -41,8 +42,8 @@ func Put(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Sco
 	if err != nil {
 		log.Warningf(ctx, "article.Put - Unable unpack form", err)
 		w.WriteHeader(http.StatusNotAcceptable)
-		return scp, err
+		return ctx, err
 	}
 
-	return scp, articles.Set(ctx, article)
+	return ctx, articles.Set(ctx, article)
 }

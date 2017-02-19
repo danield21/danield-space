@@ -120,26 +120,26 @@ func TestPrepareHandler(t *testing.T) {
 	}
 }
 
-func mockHandler1(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func mockHandler1(ctx context.Context, e envir.Environment, w http.ResponseWriter) error {
 	w.Write([]byte("World"))
 	return nil
 }
 
-func mockHandler2(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func mockHandler2(ctx context.Context, e envir.Environment, w http.ResponseWriter) error {
 	w.Write([]byte("Person"))
 	return nil
 }
 
 func mockLink1(h service.Handler) service.Handler {
-	return func(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) error {
 		w.Write([]byte("Hello, "))
-		return h(scp, e, w)
+		return h(ctx, e, w)
 	}
 }
 
 func mockLink2(h service.Handler) service.Handler {
-	return func(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) error {
 		w.Write([]byte("Goodbye, "))
-		return h(scp, e, w)
+		return h(ctx, e, w)
 	}
 }
