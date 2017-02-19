@@ -9,7 +9,7 @@ import (
 )
 
 //Handler is a modified struct of http.HandlerFunc, except requires a Environment for getting information about the site.
-type Handler func(s envir.Scope, e envir.Environment, w http.ResponseWriter) error
+type Handler func(s envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error)
 
 type Link func(h Handler) Handler
 
@@ -22,7 +22,7 @@ func Apply(e envir.Environment, h Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		scp := NewScope(r)
 
-		err := h(scp, e, w)
+		_, err := h(scp, e, w)
 
 		if err == nil {
 			return
@@ -44,10 +44,11 @@ func Chain(h Handler, links ...Link) (chain Handler) {
 
 func ToLink(l Handler) Link {
 	return func(h Handler) Handler {
-		return func(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
-			err := l(scp, e, w)
+		return func(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
+			var err error
+			scp, err = l(scp, e, w)
 			if err != nil {
-				return err
+				return scp, err
 			}
 			return h(scp, e, w)
 		}

@@ -12,7 +12,7 @@ import (
 	"google.golang.org/appengine/log"
 )
 
-func Put(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func Put(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	r := scp.Request()
 	ctx := e.Context(r)
 	session := scp.Session()
@@ -20,7 +20,7 @@ func Put(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
 
 	_, signed := admin.GetUser(session)
 	if !signed {
-		return status.ErrUnauthorized
+		return scp, status.ErrUnauthorized
 	}
 
 	r.ParseForm()
@@ -31,7 +31,7 @@ func Put(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
 	if err != nil {
 		log.Warningf(ctx, "category.Put - Unable to decode form", err)
 		w.WriteHeader(http.StatusBadRequest)
-		return err
+		return scp, err
 	}
 
 	form.Url = path["category"]
@@ -40,7 +40,7 @@ func Put(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
 	if err != nil {
 		log.Warningf(ctx, "category.Put - Unable unpack form", err)
 		w.WriteHeader(http.StatusBadRequest)
-		return err
+		return scp, err
 	}
 
 	err = categories.Set(ctx, category)
@@ -48,5 +48,5 @@ func Put(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
 		log.Warningf(ctx, "category.Put - Unable to place category into database", err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-	return err
+	return scp, err
 }

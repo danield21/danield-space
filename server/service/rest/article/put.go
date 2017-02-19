@@ -12,7 +12,7 @@ import (
 	"google.golang.org/appengine/log"
 )
 
-func Put(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func Put(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	r := scp.Request()
 	ctx := e.Context(r)
 	session := scp.Session()
@@ -20,7 +20,7 @@ func Put(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
 
 	_, signed := admin.GetUser(session)
 	if !signed {
-		return status.ErrUnauthorized
+		return scp, status.ErrUnauthorized
 	}
 
 	r.ParseForm()
@@ -31,7 +31,7 @@ func Put(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
 	if err != nil {
 		log.Warningf(ctx, "article.Put - Unable to decode form", err)
 		w.WriteHeader(http.StatusNotAcceptable)
-		return err
+		return scp, err
 	}
 
 	form.Category = path["category"]
@@ -41,8 +41,8 @@ func Put(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
 	if err != nil {
 		log.Warningf(ctx, "article.Put - Unable unpack form", err)
 		w.WriteHeader(http.StatusNotAcceptable)
-		return err
+		return scp, err
 	}
 
-	return articles.Set(ctx, article)
+	return scp, articles.Set(ctx, article)
 }

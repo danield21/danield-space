@@ -32,13 +32,13 @@ func (p notFoundPage) Page() string {
 	return "page/status/not-found"
 }
 
-func NotFoundHeaderHandler(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func NotFoundHeaderHandler(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	return view.HeaderHandler(http.StatusNotFound,
 		view.Header{"Content-Type", service.HTML.AddCharset("utf-8").String()})(scp, e, w)
 }
 
 //NotFoundHandler handles the not found page
-func NotFoundHandler(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func NotFoundHandler(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	r := scp.Request()
 	w.Header().Set("Content-Type", service.HTML.AddCharset("utf-8").String())
 	w.WriteHeader(http.StatusNotFound)
@@ -52,16 +52,17 @@ func NotFoundHandler(scp envir.Scope, e envir.Environment, w http.ResponseWriter
 		SiteInfo: info,
 	}
 
-	return e.View(w, useTheme, "page/status/not-found", pageData)
+	return scp, e.View(w, useTheme, "page/status/not-found", pageData)
 }
 
 func NotFoundLink(h service.Handler) service.Handler {
-	return func(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
-		err := h(scp, e, w)
+	return func(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
+		var err error
+		scp, err = h(scp, e, w)
 		if err == nil {
-			return nil
+			return scp, nil
 		} else if err != ErrNotFound {
-			return err
+			return scp, err
 		}
 
 		return NotFoundHandler(scp, e, w)

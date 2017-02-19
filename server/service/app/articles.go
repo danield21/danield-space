@@ -19,13 +19,13 @@ type articlesModel struct {
 }
 
 //ArticleHeaders contains the headers for index
-func ArticleHeaders(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func ArticleHeaders(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	w.Header().Set("Content-Type", service.HTML.AddCharset("utf-8").String())
-	return nil
+	return scp, nil
 }
 
 //Article handles the index page
-func Article(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func Article(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	r := scp.Request()
 	ctx := e.Context(r)
 	useTheme := e.Theme(r, theme.GetApp(ctx))
@@ -37,7 +37,6 @@ func Article(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error 
 	a, err := articles.Get(ctx, cat, vars["key"])
 	if err != nil {
 		log.Errorf(ctx, "app.Article - Unable to get articles by type\n%v", err)
-		return err
 	}
 
 	pageData := articlesModel{
@@ -52,5 +51,5 @@ func Article(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error 
 	if err != nil {
 		log.Errorf(ctx, "app.Article - Unable to generate page:\n%v", err)
 	}
-	return err
+	return scp, err
 }

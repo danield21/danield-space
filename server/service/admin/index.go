@@ -11,13 +11,13 @@ import (
 )
 
 //IndexHeaders contains the headers for index
-func IndexHeaders(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func IndexHeaders(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	w.Header().Set("Content-Type", service.HTML.AddCharset("utf-8").String())
-	return nil
+	return scp, nil
 }
 
 //Index handles the index page
-func Index(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func Index(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	r := scp.Request()
 	ctx := e.Context(r)
 	useTheme := e.Theme(r, theme.GetApp(ctx))
@@ -44,5 +44,5 @@ func Index(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
 		log.Errorf(ctx, "admin.Index - Unable to generate page:\n%v", err)
 	}
 
-	return err
+	return scp, err
 }

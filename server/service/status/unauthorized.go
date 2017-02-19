@@ -14,7 +14,7 @@ import (
 var ErrUnauthorized = errors.New("unauthorized to see resource")
 
 //Unauthorized handles the unauthorized page
-func UnauthorizedHandler(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func UnauthorizedHandler(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	r := scp.Request()
 	w.Header().Set("Content-Type", service.HTML.AddCharset("utf-8").String())
 	w.WriteHeader(http.StatusUnauthorized)
@@ -34,16 +34,17 @@ func UnauthorizedHandler(scp envir.Scope, e envir.Environment, w http.ResponseWr
 		Redirect: r.URL.Path,
 	}
 
-	return e.View(w, useTheme, "page/status/unauthorized", pageData)
+	return scp, e.View(w, useTheme, "page/status/unauthorized", pageData)
 }
 
 func UnauthorizedLink(h service.Handler) service.Handler {
-	return func(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
-		err := h(scp, e, w)
+	return func(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
+		var err error
+		scp, err = h(scp, e, w)
 		if err == nil {
-			return nil
+			return scp, nil
 		} else if err != ErrUnauthorized {
-			return err
+			return scp, err
 		}
 
 		return UnauthorizedHandler(scp, e, w)

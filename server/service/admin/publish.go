@@ -13,13 +13,13 @@ import (
 )
 
 //PublishHeaders contains the headers for index
-func PublishHeaders(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func PublishHeaders(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	w.Header().Set("Content-Type", service.HTML.AddCharset("utf-8").String())
-	return nil
+	return scp, nil
 }
 
 //Publish handles the index page
-func Publish(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func Publish(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	r := scp.Request()
 	ctx := e.Context(r)
 	useTheme := e.Theme(r, theme.GetApp(ctx))
@@ -52,5 +52,5 @@ func Publish(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error 
 	if err != nil {
 		log.Errorf(ctx, "admin.Publish - Unable to generate page:\n%v", err)
 	}
-	return err
+	return scp, err
 }

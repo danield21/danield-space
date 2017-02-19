@@ -9,14 +9,14 @@ import (
 	"google.golang.org/appengine/log"
 )
 
-func CategoryCreate(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func CategoryCreate(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	r := scp.Request()
 	ctx := e.Context(r)
 
 	err := r.ParseForm()
 	if err != nil {
 		log.Warningf(ctx, "admin.CategoryForm - Unable to parse form\n%v", err)
-		return err
+		return scp, err
 	}
 
 	var form categories.FormCategory

@@ -8,7 +8,7 @@ import (
 	"google.golang.org/appengine/log"
 )
 
-func Unauth(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func Unauth(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	r := scp.Request()
 	session := scp.Session()
 	ctx := e.Context(r)
@@ -35,5 +35,5 @@ func Unauth(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
 		w.Header().Set("Location", redirect)
 		w.WriteHeader(http.StatusFound)
 	}
-	return nil
+	return scp, nil
 }

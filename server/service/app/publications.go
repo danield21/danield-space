@@ -23,13 +23,13 @@ type publicationList struct {
 }
 
 //PublicationsHeaders contains the headers for index
-func PublicationsHeaders(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func PublicationsHeaders(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	w.Header().Set("Content-Type", service.HTML.AddCharset("utf-8").String())
-	return nil
+	return scp, nil
 }
 
 //Publications handles the index page
-func Publications(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func Publications(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	r := scp.Request()
 	ctx := e.Context(r)
 	useTheme := e.Theme(r, theme.GetApp(ctx))
@@ -62,5 +62,5 @@ func Publications(scp envir.Scope, e envir.Environment, w http.ResponseWriter) e
 	if err != nil {
 		log.Errorf(ctx, "app.Publications - Unable to generate page\n%v", err)
 	}
-	return err
+	return scp, err
 }

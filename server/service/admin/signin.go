@@ -18,13 +18,13 @@ type signinModel struct {
 }
 
 //SignInHeaders contains the headers for index
-func SignInHeaders(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func SignInHeaders(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	w.Header().Set("Content-Type", service.HTML.AddCharset("utf-8").String())
-	return nil
+	return scp, nil
 }
 
 //SignIn handles the index page
-func SignIn(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func SignIn(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	r := scp.Request()
 	ctx := e.Context(r)
 	useTheme := e.Theme(r, theme.GetApp(ctx))
@@ -43,5 +43,5 @@ func SignIn(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
 	if err != nil {
 		log.Errorf(ctx, "admin.SignIn - Unable to generate page:\n%v", err)
 	}
-	return err
+	return scp, err
 }

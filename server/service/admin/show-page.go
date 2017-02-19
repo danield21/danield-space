@@ -11,14 +11,14 @@ import (
 )
 
 //ShowPageHeaders contains the headers
-func ShowPageHeaders(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func ShowPageHeaders(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	w.Header().Set("Content-Type", service.HTML.AddCharset("utf-8").String())
-	return nil
+	return scp, nil
 }
 
 //ShowPage handles the page
 func ShowPage(page string) service.Handler {
-	return func(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+	return func(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 		r := scp.Request()
 		ctx := e.Context(r)
 		useTheme := e.Theme(r, theme.GetApp(ctx))
@@ -44,6 +44,6 @@ func ShowPage(page string) service.Handler {
 		if err != nil {
 			log.Errorf(ctx, "admin.Index - Unable to generate page:\n%v", err)
 		}
-		return err
+		return scp, err
 	}
 }

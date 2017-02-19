@@ -17,13 +17,13 @@ type indexModel struct {
 }
 
 //IndexHeaders contains the headers for index
-func IndexHeaders(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func IndexHeaders(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	w.Header().Set("Content-Type", service.HTML.AddCharset("utf-8").String())
-	return nil
+	return scp, nil
 }
 
 //Index handles the index page
-func Index(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func Index(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	r := scp.Request()
 	ctx := e.Context(r)
 	useTheme := e.Theme(r, theme.GetApp(ctx))
@@ -33,7 +33,6 @@ func Index(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
 	a, err := articles.GetAll(ctx, 10)
 	if err != nil {
 		log.Errorf(ctx, "app.Index - Unable to get last 10 articles\n%v", err)
-		return err
 	}
 
 	pageData := indexModel{
@@ -48,5 +47,5 @@ func Index(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
 	if err != nil {
 		log.Errorf(ctx, "app.Index - Unable to generate page\n%v", err)
 	}
-	return err
+	return scp, err
 }

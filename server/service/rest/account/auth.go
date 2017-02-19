@@ -12,7 +12,7 @@ import (
 const unlimited = -1
 
 //Auth checks if user has correct credentials and gives them a token
-func Auth(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func Auth(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	var (
 		username string
 		password []byte
@@ -44,7 +44,7 @@ func Auth(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
 		} else {
 			http.Redirect(w, r, "/admin/signin?error=no_match&redirect="+redirect, http.StatusFound)
 		}
-		return nil
+		return scp, nil
 	}
 
 	log.Infof(ctx, "account.Auth - %s logged in", username)
@@ -61,5 +61,5 @@ func Auth(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
 		w.Header().Set("Location", redirect)
 		w.WriteHeader(http.StatusFound)
 	}
-	return nil
+	return scp, nil
 }

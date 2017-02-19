@@ -20,13 +20,13 @@ type publicationsTypeModel struct {
 }
 
 //PublicationsTypeHeaders contains the headers for index
-func PublicationsTypeHeaders(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func PublicationsTypeHeaders(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	w.Header().Set("Content-Type", service.HTML.AddCharset("utf-8").String())
-	return nil
+	return scp, nil
 }
 
 //PublicationsType handles the index page
-func PublicationsType(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func PublicationsType(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	r := scp.Request()
 	ctx := e.Context(r)
 	useTheme := e.Theme(r, theme.GetApp(ctx))
@@ -57,5 +57,5 @@ func PublicationsType(scp envir.Scope, e envir.Environment, w http.ResponseWrite
 	if err != nil {
 		log.Errorf(ctx, "app.PublicationsType - Unable to generate page\n%v", err)
 	}
-	return err
+	return scp, err
 }

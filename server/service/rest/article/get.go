@@ -13,7 +13,7 @@ import (
 const unlimited = -1
 
 //Get handles get requests for articles and returns a list of JSON objects
-func Get(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func Get(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	var (
 		limit int
 	)
@@ -37,5 +37,5 @@ func Get(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
 	if err != nil {
 		log.Warningf(ctx, "article.Get - Unable to encode articles into json\n%v", err)
 	}
-	return err
+	return scp, err
 }

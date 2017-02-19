@@ -13,11 +13,11 @@ type Header struct {
 }
 
 func HeaderHandler(status int, headers ...Header) service.Handler {
-	return func(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+	return func(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 		w.WriteHeader(status)
 		for _, h := range headers {
 			w.Header().Add(h.Header, h.Value)
 		}
-		return nil
+		return scp, nil
 	}
 }

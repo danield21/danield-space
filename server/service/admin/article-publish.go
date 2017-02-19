@@ -9,7 +9,7 @@ import (
 	"google.golang.org/appengine/log"
 )
 
-func ArticlePublish(scp envir.Scope, e envir.Environment, w http.ResponseWriter) error {
+func ArticlePublish(scp envir.Scope, e envir.Environment, w http.ResponseWriter) (envir.Scope, error) {
 	r := scp.Request()
 	ctx := e.Context(r)
 
