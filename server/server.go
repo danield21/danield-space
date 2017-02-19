@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/danield21/danield-space/server/controllers"
+	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/service"
-	"github.com/danield21/danield-space/server/service/status"
 	"github.com/danield21/danield-space/server/views"
 	"github.com/gorilla/mux"
 )

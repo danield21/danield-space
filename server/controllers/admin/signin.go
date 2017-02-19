@@ -8,7 +8,7 @@ import (
 	"github.com/danield21/danield-space/server/repository/theme"
 	"github.com/danield21/danield-space/server/service"
 
-	"github.com/danield21/danield-space/server/service/rest"
+	"github.com/danield21/danield-space/server/controllers/rest"
 	"google.golang.org/appengine/log"
 )
 

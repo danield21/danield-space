@@ -3,9 +3,9 @@ package account
 import (
 	"net/http"
 
+	"github.com/danield21/danield-space/server/controllers/rest"
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/repository/account"
-	"github.com/danield21/danield-space/server/service/rest"
 	"google.golang.org/appengine/log"
 )
 
