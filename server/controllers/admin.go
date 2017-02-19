@@ -14,7 +14,7 @@ import (
 
 //Admin configures the services for admin services
 func Admin(e envir.Environment, r *mux.Router) {
-	r.NotFoundHandler = service.Prepare(e, view.HTMLHandler, status.NotFoundLink, link.Theme)
+	r.NotFoundHandler = service.Prepare(e, view.HTMLHandler, service.ToLink(status.NotFoundPageHandler), link.Theme)
 
 	r.HandleFunc("/", service.Prepare(e, admin.IndexHeaders)).
 		Methods(http.MethodHead)

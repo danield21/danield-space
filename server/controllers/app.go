@@ -14,7 +14,7 @@ import (
 
 //New creates a new server instance to run
 func App(e envir.Environment, r *mux.Router) {
-	r.NotFoundHandler = service.Prepare(e, view.HTMLHandler, status.NotFoundLink, link.Theme)
+	r.NotFoundHandler = service.Prepare(e, view.HTMLHandler, service.ToLink(status.NotFoundPageHandler), link.Theme)
 
 	r.HandleFunc("/", service.Prepare(e, app.IndexHeaders)).Methods(http.MethodHead)
 	r.HandleFunc("/", service.Prepare(e, app.Index)).Methods(http.MethodGet)

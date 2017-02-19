@@ -7,7 +7,6 @@ import (
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
-	"github.com/danield21/danield-space/server/repository/theme"
 	"github.com/danield21/danield-space/server/service"
 	"github.com/danield21/danield-space/server/service/view"
 	"golang.org/x/net/context"
@@ -33,29 +32,13 @@ func (p notFoundPage) Page() string {
 	return "page/status/not-found"
 }
 
-func NotFoundHeaderHandler(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-	return view.HeaderHandler(http.StatusNotFound,
-		view.Header{"Content-Type", service.HTML.AddCharset("utf-8").String()})(ctx, e, w)
-}
+//NotFoundPageHandler handles the not found page
+var NotFoundPageHandler service.Handler = service.Chain(NotFoundHeaderHandler, NotFoundBodyLink)
 
-//NotFoundHandler handles the not found page
-func NotFoundHandler(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-	r := service.Request(ctx)
-	w.Header().Set("Content-Type", service.HTML.AddCharset("utf-8").String())
-	w.WriteHeader(http.StatusNotFound)
+var NotFoundHeaderHandler service.Handler = view.HeaderHandler(http.StatusNotFound,
+	view.Header{"Content-Type", service.HTML.AddCharset("utf-8").String()})
 
-	useTheme := e.Theme(r, theme.GetApp(ctx))
-
-	info := siteInfo.Get(ctx)
-
-	pageData := service.BaseModel{
-		SiteInfo: info,
-	}
-
-	return ctx, e.View(w, useTheme, "page/status/not-found", pageData)
-}
-
-func NotFoundLink(h service.Handler) service.Handler {
+func NotFoundBodyLink(h service.Handler) service.Handler {
 	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
 		info := siteInfo.Get(ctx)
 
@@ -85,6 +68,6 @@ func CheckNotFoundLink(h service.Handler) service.Handler {
 			return ctx, err
 		}
 
-		return NotFoundHandler(ctx, e, w)
+		return NotFoundPageHandler(ctx, e, w)
 	}
 }

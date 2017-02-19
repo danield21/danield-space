@@ -15,7 +15,7 @@ import (
 
 //Rest configures the services for rest services
 func Rest(e envir.Environment, r *mux.Router) {
-	r.NotFoundHandler = service.Prepare(e, view.JSONHandler, status.NotFoundLink)
+	r.NotFoundHandler = service.Prepare(e, view.JSONHandler, service.ToLink(status.NotFoundPageHandler))
 
 	r.HandleFunc("/article", service.Prepare(e, article.Get)).Methods(http.MethodGet)
 	r.HandleFunc("/article/{category}/{url}", service.Prepare(e, article.Put)).Methods(http.MethodPut)
