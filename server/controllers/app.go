@@ -16,8 +16,8 @@ import (
 func App(e envir.Environment, r *mux.Router) {
 	r.NotFoundHandler = service.Prepare(e, view.HTMLHandler, service.ToLink(status.NotFoundPageHandler), link.Theme)
 
-	r.HandleFunc("/", service.Prepare(e, app.IndexHeaders)).Methods(http.MethodHead)
-	r.HandleFunc("/", service.Prepare(e, app.Index)).Methods(http.MethodGet)
+	r.HandleFunc("/", service.Prepare(e, app.IndexHeadersHandler)).Methods(http.MethodHead)
+	r.HandleFunc("/", service.Prepare(e, app.IndexPageHandler)).Methods(http.MethodGet)
 	r.HandleFunc("/publications", service.Prepare(e, app.PublicationsHeaders)).Methods(http.MethodHead)
 	r.HandleFunc("/publications", service.Prepare(e, app.Publications)).Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/publications/{category}", service.Prepare(e, app.PublicationsTypeHeaders)).Methods(http.MethodHead)
