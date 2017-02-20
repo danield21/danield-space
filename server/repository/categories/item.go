@@ -11,7 +11,7 @@ type Category struct {
 	Description string
 }
 
-func EmptyCategory(url string) *Category {
+func NewEmptyCategory(url string) *Category {
 	cat := new(Category)
 	cat.Url = url
 	return cat

@@ -16,12 +16,12 @@ import (
 func App(e envir.Environment, r *mux.Router) {
 	r.NotFoundHandler = service.Prepare(e, view.HTMLHandler, service.ToLink(status.NotFoundPageHandler), link.Theme)
 
-	r.HandleFunc("/", service.Prepare(e, app.IndexHeadersHandler)).Methods(http.MethodHead)
-	r.HandleFunc("/", service.Prepare(e, app.IndexPageHandler)).Methods(http.MethodGet)
-	r.HandleFunc("/publications", service.Prepare(e, app.PublicationsHeaders)).Methods(http.MethodHead)
-	r.HandleFunc("/publications", service.Prepare(e, app.Publications)).Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/publications/{category}", service.Prepare(e, app.PublicationsTypeHeaders)).Methods(http.MethodHead)
-	r.HandleFunc("/publications/{category}", service.Prepare(e, app.PublicationsType)).Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/publications/{category}/{key}", service.Prepare(e, app.ArticleHeaders)).Methods(http.MethodHead)
-	r.HandleFunc("/publications/{category}/{key}", service.Prepare(e, app.Article)).Methods(http.MethodGet, http.MethodPost)
+	r.HandleFunc("/", service.Apply(e, app.IndexHeadersHandler)).Methods(http.MethodHead)
+	r.HandleFunc("/", service.Apply(e, app.IndexPageHandler)).Methods(http.MethodGet)
+	r.HandleFunc("/publications", service.Apply(e, app.PublicationsHeadersHandler)).Methods(http.MethodHead)
+	r.HandleFunc("/publications", service.Apply(e, app.PublicationsPageHandler)).Methods(http.MethodGet, http.MethodPost)
+	r.HandleFunc("/publications/{category}", service.Apply(e, app.PublicationsCategoryHeadersHandler)).Methods(http.MethodHead)
+	r.HandleFunc("/publications/{category}", service.Apply(e, app.PublicationsCategoryPageHandler)).Methods(http.MethodGet, http.MethodPost)
+	r.HandleFunc("/publications/{category}/{key}", service.Apply(e, app.ArticleHeadersHandler)).Methods(http.MethodHead)
+	r.HandleFunc("/publications/{category}/{key}", service.Apply(e, app.ArticlePageHandler)).Methods(http.MethodGet, http.MethodPost)
 }
