@@ -46,10 +46,10 @@ func Admin(e envir.Environment, r *mux.Router) {
 		Methods(http.MethodHead)
 	r.HandleFunc("/category/", service.Prepare(e, admin.ShowPage("category"), status.LinkAll)).
 		Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/category/create", service.Prepare(e, admin.ShowPageHeaders)).
+	r.HandleFunc("/category/create", service.Apply(e, admin.CategoryCreateHeadersHandler)).
 		Methods(http.MethodHead)
-	r.HandleFunc("/category/create", service.Prepare(e, admin.ShowPage("category-create"), status.LinkAll)).
+	r.HandleFunc("/category/create", service.Apply(e, admin.CategoryCreatePageHandler)).
 		Methods(http.MethodGet)
-	r.HandleFunc("/category/create", service.Prepare(e, admin.CategoryCreate, status.LinkAll)).
+	r.HandleFunc("/category/create", service.Apply(e, admin.CategoryCreateFormHandler)).
 		Methods(http.MethodPost)
 }

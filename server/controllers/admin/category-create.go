@@ -3,40 +3,66 @@ package admin
 import (
 	"net/http"
 
+	"github.com/danield21/danield-space/server/controllers/form"
+	"github.com/danield21/danield-space/server/controllers/link"
+	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/envir"
-	"github.com/danield21/danield-space/server/repository/categories"
+	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"github.com/danield21/danield-space/server/service"
-	"github.com/gorilla/schema"
+	"github.com/danield21/danield-space/server/service/view"
 	"golang.org/x/net/context"
-	"google.golang.org/appengine/log"
 )
 
-func CategoryCreate(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-	r := service.Request(ctx)
+var CategoryCreateHeadersHandler = view.HeaderHandler(http.StatusOK,
+	view.Header{"Content-Type", service.HTML.AddCharset("utf-8").String()},
+)
 
-	err := r.ParseForm()
-	if err != nil {
-		log.Warningf(ctx, "admin.CategoryForm - Unable to parse form\n%v", err)
-		return ctx, err
+var CategoryCreatePageHandler = service.Chain(
+	view.HTMLHandler,
+	service.ToLink(service.Chain(
+		CategoryCreateHeadersHandler,
+		CategoryCreatePageLink,
+		link.Theme,
+		status.LinkAll,
+	)),
+)
+
+var CategoryCreateFormHandler = service.Chain(
+	view.HTMLHandler,
+	service.ToLink(service.Chain(
+		CategoryCreateHeadersHandler,
+		CategoryCreatePageLink,
+		form.PutCategoryLink,
+		link.Theme,
+		status.LinkAll,
+	)),
+)
+
+func CategoryCreatePageLink(h service.Handler) service.Handler {
+	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+		f := form.GetForm(ctx)
+		s := service.Session(ctx)
+
+		user, signedIn := GetUser(s)
+		if !signedIn {
+			return ctx, status.ErrUnauthorized
+		}
+
+		info := siteInfo.Get(ctx)
+
+		data := struct {
+			AdminModel
+			Form form.Form
+		}{
+			AdminModel: AdminModel{
+				BaseModel: service.BaseModel{
+					SiteInfo: info,
+				},
+				User: user,
+			},
+			Form: f,
+		}
+
+		return h(link.PageContext(ctx, "page/admin/category-create", data), e, w)
 	}
-
-	var form categories.FormCategory
-
-	decoder := schema.NewDecoder()
-	err = decoder.Decode(&form, r.PostForm)
-	if err != nil {
-		log.Warningf(ctx, "category.Put - Unable to decode form\n%v", err)
-	}
-
-	category, err := form.Unpack()
-	if err != nil {
-		log.Warningf(ctx, "category.Put - Unable unpack form\n%v", err)
-	}
-
-	err = categories.Set(ctx, category)
-	if err != nil {
-		log.Warningf(ctx, "category.Put - Unable to place category into database\n%v", err)
-	}
-
-	return ShowPage("category-create")(ctx, e, w)
 }

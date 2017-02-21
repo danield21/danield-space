@@ -1,17 +1,26 @@
+{{ template "core/admin-panel" . }}
 <form action="/admin/category/create" method="post">
+	{{ if ((len .Form) gt 0) and not .Form.HasErrors }}
 	<div class="cloud">
+		Category was successfully saved.
+	</div>
+	{{end}}
+	<div class="cloud">
+		{{ $title := .Form.Get "title" }}
 		<label for="form-title">Title</label>
-		<input type="text" name="title" id="form-title" required>
+		<input type="text" name="title" id="form-title" value="{{ $title.Value }}" required>
 	</div>
 	<div class="cloud">
+		{{ $url := .Form.Get "url" }}
 		<label for="form-url">Url</label>
-		<input type="text" name="url" id="form-url" pattern="([a-z]+(-[a-z]+)?)+" required>
+		<input type="text" name="url" id="form-url" pattern="([a-z]+(-[a-z]+)?)+" value="{{ $url.Value }}" required>
 	</div>
 	<div class="cloud">
+		{{ $description := .Form.Get "description" }}
 		<label for="form-description">Description</label>
-		<input type="text" name="description" id="form-description" required>
+		<input type="text" name="description" id="form-description" value="{{ $description.Value }}" required>
 	</div>
 	<div class="cloud">
-        <button type="submit">Submit</button>
+        	<button type="submit">Submit</button>
 	</div>
 </form>
