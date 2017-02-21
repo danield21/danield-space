@@ -5,7 +5,6 @@ import (
 
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
-	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/handler/view"
 	"github.com/danield21/danield-space/server/repository/articles"
@@ -34,7 +33,7 @@ var PublishHeadersHandler handler.Handler = view.HeaderHandler(http.StatusOK,
 
 //Publish handles the index page
 func PublishPageLink(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 		ses := handler.Session(ctx)
 
 		user, signedIn := GetUser(ses)
@@ -67,7 +66,7 @@ func PublishPageLink(h handler.Handler) handler.Handler {
 }
 
 func PublishFormLink(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 		r := handler.Request(ctx)
 		ses := handler.Session(ctx)
 

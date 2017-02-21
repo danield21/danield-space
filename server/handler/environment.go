@@ -1,4 +1,4 @@
-package envir
+package handler
 
 import (
 	"io"
@@ -14,10 +14,4 @@ type Environment interface {
 	Context(r *http.Request) context.Context
 	//Removing soon
 	Session(r *http.Request) (session *sessions.Session)
-	Theme(r *http.Request, defaultTheme string) string
-}
-
-type Scope interface {
-	Session() *sessions.Session
-	Request() *http.Request
 }

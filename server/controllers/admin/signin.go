@@ -3,14 +3,13 @@ package admin
 import (
 	"net/http"
 
-	"github.com/danield21/danield-space/server/controllers/rest"
-	"github.com/danield21/danield-space/server/envir"
+	"github.com/danield21/danield-space/server/controllers/action"
+	"github.com/danield21/danield-space/server/controllers/link"
+	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/handler/view"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
-	"github.com/danield21/danield-space/server/repository/theme"
 	"golang.org/x/net/context"
-	"google.golang.org/appengine/log"
 )
 
 type signinModel struct {
@@ -18,30 +17,32 @@ type signinModel struct {
 	Redirect string
 }
 
-//SignInHeaders contains the headers for index
-func SignInHeaders(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-	w.Header().Set("Content-Type", view.HTMLContentType)
-	return ctx, nil
-}
+var SignInHeadersHandler = view.HeaderHandler(http.StatusOK,
+	view.Header{"Content-Type", view.HTMLContentType},
+)
 
-//SignIn handles the index page
-func SignIn(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-	r := handler.Request(ctx)
-	useTheme := e.Theme(r, theme.GetApp(ctx))
+var SignInPageHandler = handler.Chain(
+	view.HTMLHandler,
+	handler.ToLink(handler.Chain(
+		SignInHeadersHandler,
+		SignInPageLink,
+		link.Theme,
+		status.LinkAll,
+	)),
+)
 
-	info := siteInfo.Get(ctx)
+func SignInPageLink(h handler.Handler) handler.Handler {
+	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
+		r := handler.Request(ctx)
+		info := siteInfo.Get(ctx)
 
-	pageData := signinModel{
-		BaseModel: handler.BaseModel{
-			SiteInfo: info,
-		},
-		Redirect: rest.GetRedirect(r),
+		data := signinModel{
+			BaseModel: handler.BaseModel{
+				SiteInfo: info,
+			},
+			Redirect: action.Redirect(r),
+		}
+
+		return h(link.PageContext(ctx, "page/admin/signin", data), e, w)
 	}
-
-	SignInHeaders(ctx, e, w)
-	err := e.View(w, useTheme, "page/admin/signin", pageData)
-	if err != nil {
-		log.Errorf(ctx, "admin.SignIn - Unable to generate page:\n%v", err)
-	}
-	return ctx, err
 }

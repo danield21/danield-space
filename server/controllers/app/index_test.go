@@ -11,7 +11,7 @@ import (
 	"google.golang.org/appengine/aetest"
 
 	"github.com/danield21/danield-space/server/controllers/app"
-	"github.com/danield21/danield-space/server/envir"
+	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -40,7 +40,7 @@ func TestIndex(t *testing.T) {
 	require.NoError(t, err, "Error in creating context")
 	defer done()
 
-	e := envir.TestingEnvironment{Templates: view, Ctx: ctx}
+	e := handler.TestingEnvironment{Templates: view, Ctx: ctx}
 
 	server := httptest.NewServer(handler.Prepare(e, app.IndexHeadersHandler))
 	defer server.Close()
@@ -73,7 +73,7 @@ func TestIndexHead(t *testing.T) {
 
 	ctx, done, err := aetest.NewContext()
 	require.NoError(t, err, "TestIndexHead.TestIndex - Error in creating context")
-	e := envir.TestingEnvironment{Templates: view, Ctx: ctx}
+	e := handler.TestingEnvironment{Templates: view, Ctx: ctx}
 	defer done()
 
 	server := httptest.NewServer(handler.Prepare(e, app.IndexHeadersHandler))

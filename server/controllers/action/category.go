@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/handler/form"
 	"github.com/danield21/danield-space/server/repository"
@@ -44,7 +43,7 @@ func UnpackCategory(values url.Values) (*categories.Category, form.Form) {
 }
 
 func PutCategoryLink(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 		r := handler.Request(ctx)
 		err := r.ParseForm()
 		if err != nil {

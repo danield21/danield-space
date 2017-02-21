@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/danield21/danield-space/server/controllers/link"
-	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/handler/view"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
@@ -21,7 +20,7 @@ var UnauthorizedHeaderHandler handler.Handler = view.HeaderHandler(http.StatusUn
 	view.Header{"Content-Type", view.HTMLContentType})
 
 func UnauthorizedBodyLink(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 		info := siteInfo.Get(ctx)
 		r := handler.Request(ctx)
 
@@ -44,7 +43,7 @@ func UnauthorizedBodyLink(h handler.Handler) handler.Handler {
 }
 
 func CheckUnauthorizedLink(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 		var err error
 		ctx, err = h(ctx, e, w)
 		if err == nil {

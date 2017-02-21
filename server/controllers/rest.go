@@ -7,14 +7,13 @@ import (
 	"github.com/danield21/danield-space/server/controllers/rest/article"
 	"github.com/danield21/danield-space/server/controllers/rest/category"
 	"github.com/danield21/danield-space/server/controllers/status"
-	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/handler/view"
 	"github.com/gorilla/mux"
 )
 
 //Rest configures the handlers for rest handlers
-func Rest(e envir.Environment, r *mux.Router) {
+func Rest(e handler.Environment, r *mux.Router) {
 	r.NotFoundHandler = handler.Prepare(e, view.JSONHandler, handler.ToLink(status.NotFoundPageHandler))
 
 	r.HandleFunc("/article", handler.Prepare(e, article.Get)).Methods(http.MethodGet)

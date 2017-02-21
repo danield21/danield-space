@@ -7,7 +7,7 @@ import (
 
 	"io"
 
-	"github.com/danield21/danield-space/server/envir"
+	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -24,7 +24,7 @@ func TestApplyHandler(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		e := envir.TestingEnvironment{Templates: nil, Ctx: context.TODO()}
+		e := handler.TestingEnvironment{Templates: nil, Ctx: context.TODO()}
 		h := handler.Apply(e, test.Handler)
 		s := httptest.NewServer(h)
 		defer s.Close()
@@ -61,7 +61,7 @@ func TestChainHandler(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		e := envir.TestingEnvironment{Templates: nil, Ctx: context.TODO()}
+		e := handler.TestingEnvironment{Templates: nil, Ctx: context.TODO()}
 		h := handler.Apply(e, test.Handler)
 		s := httptest.NewServer(h)
 		defer s.Close()
@@ -84,7 +84,7 @@ func TestChainHandler(t *testing.T) {
 }
 
 func TestPrepareHandler(t *testing.T) {
-	e := envir.TestingEnvironment{Templates: nil, Ctx: context.TODO()}
+	e := handler.TestingEnvironment{Templates: nil, Ctx: context.TODO()}
 
 	tests := []struct {
 		Handler http.HandlerFunc
@@ -120,25 +120,25 @@ func TestPrepareHandler(t *testing.T) {
 	}
 }
 
-func mockHandler1(ctx context.Context, e envir.Environment, w http.ResponseWriter) error {
+func mockHandler1(ctx context.Context, e handler.Environment, w http.ResponseWriter) error {
 	w.Write([]byte("World"))
 	return nil
 }
 
-func mockHandler2(ctx context.Context, e envir.Environment, w http.ResponseWriter) error {
+func mockHandler2(ctx context.Context, e handler.Environment, w http.ResponseWriter) error {
 	w.Write([]byte("Person"))
 	return nil
 }
 
 func mockLink1(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) error {
+	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) error {
 		w.Write([]byte("Hello, "))
 		return h(ctx, e, w)
 	}
 }
 
 func mockLink2(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) error {
+	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) error {
 		w.Write([]byte("Goodbye, "))
 		return h(ctx, e, w)
 	}

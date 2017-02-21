@@ -1,10 +1,11 @@
-package envir
+package controllers
 
 import (
 	"html/template"
 	"io"
 	"net/http"
 
+	"github.com/danield21/danield-space/server/handler"
 	"github.com/gorilla/sessions"
 	"golang.org/x/net/context"
 )
@@ -17,18 +18,12 @@ type TestingEnvironment struct {
 
 //View creates a mock view
 func (t TestingEnvironment) View(w io.Writer, theme, view string, data interface{}) error {
-	return RenderTemplateWithTheme(t.Templates, w, theme, view, data)
+	return handler.RenderTemplateWithTheme(t.Templates, w, theme, view, data)
 }
 
 //Session gets a mock session
 func (t TestingEnvironment) Session(r *http.Request) (session *sessions.Session) {
-	session = GetSession(r)
-	return
-}
-
-//Theme gets a mock theme
-func (t TestingEnvironment) Theme(r *http.Request, defaultTheme string) (theme string) {
-	theme = GetTheme(r, defaultTheme)
+	session = handler.GetSession(r)
 	return
 }
 

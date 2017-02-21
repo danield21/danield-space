@@ -3,22 +3,21 @@ package handler
 import (
 	"net/http"
 
-	"github.com/danield21/danield-space/server/envir"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
 //Handler is a modified struct of http.HandlerFunc, except requires a Environment for getting information about the site.
-type Handler func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error)
+type Handler func(ctx context.Context, e Environment, w http.ResponseWriter) (context.Context, error)
 
 type Link func(h Handler) Handler
 
-func Prepare(e envir.Environment, h Handler, links ...Link) http.HandlerFunc {
+func Prepare(e Environment, h Handler, links ...Link) http.HandlerFunc {
 	return Apply(e, Chain(h, links...))
 }
 
 //Apply will turn a Handler into a HandlerFunc with an Environment, may be production or testing
-func Apply(e envir.Environment, h Handler) http.HandlerFunc {
+func Apply(e Environment, h Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := e.Context(r)
 		ctx = SetupContext(ctx, r)
@@ -43,7 +42,7 @@ func Chain(h Handler, links ...Link) (chain Handler) {
 
 func ToLink(l Handler) Link {
 	return func(h Handler) Handler {
-		return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+		return func(ctx context.Context, e Environment, w http.ResponseWriter) (context.Context, error) {
 			var err error
 			ctx, err = l(ctx, e, w)
 			if err != nil {

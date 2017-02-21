@@ -6,14 +6,13 @@ import (
 	"github.com/danield21/danield-space/server/controllers/app"
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
-	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/handler/view"
 	"github.com/gorilla/mux"
 )
 
 //New creates a new server instance to run
-func App(e envir.Environment, r *mux.Router) {
+func App(e handler.Environment, r *mux.Router) {
 	r.NotFoundHandler = handler.Prepare(e, view.HTMLHandler, handler.ToLink(status.NotFoundPageHandler), link.Theme)
 
 	r.HandleFunc("/", handler.Apply(e, app.IndexHeadersHandler)).Methods(http.MethodHead)

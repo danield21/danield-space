@@ -4,15 +4,14 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/danield21/danield-space/server/envir"
-	"github.com/danield21/danield-space/server/repository/categories"
 	"github.com/danield21/danield-space/server/handler"
+	"github.com/danield21/danield-space/server/repository/categories"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
 //Get handles get requests for articles and returns a list of JSON objects
-func Get(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+func Get(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 	r := handler.Request(ctx)
 
 	err := r.ParseForm()

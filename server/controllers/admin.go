@@ -6,23 +6,22 @@ import (
 	"github.com/danield21/danield-space/server/controllers/admin"
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
-	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/handler/view"
 	"github.com/gorilla/mux"
 )
 
 //Admin configures the handlers for admin handlers
-func Admin(e envir.Environment, r *mux.Router) {
+func Admin(e handler.Environment, r *mux.Router) {
 	r.NotFoundHandler = handler.Prepare(e, view.HTMLHandler, handler.ToLink(status.NotFoundPageHandler), link.Theme)
 
 	r.HandleFunc("/", handler.Apply(e, admin.IndexHeadersHandler)).
 		Methods(http.MethodHead)
 	r.HandleFunc("/", handler.Apply(e, admin.IndexPageHandler)).
 		Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/signin", handler.Prepare(e, admin.SignInHeaders)).
+	r.HandleFunc("/signin", handler.Apply(e, admin.SignInHeadersHandler)).
 		Methods(http.MethodHead)
-	r.HandleFunc("/signin", handler.Prepare(e, admin.SignIn)).
+	r.HandleFunc("/signin", handler.Apply(e, admin.SignInPageHandler)).
 		Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/article/", handler.Prepare(e, admin.ShowPageHeaders)).
 		Methods(http.MethodHead)

@@ -5,9 +5,8 @@ import (
 	"net/http"
 
 	"github.com/danield21/danield-space/server/controllers/rest"
-	"github.com/danield21/danield-space/server/envir"
-	"github.com/danield21/danield-space/server/repository/articles"
 	"github.com/danield21/danield-space/server/handler"
+	"github.com/danield21/danield-space/server/repository/articles"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
@@ -15,7 +14,7 @@ import (
 const unlimited = -1
 
 //Get handles get requests for articles and returns a list of JSON objects
-func Get(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+func Get(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 	var (
 		limit int
 	)

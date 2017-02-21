@@ -4,9 +4,8 @@ import (
 	"net/http"
 
 	"github.com/danield21/danield-space/server/controllers/rest"
-	"github.com/danield21/danield-space/server/envir"
-	"github.com/danield21/danield-space/server/repository/account"
 	"github.com/danield21/danield-space/server/handler"
+	"github.com/danield21/danield-space/server/repository/account"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
@@ -14,7 +13,7 @@ import (
 const unlimited = -1
 
 //Auth checks if user has correct credentials and gives them a token
-func Auth(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+func Auth(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 	var (
 		username string
 		password []byte

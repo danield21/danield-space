@@ -5,7 +5,6 @@ import (
 
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
-	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/handler/view"
 	"github.com/danield21/danield-space/server/repository/articles"
@@ -36,7 +35,7 @@ var PublicationsPageHandler = handler.Chain(
 
 //Publications handles the index page
 func PublicationsPageLink(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 		info := siteInfo.Get(ctx)
 
 		articleMap, err := articles.GetMapKeyedByCategory(ctx, 10)

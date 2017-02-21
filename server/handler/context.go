@@ -3,7 +3,6 @@ package handler
 import (
 	"net/http"
 
-	"github.com/danield21/danield-space/server/envir"
 	"github.com/gorilla/sessions"
 	"golang.org/x/net/context"
 )
@@ -14,7 +13,7 @@ const requestKey = uniqueKey("request")
 const sessionKey = uniqueKey("session")
 
 func SetupContext(ctx context.Context, req *http.Request) context.Context {
-	ses := envir.GetSession(req)
+	ses := GetSession(req)
 
 	rCtx := context.WithValue(ctx, requestKey, req)
 	sCtx := context.WithValue(rCtx, sessionKey, ses)

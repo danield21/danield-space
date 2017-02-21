@@ -9,7 +9,7 @@ import (
 
 	"google.golang.org/appengine/aetest"
 
-	"github.com/danield21/danield-space/server/envir"
+	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/handler/status"
 	"github.com/stretchr/testify/assert"
@@ -30,7 +30,7 @@ func TestNotFound(t *testing.T) {
 
 	ctx, done, err := aetest.NewContext()
 	require.NoError(t, err, "TestIndexHead.TestIndex - Error in creating context")
-	e := envir.TestingEnvironment{Templates: view, Ctx: ctx}
+	e := handler.TestingEnvironment{Templates: view, Ctx: ctx}
 	defer done()
 
 	server := httptest.NewServer(handler.Prepare(e, status.NotFoundHandler))

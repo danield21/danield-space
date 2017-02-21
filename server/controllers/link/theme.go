@@ -3,15 +3,14 @@ package link
 import (
 	"net/http"
 
-	"github.com/danield21/danield-space/server/envir"
-	"github.com/danield21/danield-space/server/repository/theme"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/handler/view"
+	"github.com/danield21/danield-space/server/repository/theme"
 	"golang.org/x/net/context"
 )
 
 func Theme(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 		r := handler.Request(ctx)
 
 		defaultTheme := theme.GetApp(ctx)
