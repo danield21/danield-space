@@ -16,9 +16,9 @@ import (
 func Admin(e envir.Environment, r *mux.Router) {
 	r.NotFoundHandler = service.Prepare(e, view.HTMLHandler, service.ToLink(status.NotFoundPageHandler), link.Theme)
 
-	r.HandleFunc("/", service.Prepare(e, admin.IndexHeaders)).
+	r.HandleFunc("/", service.Apply(e, admin.IndexHeadersHandler)).
 		Methods(http.MethodHead)
-	r.HandleFunc("/", service.Prepare(e, admin.Index, status.LinkAll)).
+	r.HandleFunc("/", service.Apply(e, admin.IndexPageHandler)).
 		Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/signin", service.Prepare(e, admin.SignInHeaders)).
 		Methods(http.MethodHead)

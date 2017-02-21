@@ -3,46 +3,52 @@ package admin
 import (
 	"net/http"
 
+	"github.com/danield21/danield-space/server/controllers/link"
+	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
-	"github.com/danield21/danield-space/server/repository/theme"
 	"github.com/danield21/danield-space/server/service"
+	"github.com/danield21/danield-space/server/service/view"
 	"golang.org/x/net/context"
-	"google.golang.org/appengine/log"
 )
 
-//IndexHeaders contains the headers for index
-func IndexHeaders(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-	w.Header().Set("Content-Type", service.HTML.AddCharset("utf-8").String())
-	return ctx, nil
-}
+var IndexHeadersHandler = view.HeaderHandler(http.StatusOK,
+	view.Header{"Content-Type", service.HTML.AddCharset("utf-8").String()},
+)
 
-//Index handles the index page
-func Index(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-	r := service.Request(ctx)
-	useTheme := e.Theme(r, theme.GetApp(ctx))
-	session := e.Session(r)
+var IndexPageHandler = service.Chain(
+	view.HTMLHandler,
+	service.ToLink(service.Chain(
+		IndexHeadersHandler,
+		IndexPageLink,
+		link.Theme,
+		status.LinkAll,
+	)),
+)
 
-	user, _ := GetUser(session)
+func IndexPageLink(h service.Handler) service.Handler {
+	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
+		session := service.Session(ctx)
 
-	info := siteInfo.Get(ctx)
+		user, signedIn := GetUser(session)
 
-	pageData := struct {
-		AdminModel
-	}{
-		AdminModel: AdminModel{
-			BaseModel: service.BaseModel{
-				SiteInfo: info,
+		if !signedIn {
+			return ctx, status.ErrUnauthorized
+		}
+
+		info := siteInfo.Get(ctx)
+
+		data := struct {
+			AdminModel
+		}{
+			AdminModel: AdminModel{
+				BaseModel: service.BaseModel{
+					SiteInfo: info,
+				},
+				User: user,
 			},
-			User: user,
-		},
-	}
+		}
 
-	IndexHeaders(ctx, e, w)
-	err := e.View(w, useTheme, "page/admin/index", pageData)
-	if err != nil {
-		log.Errorf(ctx, "admin.Index - Unable to generate page:\n%v", err)
+		return h(link.PageContext(ctx, "page/admin/index", data), e, w)
 	}
-
-	return ctx, err
 }
