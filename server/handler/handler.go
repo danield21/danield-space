@@ -20,7 +20,7 @@ func Prepare(e Environment, h Handler, links ...Link) http.HandlerFunc {
 func Apply(e Environment, h Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := e.Context(r)
-		ctx = SetupContext(ctx, r)
+		ctx = SetupContext(ctx, e, r)
 
 		_, err := h(ctx, e, w)
 

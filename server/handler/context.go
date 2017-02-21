@@ -12,8 +12,8 @@ type uniqueKey string
 const requestKey = uniqueKey("request")
 const sessionKey = uniqueKey("session")
 
-func SetupContext(ctx context.Context, req *http.Request) context.Context {
-	ses := GetSession(req)
+func SetupContext(ctx context.Context, e Environment, req *http.Request) context.Context {
+	ses := e.Session(req)
 
 	rCtx := context.WithValue(ctx, requestKey, req)
 	sCtx := context.WithValue(rCtx, sessionKey, ses)

@@ -11,11 +11,11 @@ import (
 //New creates a new server instance to run
 func New() http.Handler {
 	r := mux.NewRouter()
-	e := ProductionEnvironment{Templates: views.Get()}
+	e := ProductionEnvironment{GenerateTemplates: views.Get("view")}
 
-	controllers.App(e, r)
-	controllers.Admin(e, r.PathPrefix("/admin").Subrouter())
-	controllers.Rest(e, r.PathPrefix("/rest").Subrouter())
+	controllers.App(&e, r)
+	controllers.Admin(&e, r.PathPrefix("/admin").Subrouter())
+	controllers.Rest(&e, r.PathPrefix("/rest").Subrouter())
 
 	return r
 }

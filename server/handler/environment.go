@@ -12,6 +12,5 @@ import (
 type Environment interface {
 	View(w io.Writer, theme, view string, data interface{}) error
 	Context(r *http.Request) context.Context
-	//Removing soon
-	Session(r *http.Request) (session *sessions.Session)
+	Session(r *http.Request) *sessions.Session
 }

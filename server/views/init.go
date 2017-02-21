@@ -10,8 +10,8 @@ import (
 )
 
 //Get gathers all the html files in the view directory and stores them in the Go template structure
-func Get() *template.Template {
-
+func Get(directory string) <-chan *template.Template {
+	out := make(chan *template.Template)
 	views := template.New("view")
 
 	funcs := template.FuncMap{
@@ -21,12 +21,15 @@ func Get() *template.Template {
 	}
 	views.Funcs(funcs)
 
-	err := filepath.Walk("view", addTo(views, funcs))
-	if err != nil {
-		log.Printf("ERROR: Error occured in initizing views: %v", err)
-	}
+	go (func() {
+		err := filepath.Walk(directory, addTo(views, funcs))
+		if err != nil {
+			log.Printf("ERROR: Error occured in initizing views: %v", err)
+		}
+		out <- views
+	})()
 
-	return views
+	return out
 }
 
 func addTo(views *template.Template, funcs template.FuncMap) func(string, os.FileInfo, error) error {
