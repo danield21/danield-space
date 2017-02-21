@@ -6,31 +6,31 @@ import (
 
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/envir"
+	"github.com/danield21/danield-space/server/handler"
+	"github.com/danield21/danield-space/server/handler/view"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
-	"github.com/danield21/danield-space/server/service"
-	"github.com/danield21/danield-space/server/service/view"
 	"golang.org/x/net/context"
 )
 
 var ErrUnauthorized = errors.New("unauthorized to see resource")
 
 //NotFoundPageHandler handles the not found page
-var UnauthorizedPageHandler service.Handler = service.Chain(NotFoundHeaderHandler, NotFoundBodyLink)
+var UnauthorizedPageHandler handler.Handler = handler.Chain(NotFoundHeaderHandler, NotFoundBodyLink)
 
-var UnauthorizedHeaderHandler service.Handler = view.HeaderHandler(http.StatusUnauthorized,
-	view.Header{"Content-Type", service.HTML.AddCharset("utf-8").String()})
+var UnauthorizedHeaderHandler handler.Handler = view.HeaderHandler(http.StatusUnauthorized,
+	view.Header{"Content-Type", view.HTMLContentType})
 
-func UnauthorizedBodyLink(h service.Handler) service.Handler {
+func UnauthorizedBodyLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
 		info := siteInfo.Get(ctx)
-		r := service.Request(ctx)
+		r := handler.Request(ctx)
 
 		data := struct {
-			service.BaseModel
+			handler.BaseModel
 			Redirect string `json: "-"`
 			Message  string
 		}{
-			BaseModel: service.BaseModel{
+			BaseModel: handler.BaseModel{
 				SiteInfo: info,
 			},
 			Redirect: r.URL.Path,
@@ -43,7 +43,7 @@ func UnauthorizedBodyLink(h service.Handler) service.Handler {
 	}
 }
 
-func CheckUnauthorizedLink(h service.Handler) service.Handler {
+func CheckUnauthorizedLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
 		var err error
 		ctx, err = h(ctx, e, w)

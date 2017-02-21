@@ -6,7 +6,7 @@ import (
 	"github.com/danield21/danield-space/server/controllers/rest"
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/repository/account"
-	"github.com/danield21/danield-space/server/service"
+	"github.com/danield21/danield-space/server/handler"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
@@ -20,7 +20,7 @@ func Auth(ctx context.Context, e envir.Environment, w http.ResponseWriter) (cont
 		password []byte
 	)
 
-	r := service.Request(ctx)
+	r := handler.Request(ctx)
 	redirect := rest.GetRedirect(r)
 
 	err := r.ParseForm()
@@ -49,7 +49,7 @@ func Auth(ctx context.Context, e envir.Environment, w http.ResponseWriter) (cont
 	}
 
 	log.Infof(ctx, "account.Auth - %s logged in", username)
-	session := service.Session(ctx)
+	session := handler.Session(ctx)
 	session.Values["user"] = username
 	err = session.Save(r, w)
 	if err != nil {

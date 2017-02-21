@@ -12,7 +12,7 @@ import (
 
 	"github.com/danield21/danield-space/server/controllers/app"
 	"github.com/danield21/danield-space/server/envir"
-	"github.com/danield21/danield-space/server/service"
+	"github.com/danield21/danield-space/server/handler"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -42,7 +42,7 @@ func TestIndex(t *testing.T) {
 
 	e := envir.TestingEnvironment{Templates: view, Ctx: ctx}
 
-	server := httptest.NewServer(service.Prepare(e, app.IndexHeadersHandler))
+	server := httptest.NewServer(handler.Prepare(e, app.IndexHeadersHandler))
 	defer server.Close()
 
 	request, err := instance.NewRequest(http.MethodGet, server.URL, nil)
@@ -76,7 +76,7 @@ func TestIndexHead(t *testing.T) {
 	e := envir.TestingEnvironment{Templates: view, Ctx: ctx}
 	defer done()
 
-	server := httptest.NewServer(service.Prepare(e, app.IndexHeadersHandler))
+	server := httptest.NewServer(handler.Prepare(e, app.IndexHeadersHandler))
 	defer server.Close()
 
 	request, err := http.NewRequest(http.MethodOptions, server.URL, bytes.NewBuffer(nil))

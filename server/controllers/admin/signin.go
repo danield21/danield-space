@@ -5,33 +5,34 @@ import (
 
 	"github.com/danield21/danield-space/server/controllers/rest"
 	"github.com/danield21/danield-space/server/envir"
+	"github.com/danield21/danield-space/server/handler"
+	"github.com/danield21/danield-space/server/handler/view"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"github.com/danield21/danield-space/server/repository/theme"
-	"github.com/danield21/danield-space/server/service"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
 type signinModel struct {
-	service.BaseModel
+	handler.BaseModel
 	Redirect string
 }
 
 //SignInHeaders contains the headers for index
 func SignInHeaders(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-	w.Header().Set("Content-Type", service.HTML.AddCharset("utf-8").String())
+	w.Header().Set("Content-Type", view.HTMLContentType)
 	return ctx, nil
 }
 
 //SignIn handles the index page
 func SignIn(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-	r := service.Request(ctx)
+	r := handler.Request(ctx)
 	useTheme := e.Theme(r, theme.GetApp(ctx))
 
 	info := siteInfo.Get(ctx)
 
 	pageData := signinModel{
-		BaseModel: service.BaseModel{
+		BaseModel: handler.BaseModel{
 			SiteInfo: info,
 		},
 		Redirect: rest.GetRedirect(r),

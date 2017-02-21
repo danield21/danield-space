@@ -4,23 +4,24 @@ import (
 	"net/http"
 
 	"github.com/danield21/danield-space/server/envir"
+	"github.com/danield21/danield-space/server/handler"
+	"github.com/danield21/danield-space/server/handler/view"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"github.com/danield21/danield-space/server/repository/theme"
-	"github.com/danield21/danield-space/server/service"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
 //ShowPageHeaders contains the headers
 func ShowPageHeaders(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-	w.Header().Set("Content-Type", service.HTML.AddCharset("utf-8").String())
+	w.Header().Set("Content-Type", view.HTMLContentType)
 	return ctx, nil
 }
 
 //ShowPage handles the page
-func ShowPage(page string) service.Handler {
+func ShowPage(page string) handler.Handler {
 	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-		r := service.Request(ctx)
+		r := handler.Request(ctx)
 		useTheme := e.Theme(r, theme.GetApp(ctx))
 		session := e.Session(r)
 
@@ -32,7 +33,7 @@ func ShowPage(page string) service.Handler {
 			AdminModel
 		}{
 			AdminModel: AdminModel{
-				BaseModel: service.BaseModel{
+				BaseModel: handler.BaseModel{
 					SiteInfo: info,
 				},
 				User: user,

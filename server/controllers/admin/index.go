@@ -6,19 +6,19 @@ import (
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/envir"
+	"github.com/danield21/danield-space/server/handler"
+	"github.com/danield21/danield-space/server/handler/view"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
-	"github.com/danield21/danield-space/server/service"
-	"github.com/danield21/danield-space/server/service/view"
 	"golang.org/x/net/context"
 )
 
 var IndexHeadersHandler = view.HeaderHandler(http.StatusOK,
-	view.Header{"Content-Type", service.HTML.AddCharset("utf-8").String()},
+	view.Header{"Content-Type", view.HTMLContentType},
 )
 
-var IndexPageHandler = service.Chain(
+var IndexPageHandler = handler.Chain(
 	view.HTMLHandler,
-	service.ToLink(service.Chain(
+	handler.ToLink(handler.Chain(
 		IndexHeadersHandler,
 		IndexPageLink,
 		link.Theme,
@@ -26,9 +26,9 @@ var IndexPageHandler = service.Chain(
 	)),
 )
 
-func IndexPageLink(h service.Handler) service.Handler {
+func IndexPageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-		session := service.Session(ctx)
+		session := handler.Session(ctx)
 
 		user, signedIn := GetUser(session)
 
@@ -42,7 +42,7 @@ func IndexPageLink(h service.Handler) service.Handler {
 			AdminModel
 		}{
 			AdminModel: AdminModel{
-				BaseModel: service.BaseModel{
+				BaseModel: handler.BaseModel{
 					SiteInfo: info,
 				},
 				User: user,

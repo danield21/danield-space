@@ -6,36 +6,36 @@ import (
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/envir"
+	"github.com/danield21/danield-space/server/handler"
+	"github.com/danield21/danield-space/server/handler/view"
 	"github.com/danield21/danield-space/server/repository/articles"
 	"github.com/danield21/danield-space/server/repository/categories"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
-	"github.com/danield21/danield-space/server/service"
-	"github.com/danield21/danield-space/server/service/view"
 	"github.com/gorilla/schema"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
-var PublishPageHandler service.Handler = service.Chain(
+var PublishPageHandler handler.Handler = handler.Chain(
 	view.HTMLHandler,
-	service.ToLink(PublishHeadersHandler),
+	handler.ToLink(PublishHeadersHandler),
 	PublishPageLink,
 	link.Theme,
 )
-var PublishFormHandler service.Handler = service.Chain(
+var PublishFormHandler handler.Handler = handler.Chain(
 	view.HTMLHandler,
-	service.ToLink(PublishPageHandler),
+	handler.ToLink(PublishPageHandler),
 	PublishFormLink,
 )
 
 //PublishHeaders contains the headers for index
-var PublishHeadersHandler service.Handler = view.HeaderHandler(http.StatusOK,
-	view.Header{"Content-Type", service.HTML.AddCharset("utf-8").String()})
+var PublishHeadersHandler handler.Handler = view.HeaderHandler(http.StatusOK,
+	view.Header{"Content-Type", view.HTMLContentType})
 
 //Publish handles the index page
-func PublishPageLink(h service.Handler) service.Handler {
+func PublishPageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-		ses := service.Session(ctx)
+		ses := handler.Session(ctx)
 
 		user, signedIn := GetUser(ses)
 		if !signedIn {
@@ -54,7 +54,7 @@ func PublishPageLink(h service.Handler) service.Handler {
 			Categories []*categories.Category
 		}{
 			AdminModel: AdminModel{
-				BaseModel: service.BaseModel{
+				BaseModel: handler.BaseModel{
 					SiteInfo: info,
 				},
 				User: user,
@@ -66,10 +66,10 @@ func PublishPageLink(h service.Handler) service.Handler {
 	}
 }
 
-func PublishFormLink(h service.Handler) service.Handler {
+func PublishFormLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-		r := service.Request(ctx)
-		ses := service.Session(ctx)
+		r := handler.Request(ctx)
+		ses := handler.Session(ctx)
 
 		_, signedIn := GetUser(ses)
 		if !signedIn {

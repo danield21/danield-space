@@ -6,23 +6,23 @@ import (
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/envir"
+	"github.com/danield21/danield-space/server/handler"
+	"github.com/danield21/danield-space/server/handler/view"
 	"github.com/danield21/danield-space/server/repository/articles"
 	"github.com/danield21/danield-space/server/repository/categories"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
-	"github.com/danield21/danield-space/server/service"
-	"github.com/danield21/danield-space/server/service/view"
 	"github.com/gorilla/mux"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
 var PublicationsCategoryHeadersHandler = view.HeaderHandler(http.StatusOK,
-	view.Header{"Content-Type", service.HTML.AddCharset("utf-8").String()},
+	view.Header{"Content-Type", view.HTMLContentType},
 )
 
-var PublicationsCategoryPageHandler = service.Chain(
+var PublicationsCategoryPageHandler = handler.Chain(
 	view.HTMLHandler,
-	service.ToLink(service.Chain(
+	handler.ToLink(handler.Chain(
 		PublicationsCategoryHeadersHandler,
 		PublicationsCategoryPageLink,
 		link.Theme,
@@ -31,9 +31,9 @@ var PublicationsCategoryPageHandler = service.Chain(
 )
 
 //PublicationsType handles the index page
-func PublicationsCategoryPageLink(h service.Handler) service.Handler {
+func PublicationsCategoryPageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-		r := service.Request(ctx)
+		r := handler.Request(ctx)
 		vars := mux.Vars(r)
 
 		info := siteInfo.Get(ctx)
@@ -51,11 +51,11 @@ func PublicationsCategoryPageLink(h service.Handler) service.Handler {
 		}
 
 		data := struct {
-			service.BaseModel
+			handler.BaseModel
 			Articles []*articles.Article
 			Category *categories.Category
 		}{
-			BaseModel: service.BaseModel{
+			BaseModel: handler.BaseModel{
 				SiteInfo: info,
 			},
 			Articles: a,

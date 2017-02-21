@@ -7,7 +7,7 @@ import (
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/repository/articles"
-	"github.com/danield21/danield-space/server/service"
+	"github.com/danield21/danield-space/server/handler"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/schema"
 	"golang.org/x/net/context"
@@ -15,8 +15,8 @@ import (
 )
 
 func Put(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-	r := service.Request(ctx)
-	session := service.Session(ctx)
+	r := handler.Request(ctx)
+	session := handler.Session(ctx)
 	path := mux.Vars(r)
 
 	_, signed := admin.GetUser(session)

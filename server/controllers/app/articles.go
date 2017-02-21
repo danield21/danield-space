@@ -6,23 +6,23 @@ import (
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/envir"
+	"github.com/danield21/danield-space/server/handler"
+	"github.com/danield21/danield-space/server/handler/view"
 	"github.com/danield21/danield-space/server/repository/articles"
 	"github.com/danield21/danield-space/server/repository/categories"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
-	"github.com/danield21/danield-space/server/service"
-	"github.com/danield21/danield-space/server/service/view"
 	"github.com/gorilla/mux"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
 var ArticleHeadersHandler = view.HeaderHandler(http.StatusOK,
-	view.Header{"Content-Type", service.HTML.AddCharset("utf-8").String()},
+	view.Header{"Content-Type", view.HTMLContentType},
 )
 
-var ArticlePageHandler = service.Chain(
+var ArticlePageHandler = handler.Chain(
 	view.HTMLHandler,
-	service.ToLink(service.Chain(
+	handler.ToLink(handler.Chain(
 		ArticleHeadersHandler,
 		ArticlePageLink,
 		link.Theme,
@@ -30,9 +30,9 @@ var ArticlePageHandler = service.Chain(
 	)),
 )
 
-func ArticlePageLink(h service.Handler) service.Handler {
+func ArticlePageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-		r := service.Request(ctx)
+		r := handler.Request(ctx)
 		vars := mux.Vars(r)
 
 		info := siteInfo.Get(ctx)
@@ -45,10 +45,10 @@ func ArticlePageLink(h service.Handler) service.Handler {
 		}
 
 		data := struct {
-			service.BaseModel
+			handler.BaseModel
 			Article *articles.Article
 		}{
-			BaseModel: service.BaseModel{
+			BaseModel: handler.BaseModel{
 				SiteInfo: info,
 			},
 			Article: a,

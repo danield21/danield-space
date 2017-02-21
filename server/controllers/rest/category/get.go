@@ -6,14 +6,14 @@ import (
 
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/repository/categories"
-	"github.com/danield21/danield-space/server/service"
+	"github.com/danield21/danield-space/server/handler"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
 //Get handles get requests for articles and returns a list of JSON objects
 func Get(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-	r := service.Request(ctx)
+	r := handler.Request(ctx)
 
 	err := r.ParseForm()
 	if err != nil {

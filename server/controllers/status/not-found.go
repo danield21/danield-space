@@ -6,9 +6,9 @@ import (
 
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/envir"
+	"github.com/danield21/danield-space/server/handler"
+	"github.com/danield21/danield-space/server/handler/view"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
-	"github.com/danield21/danield-space/server/service"
-	"github.com/danield21/danield-space/server/service/view"
 	"golang.org/x/net/context"
 )
 
@@ -33,20 +33,20 @@ func (p notFoundPage) Page() string {
 }
 
 //NotFoundPageHandler handles the not found page
-var NotFoundPageHandler service.Handler = service.Chain(NotFoundHeaderHandler, NotFoundBodyLink)
+var NotFoundPageHandler handler.Handler = handler.Chain(NotFoundHeaderHandler, NotFoundBodyLink)
 
-var NotFoundHeaderHandler service.Handler = view.HeaderHandler(http.StatusNotFound,
-	view.Header{"Content-Type", service.HTML.AddCharset("utf-8").String()})
+var NotFoundHeaderHandler handler.Handler = view.HeaderHandler(http.StatusNotFound,
+	view.Header{"Content-Type", view.HTMLContentType})
 
-func NotFoundBodyLink(h service.Handler) service.Handler {
+func NotFoundBodyLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
 		info := siteInfo.Get(ctx)
 
 		data := struct {
-			service.BaseModel
+			handler.BaseModel
 			Message string
 		}{
-			service.BaseModel{
+			handler.BaseModel{
 				SiteInfo: info,
 			},
 			"could not locate resource",
@@ -58,7 +58,7 @@ func NotFoundBodyLink(h service.Handler) service.Handler {
 	}
 }
 
-func CheckNotFoundLink(h service.Handler) service.Handler {
+func CheckNotFoundLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
 		var err error
 		ctx, err = h(ctx, e, w)

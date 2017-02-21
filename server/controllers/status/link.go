@@ -1,11 +1,11 @@
 package status
 
 import (
-	"github.com/danield21/danield-space/server/service"
+	"github.com/danield21/danield-space/server/handler"
 )
 
-func LinkAll(h service.Handler) service.Handler {
-	return service.Chain(h,
+func LinkAll(h handler.Handler) handler.Handler {
+	return handler.Chain(h,
 		CheckUnauthorizedLink,
 		CheckNotFoundLink,
 	)

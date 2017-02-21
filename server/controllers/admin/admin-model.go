@@ -1,10 +1,10 @@
 package admin
 
 import (
-	"github.com/danield21/danield-space/server/service"
+	"github.com/danield21/danield-space/server/handler"
 )
 
 type AdminModel struct {
-	service.BaseModel
+	handler.BaseModel
 	User string
 }

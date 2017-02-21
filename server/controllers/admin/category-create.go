@@ -3,23 +3,24 @@ package admin
 import (
 	"net/http"
 
-	"github.com/danield21/danield-space/server/controllers/form"
+	"github.com/danield21/danield-space/server/controllers/action"
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/envir"
+	"github.com/danield21/danield-space/server/handler"
+	"github.com/danield21/danield-space/server/handler/form"
+	"github.com/danield21/danield-space/server/handler/view"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
-	"github.com/danield21/danield-space/server/service"
-	"github.com/danield21/danield-space/server/service/view"
 	"golang.org/x/net/context"
 )
 
 var CategoryCreateHeadersHandler = view.HeaderHandler(http.StatusOK,
-	view.Header{"Content-Type", service.HTML.AddCharset("utf-8").String()},
+	view.Header{"Content-Type", view.HTMLContentType},
 )
 
-var CategoryCreatePageHandler = service.Chain(
+var CategoryCreatePageHandler = handler.Chain(
 	view.HTMLHandler,
-	service.ToLink(service.Chain(
+	handler.ToLink(handler.Chain(
 		CategoryCreateHeadersHandler,
 		CategoryCreatePageLink,
 		link.Theme,
@@ -27,21 +28,21 @@ var CategoryCreatePageHandler = service.Chain(
 	)),
 )
 
-var CategoryCreateFormHandler = service.Chain(
+var CategoryCreateFormHandler = handler.Chain(
 	view.HTMLHandler,
-	service.ToLink(service.Chain(
+	handler.ToLink(handler.Chain(
 		CategoryCreateHeadersHandler,
 		CategoryCreatePageLink,
-		form.PutCategoryLink,
+		action.PutCategoryLink,
 		link.Theme,
 		status.LinkAll,
 	)),
 )
 
-func CategoryCreatePageLink(h service.Handler) service.Handler {
+func CategoryCreatePageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e envir.Environment, w http.ResponseWriter) (context.Context, error) {
-		f := form.GetForm(ctx)
-		s := service.Session(ctx)
+		f := form.AsForm(ctx)
+		s := handler.Session(ctx)
 
 		user, signedIn := GetUser(s)
 		if !signedIn {
@@ -55,7 +56,7 @@ func CategoryCreatePageLink(h service.Handler) service.Handler {
 			Form form.Form
 		}{
 			AdminModel: AdminModel{
-				BaseModel: service.BaseModel{
+				BaseModel: handler.BaseModel{
 					SiteInfo: info,
 				},
 				User: user,

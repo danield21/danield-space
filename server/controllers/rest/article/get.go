@@ -7,7 +7,7 @@ import (
 	"github.com/danield21/danield-space/server/controllers/rest"
 	"github.com/danield21/danield-space/server/envir"
 	"github.com/danield21/danield-space/server/repository/articles"
-	"github.com/danield21/danield-space/server/service"
+	"github.com/danield21/danield-space/server/handler"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
@@ -20,7 +20,7 @@ func Get(ctx context.Context, e envir.Environment, w http.ResponseWriter) (conte
 		limit int
 	)
 
-	r := service.Request(ctx)
+	r := handler.Request(ctx)
 
 	err := r.ParseForm()
 	if err != nil {

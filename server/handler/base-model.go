@@ -1,4 +1,4 @@
-package service
+package handler
 
 import (
 	"github.com/danield21/danield-space/server/repository/siteInfo"

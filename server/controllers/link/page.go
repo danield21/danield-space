@@ -1,7 +1,7 @@
 package link
 
 import (
-	"github.com/danield21/danield-space/server/service/view"
+	"github.com/danield21/danield-space/server/handler/view"
 	"golang.org/x/net/context"
 )
 
