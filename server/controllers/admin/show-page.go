@@ -3,6 +3,7 @@ package admin
 import (
 	"net/http"
 
+	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/handler/view"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
@@ -23,7 +24,7 @@ func ShowPage(page string) handler.Handler {
 		useTheme := "balloon"
 		session := e.Session(r)
 
-		user, _ := GetUser(session)
+		user, _ := link.User(session)
 
 		info := siteInfo.Get(ctx)
 

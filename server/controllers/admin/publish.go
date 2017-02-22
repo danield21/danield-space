@@ -36,7 +36,7 @@ func PublishPageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 		ses := handler.Session(ctx)
 
-		user, signedIn := GetUser(ses)
+		user, signedIn := link.User(ses)
 		if !signedIn {
 			return ctx, status.ErrUnauthorized
 		}
@@ -70,7 +70,7 @@ func PublishFormLink(h handler.Handler) handler.Handler {
 		r := handler.Request(ctx)
 		ses := handler.Session(ctx)
 
-		_, signedIn := GetUser(ses)
+		_, signedIn := link.User(ses)
 		if !signedIn {
 			return ctx, status.ErrUnauthorized
 		}

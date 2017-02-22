@@ -6,8 +6,8 @@ import (
 	"golang.org/x/net/context"
 )
 
-var ErrNoPage = errors.New("context does not page")
-var ErrNoTheme = errors.New("context does not theme")
+var ErrNoPage = errors.New("context does not have page")
+var ErrNoTheme = errors.New("context does not have theme")
 
 type uniqueKey string
 

@@ -27,7 +27,7 @@ var CategoryCreatePageHandler = handler.Chain(
 	)),
 )
 
-var CategoryCreateFormHandler = handler.Chain(
+var CategoryCreateActionHandler = handler.Chain(
 	view.HTMLHandler,
 	handler.ToLink(handler.Chain(
 		CategoryCreateHeadersHandler,
@@ -43,7 +43,7 @@ func CategoryCreatePageLink(h handler.Handler) handler.Handler {
 		f := form.AsForm(ctx)
 		s := handler.Session(ctx)
 
-		user, signedIn := GetUser(s)
+		user, signedIn := link.User(s)
 		if !signedIn {
 			return ctx, status.ErrUnauthorized
 		}

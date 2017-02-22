@@ -4,6 +4,8 @@ import (
 	"errors"
 	"net/http"
 
+	"google.golang.org/appengine/log"
+
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/handler/view"
@@ -46,9 +48,11 @@ func CheckNotFoundLink(h handler.Handler) handler.Handler {
 		if err == nil {
 			return ctx, nil
 		} else if err != ErrNotFound {
+			log.Debugf(ctx, "Error popped up: %v", err)
 			return ctx, err
 		}
 
+		log.Debugf(ctx, "Error popped up: %v", err)
 		return NotFoundPageHandler(ctx, e, w)
 	}
 }

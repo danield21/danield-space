@@ -3,7 +3,7 @@ package category
 import (
 	"net/http"
 
-	"github.com/danield21/danield-space/server/controllers/admin"
+	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/categories"
@@ -18,7 +18,7 @@ func Put(ctx context.Context, e handler.Environment, w http.ResponseWriter) (con
 	session := handler.Session(ctx)
 	path := mux.Vars(r)
 
-	_, signed := admin.GetUser(session)
+	_, signed := link.User(session)
 	if !signed {
 		return ctx, status.ErrUnauthorized
 	}

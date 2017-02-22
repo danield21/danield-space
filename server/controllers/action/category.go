@@ -57,7 +57,11 @@ func PutCategoryLink(h handler.Handler) handler.Handler {
 
 		err = categories.Set(ctx, cat)
 		if err != nil {
-			return h(form.WithForm(ctx, form.NewErrorForm("Unable to put into database")), e, w)
+			errField := form.NewFormField("", "")
+			errField.ErrorMessage = "Unable to put into database"
+
+			f = append(f, errField)
+			return h(form.WithForm(ctx, f), e, w)
 		}
 
 		return h(form.WithForm(ctx, f), e, w)

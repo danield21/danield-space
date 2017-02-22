@@ -29,7 +29,7 @@ func IndexPageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 		session := handler.Session(ctx)
 
-		user, signedIn := GetUser(session)
+		user, signedIn := link.User(session)
 
 		if !signedIn {
 			return ctx, status.ErrUnauthorized

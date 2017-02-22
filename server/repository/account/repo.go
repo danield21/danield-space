@@ -10,33 +10,36 @@ import (
 //Be sure to change it
 var Default = Account{Username: "Root", Hashword: nil}
 
+const entity = "Admin"
+
 func init() {
 	Default.Password([]byte("ThisIsAVerySimplePassword!"))
 }
 
-func GetAll(c context.Context) (admins []Account, err error) {
-	q := datastore.NewQuery("Admin")
-	_, err = q.GetAll(c, admins)
-	return
+func GetAll(ctx context.Context) ([]*Account, error) {
+	var accounts []*Account
+	q := datastore.NewQuery(entity)
+	_, err := q.GetAll(ctx, &accounts)
+	return accounts, err
 }
 
-func IsAdmin(c context.Context, username string, password []byte) bool {
-	var admins []Account
-	q := datastore.NewQuery("Admin").Filter("Username =", username)
-	_, err := q.GetAll(c, admins)
+func IsAdmin(ctx context.Context, username string, password []byte) bool {
+	accounts, err := GetAll(ctx)
 
-	if err == nil {
-		return len(admins) > 0 && admins[0].SamePassword(password)
+	if err != nil || len(accounts) == 0 {
+		log.Warningf(ctx, "admin.IsAdmin - Unable to retrieve Admin accounts from database, using default\n")
+		accounts = append(accounts, &Default)
+		key := datastore.NewIncompleteKey(ctx, entity, nil)
+		_, err = datastore.Put(ctx, key, accounts[0])
+		if err != nil {
+			log.Warningf(ctx, "admin.IsAdmin - Unable to put default account into database\n%v", err)
+		}
 	}
 
-	log.Warningf(c, "admin.IsAdmin - Unable to retrieve Admin accounts from database, using default\n%v", err)
-
-	key := datastore.NewIncompleteKey(c, "Admin", nil)
-	_, err = datastore.Put(c, key, &Default)
-
-	if err != nil {
-		log.Warningf(c, "admin.IsAdmin - Unable to put default account into database\n%v", err)
+	for _, acc := range accounts {
+		if username == acc.Username && acc.SamePassword(password) {
+			return true
+		}
 	}
-
-	return Default.Username == username && Default.SamePassword(password)
+	return false
 }

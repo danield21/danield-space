@@ -22,7 +22,15 @@ func Admin(e handler.Environment, r *mux.Router) {
 	r.HandleFunc("/signin", handler.Apply(e, admin.SignInHeadersHandler)).
 		Methods(http.MethodHead)
 	r.HandleFunc("/signin", handler.Apply(e, admin.SignInPageHandler)).
-		Methods(http.MethodGet, http.MethodPost)
+		Methods(http.MethodGet)
+	r.HandleFunc("/signin", handler.Apply(e, admin.SignInActionHandler)).
+		Methods(http.MethodPost)
+	r.HandleFunc("/sign-out", handler.Apply(e, admin.SignOutHeadersHandler)).
+		Methods(http.MethodHead)
+	r.HandleFunc("/sign-out", handler.Apply(e, admin.SignOutPageHandler)).
+		Methods(http.MethodGet)
+	r.HandleFunc("/sign-out", handler.Apply(e, admin.SignOutActionHandler)).
+		Methods(http.MethodPost)
 	r.HandleFunc("/article/", handler.Prepare(e, admin.ShowPageHeaders)).
 		Methods(http.MethodHead)
 	r.HandleFunc("/article/", handler.Prepare(e, admin.ShowPage("article"), status.LinkAll)).
@@ -49,6 +57,6 @@ func Admin(e handler.Environment, r *mux.Router) {
 		Methods(http.MethodHead)
 	r.HandleFunc("/category/create", handler.Apply(e, admin.CategoryCreatePageHandler)).
 		Methods(http.MethodGet)
-	r.HandleFunc("/category/create", handler.Apply(e, admin.CategoryCreateFormHandler)).
+	r.HandleFunc("/category/create", handler.Apply(e, admin.CategoryCreateActionHandler)).
 		Methods(http.MethodPost)
 }
