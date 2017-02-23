@@ -20,7 +20,7 @@ func UnpackCategory(values url.Values) (*categories.Category, form.Form) {
 	form.NotEmpty(title, "Title is required")
 
 	urlFld := form.NewField(catURLKey, values.Get(catURLKey))
-	if !form.NotEmpty(urlFld, "URL is required") && !repository.ValidUrlPart(urlFld.Value) {
+	if !form.NotEmpty(urlFld, "URL is required") && !repository.ValidURLPart(urlFld.Value) {
 		urlFld.ErrorMessage = "URL is not in a proper format"
 	}
 
@@ -36,7 +36,7 @@ func UnpackCategory(values url.Values) (*categories.Category, form.Form) {
 	category := new(categories.Category)
 	*category = categories.Category{
 		Title:       title.Value,
-		Url:         urlFld.Value,
+		URL:         urlFld.Value,
 		Description: description.Value,
 	}
 	return category, f

@@ -21,13 +21,13 @@ func Get(ctx context.Context, cat *categories.Category, url string) (*Article, e
 	if cat == nil {
 		return nil, categories.ErrNilCategory
 	} else if cat.Key == nil {
-		cat, err = categories.Get(ctx, cat.Url)
+		cat, err = categories.Get(ctx, cat.URL)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	q := datastore.NewQuery(entity).Filter("Url =", url).Ancestor(cat.Key).Limit(1)
+	q := datastore.NewQuery(entity).Filter("URL =", url).Ancestor(cat.Key).Limit(1)
 
 	keys, err = q.GetAll(ctx, &articles)
 	if err != nil {
@@ -81,7 +81,7 @@ func GetAllByCategory(ctx context.Context, cat *categories.Category, limit int) 
 	if cat == nil {
 		return nil, categories.ErrNilCategory
 	} else if cat.Key == nil {
-		cat, err = categories.Get(ctx, cat.Url)
+		cat, err = categories.Get(ctx, cat.URL)
 		if err != nil {
 			return nil, err
 		}
@@ -126,10 +126,10 @@ func Set(ctx context.Context, article *Article) error {
 		return ErrNilArticle
 	}
 
-	oldArticle, err := Get(ctx, article.Category, article.Url)
+	oldArticle, err := Get(ctx, article.Category, article.URL)
 
 	if err != nil {
-		cat, _ := categories.Get(ctx, article.Category.Url)
+		cat, _ := categories.Get(ctx, article.Category.URL)
 		article.DataElement = repository.WithNew(repository.WithPerson(ctx))
 		article.Key = datastore.NewIncompleteKey(ctx, entity, cat.Key)
 	} else {

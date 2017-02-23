@@ -1,6 +1,6 @@
 {{ range .Publications }}
 	<section>
 		{{ template "templates/article-list" . }}
-		<a href="/publications/{{ .Category.Url }}">See more {{ asTitle .Category.Title }} articles</a>
+		<a href="/publications/{{ .Category.URL }}">See more {{ asTitle .Category.Title }} articles</a>
 	</section>
 {{end}}

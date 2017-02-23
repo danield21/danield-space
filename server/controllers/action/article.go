@@ -37,13 +37,13 @@ func UnpackArticle(ctx context.Context, values url.Values) (*articles.Article, f
 	form.NotEmpty(authorFld, "author is required")
 
 	urlFld := form.NewField(urlKey, values.Get(urlKey))
-	if form.NotEmpty(urlFld, "url is required") && !repository.ValidUrlPart(urlFld.Value) {
+	if form.NotEmpty(urlFld, "url is required") && !repository.ValidURLPart(urlFld.Value) {
 		urlFld.ErrorMessage = "url is not in a proper format"
 	}
 
 	catFld := form.NewField(catKey, values.Get(catKey))
 	if form.NotEmpty(catFld, "category is required") {
-		if !repository.ValidUrlPart(catFld.Value) {
+		if !repository.ValidURLPart(catFld.Value) {
 			catFld.ErrorMessage = "category is not in a proper format"
 		} else if category, err = categories.Get(ctx, catFld.Value); err != nil {
 			catFld.ErrorMessage = "unable to find specified category"
@@ -85,7 +85,7 @@ func UnpackArticle(ctx context.Context, values url.Values) (*articles.Article, f
 		Title:       titleFld.Value,
 		Author:      authorFld.Value,
 		Category:    category,
-		Url:         urlFld.Value,
+		URL:         urlFld.Value,
 		PublishDate: publishDate,
 		Abstract:    abstractFld.Value,
 		HTMLContent: []byte(content),

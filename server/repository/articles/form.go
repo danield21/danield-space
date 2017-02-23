@@ -14,7 +14,7 @@ import (
 type FormArticle struct {
 	Title       string `schema:"title"`
 	Author      string `schema:"author"`
-	Url         string `schema:"url"`
+	URL         string `schema:"url"`
 	PublishDate string `schema:"publish"`
 	Abstract    string `schema:"abstract"`
 	Content     string `schema:"content"`
@@ -23,15 +23,15 @@ type FormArticle struct {
 
 var ErrNoTitle = errors.New("No title")
 var ErrCategoryBadFormat = errors.New("Bad category format")
-var ErrUrlBadFormat = errors.New("Bad url format")
+var ErrURLBadFormat = errors.New("Bad url format")
 var ErrNoPublishDate = errors.New("No publish date")
 var ErrNoAbstract = errors.New("No abstract")
 var ErrNoContent = errors.New("No content")
 
 func (f FormArticle) Unpack(ctx context.Context) (*Article, error) {
 
-	if !theme.ValidTheme(f.Url) {
-		return nil, ErrUrlBadFormat
+	if !theme.ValidTheme(f.URL) {
+		return nil, ErrURLBadFormat
 	}
 
 	category, err := parseCategory(ctx, f.Category)
@@ -52,7 +52,7 @@ func (f FormArticle) Unpack(ctx context.Context) (*Article, error) {
 	a := new(Article)
 	a.Title = f.Title
 	a.Author = f.Author
-	a.Url = f.Url
+	a.URL = f.URL
 	a.PublishDate = publish
 	a.Abstract = f.Abstract
 	a.HTMLContent = content
@@ -61,18 +61,18 @@ func (f FormArticle) Unpack(ctx context.Context) (*Article, error) {
 	return a, nil
 }
 
-func parseUrl(url string) (string, error) {
+func parseURL(url string) (string, error) {
 	if !theme.ValidTheme(url) {
-		return "", ErrUrlBadFormat
+		return "", ErrURLBadFormat
 	}
 	return url, nil
 }
 
-func parseCategory(ctx context.Context, catUrl string) (*categories.Category, error) {
-	if !theme.ValidTheme(catUrl) {
+func parseCategory(ctx context.Context, catURL string) (*categories.Category, error) {
+	if !theme.ValidTheme(catURL) {
 		return nil, ErrCategoryBadFormat
 	}
-	return categories.Get(ctx, catUrl)
+	return categories.Get(ctx, catURL)
 }
 
 func parsePublish(publish string) (time.Time, error) {

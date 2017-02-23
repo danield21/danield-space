@@ -7,12 +7,12 @@ import (
 type Category struct {
 	repository.DataElement
 	Title       string
-	Url         string
+	URL         string
 	Description string
 }
 
 func NewEmptyCategory(url string) *Category {
 	cat := new(Category)
-	cat.Url = url
+	cat.URL = url
 	return cat
 }

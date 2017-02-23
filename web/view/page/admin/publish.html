@@ -16,10 +16,10 @@
 		<select name="category" id="form-category">
 			<option value="">Please choose</option>
 			{{ range .Categories }}
-			{{ if eq .Url $category.Value }}
-			<option value="{{.Url}}" selected>{{ .Title }}</option>
+			{{ if eq .URL $category.Value }}
+			<option value="{{.URL}}" selected>{{ .Title }}</option>
 			{{ else }}
-			<option value="{{.Url}}">{{ .Title }}</option>
+			<option value="{{.URL}}">{{ .Title }}</option>
 			{{ end }}
 			{{ end }}
 		</select>

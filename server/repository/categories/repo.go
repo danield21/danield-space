@@ -16,7 +16,7 @@ var ErrNilCategory = errors.New("category was nil")
 func Get(c context.Context, url string) (*Category, error) {
 	var categories []*Category
 
-	q := datastore.NewQuery(entity).Filter("Url =", url).Limit(1)
+	q := datastore.NewQuery(entity).Filter("URL =", url).Limit(1)
 
 	keys, err := q.GetAll(c, &categories)
 	if err != nil {
@@ -51,7 +51,7 @@ func Set(ctx context.Context, cat *Category) error {
 	if cat == nil {
 		return ErrNilCategory
 	}
-	oldCat, err := Get(ctx, cat.Url)
+	oldCat, err := Get(ctx, cat.URL)
 
 	if err != nil {
 		cat.DataElement = repository.WithNew(repository.WithPerson(ctx))
@@ -70,7 +70,7 @@ func Remove(c context.Context, cat *Category) error {
 	if cat == nil {
 		return ErrNilCategory
 	} else if cat.Key == nil {
-		cat, err = Get(c, cat.Url)
+		cat, err = Get(c, cat.URL)
 		if err != nil {
 			return err
 		}
@@ -80,6 +80,6 @@ func Remove(c context.Context, cat *Category) error {
 }
 
 func IsUnique(c context.Context, category *Category) bool {
-	_, err := Get(c, category.Url)
+	_, err := Get(c, category.URL)
 	return err == nil
 }

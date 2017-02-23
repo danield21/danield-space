@@ -46,7 +46,7 @@ func set(c context.Context, section string, theme string) error {
 
 //ValidTheme is a helper function to determine if a entered theme can be valid
 func ValidTheme(theme string) bool {
-	return repository.ValidUrlPart(theme)
+	return repository.ValidURLPart(theme)
 }
 
 func themeToItem(section, theme string) *bucket.Item {

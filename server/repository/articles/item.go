@@ -16,7 +16,7 @@ type Article struct {
 	repository.DataElement
 	Title       string
 	Author      string
-	Url         string
+	URL         string
 	PublishDate time.Time
 	Abstract    string               `datastore:",noindex"`
 	HTMLContent []byte               `datastore:",noindex"`
@@ -25,7 +25,7 @@ type Article struct {
 
 //Path returns the path for a article.
 func (a Article) Path() string {
-	return "/" + a.Category.Url + "/" + a.Url
+	return "/" + a.Category.URL + "/" + a.URL
 }
 
 //Heading returns a heading for the article using the Type and Title.
