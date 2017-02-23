@@ -15,7 +15,6 @@ func New() http.Handler {
 
 	controllers.App(&e, r)
 	controllers.Admin(&e, r.PathPrefix("/admin").Subrouter())
-	controllers.Rest(&e, r.PathPrefix("/rest").Subrouter())
 
 	return r
 }
