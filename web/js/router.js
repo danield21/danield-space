@@ -2,11 +2,11 @@ const Modernizr = require("modernizr")
 
 module.exports = {
 	firstA,
-	getRoute,
 	init,
 	next,
 	meetsRequirements,
-	handleRouting
+	handleRouting,
+	handleForm,
 }
 
 function meetsRequirements() {
@@ -30,9 +30,19 @@ function firstA(element) {
 	return firstA(element.parentElement)
 }
 
-function next(a) {
-	return getRoute(a).then(html => {
-		window.history.pushState(html.body.innerHTML, window.document.title, a.href)
+function firstForm(element) {
+	if(element.tagName.toUpperCase() == "FORM") {
+		return element
+	}
+	if(element.parentElement == null) {
+		return null
+	}
+	return firstForm(element.parentElement)
+}
+
+function next(url, perform) {
+	return perform.then(html => {
+		window.history.pushState(html.body.innerHTML, window.document.title, url)
 		const frag = document.createDocumentFragment()
 		Array.from(html.body.children).forEach(c => frag.appendChild(c))
 		return Promise.resolve(frag)
@@ -41,7 +51,24 @@ function next(a) {
 	})
 }
 
-function getRoute(a) {
+function submitForm(form) {
+	var url = form.action
+	var method = form.method
+	var data = Array.from(form.elements).reduce((encode, e) => {
+		if(e.name) {
+			if(encode) encode += "&"
+			return encode + encodeURIComponent(e.name) + "=" + encodeURIComponent(e.value)
+		}
+		return encode
+	}, "")
+	return Bliss.fetch(form.action + "?theme=none", { responseType: "document", method, data}).then(response => {
+		return response.responseXML ? Promise.resolve(response.responseXML) : Promise.reject(new Error("Did not get a document back from " + a.href))
+	}, e => {
+		return e.xhr.responseXML ? Promise.resolve(e.xhr.responseXML) : Promise.reject(new Error("Did not get a document back from " + a.href))
+	})
+}
+
+function navigate(a) {
 	if(a && a.tagName.toUpperCase() != "A" && a.href) {
 		return Promise.reject(new Error("Provided value is not an A element with an href"))
 	}
@@ -69,7 +96,28 @@ function handleRouting(transitionOut, transitionIn) {
 
 		Promise.all([
 			transitionOut(),
-			next(a)
+			next(a.href, navigate(a))
+		]).then(transitionIn)
+	}
+}
+
+function handleForm(transitionOut, transitionIn) {
+	return e => {
+		if(e.defaultPrevented) {
+			return;
+		}
+
+		let form = firstForm(e.target)
+
+		if(form == null) {
+			return;
+		}
+
+		e.preventDefault()
+
+		Promise.all([
+			transitionOut(),
+			next(form.action, submitForm(form))
 		]).then(transitionIn)
 	}
 }

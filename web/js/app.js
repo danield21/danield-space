@@ -9,9 +9,10 @@ const router = require("./router")
 const Sun = require("./sun")
 const Modernizr = require("modernizr")
 
-exports.debug = {
+exports.imports = {
 	Anime,
-	meetsRequirements
+	meetsRequirements,
+	router
 }
 
 function meetsRequirements() {
@@ -128,6 +129,12 @@ function initRouting(main) {
 		const outStruct = transitionOut(main)
 		const inStruct = transitionIn(main)
 		router.handleRouting(outStruct.func, inStruct.func)(e)
+	})
+
+	window.addEventListener('submit', e => {
+		const outStruct = transitionOut(main)
+		const inStruct = transitionIn(main)
+		router.handleForm(outStruct.func, inStruct.func)(e)
 	})
 	window.addEventListener("popstate", e => {
 		main.innerHTML = e.state
