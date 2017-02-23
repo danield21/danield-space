@@ -31,9 +31,9 @@ func Admin(e handler.Environment, r *mux.Router) {
 		Methods(http.MethodGet)
 	r.HandleFunc("/sign-out", handler.Apply(e, admin.SignOutActionHandler)).
 		Methods(http.MethodPost)
-	r.HandleFunc("/article/", handler.Prepare(e, admin.ShowPageHeaders)).
+	r.HandleFunc("/article/", handler.Prepare(e, admin.ArticlesHeadersHandler)).
 		Methods(http.MethodHead)
-	r.HandleFunc("/article/", handler.Prepare(e, admin.ShowPage("article"), status.LinkAll)).
+	r.HandleFunc("/article/", handler.Prepare(e, admin.ArticlesPageHandler, status.LinkAll)).
 		Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/article/publish", handler.Prepare(e, admin.PublishHeadersHandler)).
 		Methods(http.MethodHead)
@@ -41,17 +41,17 @@ func Admin(e handler.Environment, r *mux.Router) {
 		Methods(http.MethodGet)
 	r.HandleFunc("/article/publish", handler.Prepare(e, admin.PublishFormHandler, status.LinkAll)).
 		Methods(http.MethodPost)
-	r.HandleFunc("/account/", handler.Prepare(e, admin.ShowPageHeaders)).
+	r.HandleFunc("/account/", handler.Prepare(e, admin.AccountHeadersHandler)).
 		Methods(http.MethodHead)
-	r.HandleFunc("/account/", handler.Prepare(e, admin.ShowPage("account"), status.LinkAll)).
+	r.HandleFunc("/account/", handler.Prepare(e, admin.AccountPageHandler, status.LinkAll)).
 		Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/site-info/", handler.Prepare(e, admin.ShowPageHeaders)).
+	r.HandleFunc("/site-info/", handler.Prepare(e, admin.SiteInfoHeadersHandler)).
 		Methods(http.MethodHead)
-	r.HandleFunc("/site-info/", handler.Prepare(e, admin.ShowPage("site-info"), status.LinkAll)).
+	r.HandleFunc("/site-info/", handler.Prepare(e, admin.SiteInfoPageHandler, status.LinkAll)).
 		Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/category/", handler.Prepare(e, admin.ShowPageHeaders)).
+	r.HandleFunc("/category/", handler.Prepare(e, admin.CategoryHeadersHandler)).
 		Methods(http.MethodHead)
-	r.HandleFunc("/category/", handler.Prepare(e, admin.ShowPage("category"), status.LinkAll)).
+	r.HandleFunc("/category/", handler.Prepare(e, admin.CategoryPageHandler, status.LinkAll)).
 		Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/category/create", handler.Apply(e, admin.CategoryCreateHeadersHandler)).
 		Methods(http.MethodHead)

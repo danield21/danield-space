@@ -1,53 +1,21 @@
 package admin
 
-import (
-	"net/http"
+var IndexHeadersHandler = AdminHeadersHandler
 
-	"github.com/danield21/danield-space/server/controllers/link"
-	"github.com/danield21/danield-space/server/controllers/status"
-	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/handler/view"
-	"github.com/danield21/danield-space/server/repository/siteInfo"
-	"golang.org/x/net/context"
-)
+var IndexPageHandler = NewAdminPageHandler("page/admin/index")
 
-var IndexHeadersHandler = view.HeaderHandler(http.StatusOK,
-	view.Header{"Content-Type", view.HTMLContentType},
-)
+var ArticlesHeadersHandler = AdminHeadersHandler
 
-var IndexPageHandler = handler.Chain(
-	view.HTMLHandler,
-	handler.ToLink(handler.Chain(
-		IndexHeadersHandler,
-		IndexPageLink,
-		link.Theme,
-		status.LinkAll,
-	)),
-)
+var ArticlesPageHandler = NewAdminPageHandler("page/admin/article")
 
-func IndexPageLink(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
-		session := handler.Session(ctx)
+var CategoryHeadersHandler = AdminHeadersHandler
 
-		user, signedIn := link.User(session)
+var CategoryPageHandler = NewAdminPageHandler("page/admin/category")
 
-		if !signedIn {
-			return ctx, status.ErrUnauthorized
-		}
+var SiteInfoHeadersHandler = AdminHeadersHandler
 
-		info := siteInfo.Get(ctx)
+var SiteInfoPageHandler = NewAdminPageHandler("page/admin/site-info")
 
-		data := struct {
-			AdminModel
-		}{
-			AdminModel: AdminModel{
-				BaseModel: handler.BaseModel{
-					SiteInfo: info,
-				},
-				User: user,
-			},
-		}
+var AccountHeadersHandler = AdminHeadersHandler
 
-		return h(link.PageContext(ctx, "page/admin/index", data), e, w)
-	}
-}
+var AccountPageHandler = NewAdminPageHandler("page/admin/account")
