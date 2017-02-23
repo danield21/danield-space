@@ -16,15 +16,15 @@ const catURLKey = "url"
 const catDscKey = "description"
 
 func UnpackCategory(values url.Values) (*categories.Category, form.Form) {
-	title := form.NewFormField(catTitleKey, values.Get(catTitleKey))
+	title := form.NewField(catTitleKey, values.Get(catTitleKey))
 	form.NotEmpty(title, "Title is required")
 
-	urlFld := form.NewFormField(catURLKey, values.Get(catURLKey))
+	urlFld := form.NewField(catURLKey, values.Get(catURLKey))
 	if !form.NotEmpty(urlFld, "URL is required") && !repository.ValidUrlPart(urlFld.Value) {
 		urlFld.ErrorMessage = "URL is not in a proper format"
 	}
 
-	description := form.NewFormField(catDscKey, values.Get(catDscKey))
+	description := form.NewField(catDscKey, values.Get(catDscKey))
 	form.NotEmpty(description, "Description is required")
 
 	f := form.Form{title, urlFld, description}
@@ -57,7 +57,7 @@ func PutCategoryLink(h handler.Handler) handler.Handler {
 
 		err = categories.Set(ctx, cat)
 		if err != nil {
-			errField := form.NewFormField("", "")
+			errField := form.NewField("", "")
 			errField.ErrorMessage = "Unable to put into database"
 
 			f = append(f, errField)

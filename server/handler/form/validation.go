@@ -2,7 +2,7 @@ package form
 
 import "strings"
 
-func NotEmpty(f *FormField, message string) bool {
+func NotEmpty(f *Field, message string) bool {
 	if strings.Trim(f.Value, " ") == "" {
 		f.ErrorMessage = message
 		return false

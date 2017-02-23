@@ -1,6 +1,6 @@
 {{ template "core/admin-panel" . }}
 <form action="/admin/category/create" method="post">
-	{{ if ((len .Form) gt 0) and not .Form.HasErrors }}
+	{{ if and (ne 0 (len .Form)) (not .Form.HasErrors) }}
 	<div class="cloud">
 		Category was successfully saved.
 	</div>

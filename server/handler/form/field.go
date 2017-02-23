@@ -1,13 +1,13 @@
 package form
 
-type FormField struct {
+type Field struct {
 	Field        string
 	ErrorMessage string
 	Value        string
 }
 
-func NewFormField(field string, value string) *FormField {
-	fld := new(FormField)
-	*fld = FormField{field, "", value}
+func NewField(field string, value string) *Field {
+	fld := new(Field)
+	*fld = Field{field, "", value}
 	return fld
 }

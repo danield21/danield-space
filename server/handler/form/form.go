@@ -1,17 +1,17 @@
 package form
 
-type Form []*FormField
+type Form []*Field
 
 func (f Form) HasErrors() bool {
 	return len(f.GetErrorForm()) > 0
 }
 
 func NewForm() Form {
-	return make([]*FormField, 0)
+	return make([]*Field, 0)
 }
 
 func NewErrorForm(errorMessage string) Form {
-	fld := NewFormField("", "")
+	fld := NewField("", "")
 	fld.ErrorMessage = errorMessage
 	return Form{fld}
 }
@@ -26,11 +26,11 @@ func (f Form) GetErrorForm() Form {
 	return errs
 }
 
-func (f Form) Get(field string) *FormField {
+func (f Form) Get(field string) *Field {
 	for _, fld := range f {
 		if fld != nil && fld.Field == field {
 			return fld
 		}
 	}
-	return NewFormField(field, "")
+	return NewField(field, "")
 }

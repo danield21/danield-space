@@ -15,10 +15,10 @@ const authUsrKey = "username"
 const authPwdKey = "password"
 
 func UnpackAuth(values url.Values) (string, []byte, form.Form) {
-	username := form.NewFormField(authUsrKey, values.Get(authUsrKey))
+	username := form.NewField(authUsrKey, values.Get(authUsrKey))
 	form.NotEmpty(username, "Username is required")
 
-	password := form.NewFormField(authPwdKey, values.Get(authPwdKey))
+	password := form.NewField(authPwdKey, values.Get(authPwdKey))
 	form.NotEmpty(password, "Password is required")
 
 	return username.Value, []byte(password.Value), form.Form{username, password}
@@ -37,7 +37,7 @@ func AuthenicateLink(h handler.Handler) handler.Handler {
 		username, password, f := UnpackAuth(r.Form)
 
 		if !account.IsAdmin(ctx, username, password) {
-			errField := form.NewFormField("", "")
+			errField := form.NewField("", "")
 			errField.ErrorMessage = "Unable to authenicate"
 
 			f = append(f, errField)
