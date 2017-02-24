@@ -3,7 +3,6 @@ package server
 import (
 	"errors"
 	"net/http"
-
 	"time"
 
 	"github.com/danield21/danield-space/server/repository/session"
@@ -16,7 +15,7 @@ import (
 
 var store sessions.Store
 
-var ErrCreateSession = errors.New("Unable to session")
+var ErrCreateSession = errors.New("Unable to create session")
 
 //GetSession returns a session using a secure key
 func GetSession(r *http.Request) *sessions.Session {
@@ -26,7 +25,7 @@ func GetSession(r *http.Request) *sessions.Session {
 	if store == nil {
 		store, err = NewStore(ctx)
 		if err != nil {
-			return nil
+			return sessions.NewSession(nil, "daniel-space")
 		}
 	}
 
