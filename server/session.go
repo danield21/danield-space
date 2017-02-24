@@ -51,11 +51,10 @@ func NewStore(ctx context.Context) (sessions.Store, error) {
 	}
 
 	for _, k := range keys {
-		log.Debugf(ctx, "\n%b - %d\n%b - %d", k.Hash, len(k.Hash), k.Block, len(k.Block))
 		kytes = append(kytes, k.Hash, k.Block)
 	}
 
-	s := sessions.NewCookieStore(keys[0].Hash)
+	s := sessions.NewCookieStore(kytes...)
 
 	s.Options.HttpOnly = true
 	s.Options.MaxAge = 60 * 60 * 24
