@@ -1,6 +1,8 @@
 package account
 
 import (
+	"errors"
+
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"
@@ -42,4 +44,23 @@ func IsAdmin(ctx context.Context, username string, password []byte) bool {
 		}
 	}
 	return false
+}
+
+func ChangePassword(ctx context.Context, username string, password []byte) error {
+	var accounts []Account
+	q := datastore.NewQuery(entity).Filter("Username =", username)
+	key, err := q.GetAll(ctx, &accounts)
+
+	if err != nil {
+		return err
+	}
+
+	if len(accounts) != 1 {
+		return errors.New("Unable to find account")
+	}
+
+	accounts[0].Password(password)
+
+	_, err = datastore.Put(ctx, key[0], &accounts[0])
+	return err
 }
