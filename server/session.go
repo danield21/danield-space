@@ -25,7 +25,7 @@ func GetSession(r *http.Request) *sessions.Session {
 	if store == nil {
 		store, err = NewStore(ctx)
 		if err != nil {
-			return sessions.NewSession(nil, "daniel-space")
+			return nil
 		}
 	}
 

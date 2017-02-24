@@ -13,6 +13,10 @@ import (
 const UserKey = "user"
 
 func User(s *sessions.Session) (string, bool) {
+	if s == nil {
+		return "", false
+	}
+
 	iUser, ok := s.Values[UserKey]
 
 	if !ok {
@@ -29,16 +33,24 @@ func User(s *sessions.Session) (string, bool) {
 }
 
 func SetUser(s *sessions.Session, user string) {
-	s.Values[UserKey] = user
+	if s != nil {
+		s.Values[UserKey] = user
+	}
 }
 
 func SaveSession(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 		req := handler.Request(ctx)
 		ses := handler.Session(ctx)
+
+		if ses == nil {
+			log.Warningf(ctx, "link.SaveSession - Unable to get session.\n%v")
+			return h(ctx, e, w)
+		}
+
 		err := ses.Save(req, w)
 		if err != nil {
-			log.Warningf(ctx, "link.SaveSession - Unable to save session\n%v", err)
+			log.Warningf(ctx, "link.SaveSession - Unable to save session.\n%v", err)
 		}
 		return h(ctx, e, w)
 	}
