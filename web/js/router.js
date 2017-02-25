@@ -103,7 +103,7 @@ function handleRouting(transitionOut, transitionIn) {
 
 function handleForm(transitionOut, transitionIn) {
 	return e => {
-		if(e.defaultPrevented) {
+		/*if(e.defaultPrevented) {
 			return;
 		}
 
@@ -118,6 +118,6 @@ function handleForm(transitionOut, transitionIn) {
 		Promise.all([
 			transitionOut(),
 			next(form.action, submitForm(form))
-		]).then(transitionIn)
+		]).then(transitionIn)*/
 	}
 }

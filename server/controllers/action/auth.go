@@ -36,7 +36,7 @@ func AuthenicateLink(h handler.Handler) handler.Handler {
 
 		username, password, f := UnpackAuth(r.Form)
 
-		if !account.IsAdmin(ctx, username, password) {
+		if !account.CanLogIn(ctx, username, password) {
 			errField := form.NewField("", "")
 			errField.ErrorMessage = "Unable to authenicate"
 

@@ -31,9 +31,9 @@ func Admin(e handler.Environment, r *mux.Router) {
 		Methods(http.MethodGet)
 	r.HandleFunc("/sign-out", handler.Apply(e, admin.SignOutActionHandler)).
 		Methods(http.MethodPost)
-	r.HandleFunc("/article/", handler.Apply(e, admin.ArticlesHeadersHandler)).
+	r.HandleFunc("/article", handler.Apply(e, admin.ArticlesHeadersHandler)).
 		Methods(http.MethodHead)
-	r.HandleFunc("/article/", handler.Apply(e, admin.ArticlesPageHandler)).
+	r.HandleFunc("/article", handler.Apply(e, admin.ArticlesPageHandler)).
 		Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/article/publish", handler.Apply(e, admin.PublishHeadersHandler)).
 		Methods(http.MethodHead)
@@ -41,17 +41,27 @@ func Admin(e handler.Environment, r *mux.Router) {
 		Methods(http.MethodGet)
 	r.HandleFunc("/article/publish", handler.Apply(e, admin.PublishActionHandler)).
 		Methods(http.MethodPost)
-	r.HandleFunc("/account/", handler.Apply(e, admin.AccountHeadersHandler)).
+	r.HandleFunc("/account", handler.Apply(e, admin.AccountHeadersHandler)).
 		Methods(http.MethodHead)
-	r.HandleFunc("/account/", handler.Apply(e, admin.AccountPageHandler)).
+	r.HandleFunc("/account", handler.Apply(e, admin.AccountPageHandler)).
 		Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/site-info/", handler.Apply(e, admin.SiteInfoHeadersHandler)).
+	r.HandleFunc("/account/all", handler.Apply(e, admin.AccountAllHeadersHandler)).
 		Methods(http.MethodHead)
-	r.HandleFunc("/site-info/", handler.Apply(e, admin.SiteInfoPageHandler)).
+	r.HandleFunc("/account/all", handler.Apply(e, admin.AccountAllPageHandler)).
+		Methods(http.MethodGet)
+	r.HandleFunc("/account/create", handler.Apply(e, admin.AccountCreateHeadersHandler)).
+		Methods(http.MethodHead)
+	r.HandleFunc("/account/create", handler.Apply(e, admin.AccountCreatePageHandler)).
+		Methods(http.MethodGet)
+	r.HandleFunc("/account/create", handler.Apply(e, admin.AccountCreateActionHandler)).
+		Methods(http.MethodPost)
+	r.HandleFunc("/site-info", handler.Apply(e, admin.SiteInfoHeadersHandler)).
+		Methods(http.MethodHead)
+	r.HandleFunc("/site-info", handler.Apply(e, admin.SiteInfoPageHandler)).
 		Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/category/", handler.Apply(e, admin.CategoryHeadersHandler)).
+	r.HandleFunc("/category", handler.Apply(e, admin.CategoryHeadersHandler)).
 		Methods(http.MethodHead)
-	r.HandleFunc("/category/", handler.Apply(e, admin.CategoryPageHandler)).
+	r.HandleFunc("/category", handler.Apply(e, admin.CategoryPageHandler)).
 		Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/category/create", handler.Apply(e, admin.CategoryCreateHeadersHandler)).
 		Methods(http.MethodHead)

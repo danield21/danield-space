@@ -1,4 +1,5 @@
-<form method="/admin/account/create" action="post">
+{{ template "core/admin-panel" . }}
+<form action="/admin/account/create" method="post">
     <div class="cloud">
         {{ $username := .Form.Get "username" }}
         <label for="form-username">Username</label>
@@ -14,11 +15,11 @@
         <label for="form-password-confirm">Password Confirm</label>
         <input id="form-password-confirm" type="password" name="password-confirm" required>
     </div>
-    {{ if .User.Super }}
+    {{ if .Super }}
     <div class="cloud">
         {{ $super := .Form.Get "super" }}
-        <input id="form-super" type="checkbox" name="super">
-        <label for="form-super"{{if $super.Value}} checked{{end}}>Super User</label>
+        <input id="form-super" type="checkbox" name="super" value="true" {{if $super.Value}} checked{{end}}>
+        <label for="form-super">Super User</label>
     </div>
     {{ end }}
     <button>Submit</button>
