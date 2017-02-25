@@ -17,6 +17,8 @@ func App(e handler.Environment, r *mux.Router) {
 
 	r.HandleFunc("/", handler.Apply(e, app.IndexHeadersHandler)).Methods(http.MethodHead)
 	r.HandleFunc("/", handler.Apply(e, app.IndexPageHandler)).Methods(http.MethodGet)
+	r.HandleFunc("/about", handler.Apply(e, app.AboutHeadersHandler)).Methods(http.MethodHead)
+	r.HandleFunc("/about", handler.Apply(e, app.AboutPageHandler)).Methods(http.MethodGet)
 	r.HandleFunc("/publications", handler.Apply(e, app.PublicationsHeadersHandler)).Methods(http.MethodHead)
 	r.HandleFunc("/publications", handler.Apply(e, app.PublicationsPageHandler)).Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/publications/{category}", handler.Apply(e, app.PublicationsCategoryHeadersHandler)).Methods(http.MethodHead)

@@ -7,6 +7,7 @@ import (
 type Account struct {
 	Username string
 	Hashword []byte
+	Super    bool
 }
 
 func (a *Account) Password(password []byte) (err error) {

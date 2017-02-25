@@ -3,4 +3,8 @@
 		{{ template "templates/article-list" . }}
 		<a href="/publications/{{ .Category.URL }}">See more {{ asTitle .Category.Title }} articles</a>
 	</section>
-{{end}}
+{{ else }}
+<div class="cloud">
+	There are currently nothing published at the moment
+</div>
+{{ end }}

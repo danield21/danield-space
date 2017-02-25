@@ -30,6 +30,7 @@ func CleanHTML(dirtyHTML []byte) (cleanHTML template.HTML, err error) {
 		"a", "p",
 		"h1", "h2", "h3", "h4", "h5", "h6",
 		"pre", "code",
+		"li", "ol", "ul",
 	)
 	policy.AllowAttrs("href").OnElements("a")
 	policy.AllowAttrs("class").Matching(languageRegexp).OnElements("code")

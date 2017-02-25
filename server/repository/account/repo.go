@@ -8,15 +8,7 @@ import (
 	"google.golang.org/appengine/log"
 )
 
-//Default is the default account
-//Be sure to change it
-var Default = Account{Username: "Root", Hashword: nil}
-
 const entity = "Admin"
-
-func init() {
-	Default.Password([]byte("ThisIsAVerySimplePassword!"))
-}
 
 func GetAll(ctx context.Context) ([]*Account, error) {
 	var accounts []*Account

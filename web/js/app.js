@@ -22,10 +22,12 @@ function meetsRequirements() {
 	Modernizr.promises
 }
 
-function styleDesert(mainCloud) {
+function styleDesert(mainCloud, desert) {
 	mainCloud.style.marginBottom = 0
+	desert.style.visibility = "hidden"
 	return new Promise((resolve) => {
 		setTimeout(() => {
+			desert.style.visibility = "visible"
 			let screen = util.screenSize()
 			mainCloud.style.marginBottom = (screen.height - 300) + "px"
 			resolve()
@@ -54,7 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	let mainCloud = Bliss("body > .cloud")
-	let styleFunc = styleDesert.bind(null, mainCloud)
+	let desert = Bliss("body > footer > .sand")
+	let styleFunc = styleDesert.bind(null, mainCloud, desert)
 
 	let mountainRange = document.getElementById("mountain-range");
 	let stickFunc = Stick.toBottom(mountainRange);
