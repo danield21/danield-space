@@ -59,4 +59,10 @@ func Admin(e handler.Environment, r *mux.Router) {
 		Methods(http.MethodGet)
 	r.HandleFunc("/category/create", handler.Apply(e, admin.CategoryCreateActionHandler)).
 		Methods(http.MethodPost)
+	r.HandleFunc("/about", handler.Apply(e, admin.AboutHeadersHandler)).
+		Methods(http.MethodHead)
+	r.HandleFunc("/about", handler.Apply(e, admin.AboutPageHandler)).
+		Methods(http.MethodGet)
+	r.HandleFunc("/about", handler.Apply(e, admin.AboutActionHandler)).
+		Methods(http.MethodPost)
 }

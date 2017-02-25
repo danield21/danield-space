@@ -34,3 +34,13 @@ func (f Form) Get(field string) *Field {
 	}
 	return NewField(field, "")
 }
+
+func (f Form) Has(field string) bool {
+	for _, fld := range f {
+		if fld != nil && fld.Field == field {
+			return false
+		}
+	}
+
+	return true
+}

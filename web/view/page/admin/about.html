@@ -1,0 +1,14 @@
+{{ template "core/admin-panel" . }}
+<form action="/admin/about" method="post">
+	{{ if and (ne 0 (len .Form)) (not .Form.HasErrors) }}
+	<div class="cloud">
+		About was successfully saved.
+	</div>
+	{{end}}
+	<div class="cloud">
+		{{ $about := .Form.Get "about" }}
+		<label for="form-about">About</label>
+		<textarea name="about" id="form-about" required>{{ $about.Value }}</textarea>
+	</div>
+    <button type="submit">Submit</button>
+</form>
