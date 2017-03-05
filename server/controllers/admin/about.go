@@ -42,6 +42,7 @@ var AboutActionHandler = handler.Chain(
 
 func AboutPageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
+		var redirect action.URL
 		f := form.AsForm(ctx)
 		s := handler.Session(ctx)
 
@@ -50,22 +51,32 @@ func AboutPageLink(h handler.Handler) handler.Handler {
 			return ctx, status.ErrUnauthorized
 		}
 
-		if f.Has("about") {
+		if f.IsEmpty() {
 			html, err := about.Get(ctx)
 			if err == nil {
 				fld := form.NewField("about", string(html))
-				fld.ErrorMessage = "hidden"
-				f = append(f, fld)
+				f.AddField(fld)
 			} else {
 				log.Warningf(ctx, "Unable to get about summary\n%v", err)
 			}
+		} else if f.IsSuccessful() {
+			f.AddMessage("Successfully saved About summary")
+			redirect = action.URL{
+				URL:   "/admin/",
+				Title: "Back to Admin Panel",
+			}
+		}
+
+		result := action.Result{
+			Form:     f,
+			Redirect: redirect,
 		}
 
 		info := siteInfo.Get(ctx)
 
 		data := struct {
 			AdminModel
-			Form form.Form
+			action.Result
 		}{
 			AdminModel: AdminModel{
 				BaseModel: handler.BaseModel{
@@ -73,7 +84,7 @@ func AboutPageLink(h handler.Handler) handler.Handler {
 				},
 				User: user,
 			},
-			Form: f,
+			Result: result,
 		}
 
 		return h(link.PageContext(ctx, "page/admin/about", data), e, w)

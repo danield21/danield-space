@@ -61,10 +61,14 @@ function submitForm(form) {
 		}
 		return encode
 	}, "")
-	return Bliss.fetch(form.action + "?theme=none", { responseType: "document", method, data}).then(response => {
-		return response.responseXML ? Promise.resolve(response.responseXML) : Promise.reject(new Error("Did not get a document back from " + a.href))
+	if(data !== "") {
+		data += "&"
+	}
+	data += "theme=none"
+	return Bliss.fetch(form.action, { responseType: "document", method, data}).then(response => {
+		return response.responseXML ? Promise.resolve(response.responseXML) : Promise.reject(new Error("Did not get a document back from " + url + "?" + data))
 	}, e => {
-		return e.xhr.responseXML ? Promise.resolve(e.xhr.responseXML) : Promise.reject(new Error("Did not get a document back from " + a.href))
+		return e.xhr.responseXML ? Promise.resolve(e.xhr.responseXML) : Promise.reject(new Error("Did not get a document back from " + url + "?" + data))
 	})
 }
 
@@ -72,11 +76,20 @@ function navigate(a) {
 	if(a && a.tagName.toUpperCase() != "A" && a.href) {
 		return Promise.reject(new Error("Provided value is not an A element with an href"))
 	}
+	var url = a.href
 
-	return Bliss.fetch(a.href + "?theme=none", { responseType: "document"}).then(response => {
-		return response.responseXML ? Promise.resolve(response.responseXML) : Promise.reject(new Error("Did not get a document back from " + a.href))
+	var queryRegex = /\?[\w\d%=\[\]&]+$/
+	if(url.match(queryRegex)) {
+		url += "&"
+	} else {
+		url += "?"
+	}
+	url += "theme=none"
+
+	return Bliss.fetch(url, { responseType: "document"}).then(response => {
+		return response.responseXML ? Promise.resolve(response.responseXML) : Promise.reject(new Error("Did not get a document back from " + url))
 	}, e => {
-		return e.xhr.responseXML ? Promise.resolve(e.xhr.responseXML) : Promise.reject(new Error("Did not get a document back from " + a.href))
+		return e.xhr.responseXML ? Promise.resolve(e.xhr.responseXML) : Promise.reject(new Error("Did not get a document back from " +  url))
 	})
 }
 
@@ -103,7 +116,7 @@ function handleRouting(transitionOut, transitionIn) {
 
 function handleForm(transitionOut, transitionIn) {
 	return e => {
-		/*if(e.defaultPrevented) {
+		if(e.defaultPrevented) {
 			return;
 		}
 
@@ -118,6 +131,6 @@ function handleForm(transitionOut, transitionIn) {
 		Promise.all([
 			transitionOut(),
 			next(form.action, submitForm(form))
-		]).then(transitionIn)*/
+		]).then(transitionIn)
 	}
 }

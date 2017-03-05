@@ -1,0 +1,10 @@
+{{ if .Form.Submitted }}
+    <div class="cloud {{ if .Form.IsSuccessful }}successful{{ else }}error{{ end }}">
+        {{ range .Form.Messages }}
+        <p>{{ . }}</p>
+        {{ end }}
+        {{ if .Redirect }}
+            {{ .Redirect.HTML }}
+        {{ end }}
+    </div>
+{{ end }}

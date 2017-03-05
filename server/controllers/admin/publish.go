@@ -43,6 +43,7 @@ var PublishActionHandler = handler.Chain(
 //Publish handles the index page
 func PublishPageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
+		var redirect action.URL
 		ses := handler.Session(ctx)
 		f := form.AsForm(ctx)
 
@@ -58,10 +59,18 @@ func PublishPageLink(h handler.Handler) handler.Handler {
 			log.Warningf(ctx, "admin.Publish - Unable to get types of articles\n%v", err)
 		}
 
+		if f.IsSuccessful() {
+			f.AddMessage("Successfully published article")
+			redirect = action.URL{
+				URL:   "/admin/",
+				Title: "Back to Admin Panel",
+			}
+		}
+
 		data := struct {
 			AdminModel
 			Categories []*categories.Category
-			Form       form.Form
+			action.Result
 		}{
 			AdminModel: AdminModel{
 				BaseModel: handler.BaseModel{
@@ -69,8 +78,11 @@ func PublishPageLink(h handler.Handler) handler.Handler {
 				},
 				User: user,
 			},
+			Result: action.Result{
+				Form:     f,
+				Redirect: redirect,
+			},
 			Categories: cats,
-			Form:       f,
 		}
 
 		return h(link.PageContext(ctx, "page/admin/publish", data), e, w)

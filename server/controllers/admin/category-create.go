@@ -40,6 +40,7 @@ var CategoryCreateActionHandler = handler.Chain(
 
 func CategoryCreatePageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
+		var redirect action.URL
 		f := form.AsForm(ctx)
 		s := handler.Session(ctx)
 
@@ -48,11 +49,19 @@ func CategoryCreatePageLink(h handler.Handler) handler.Handler {
 			return ctx, status.ErrUnauthorized
 		}
 
+		if f.IsSuccessful() {
+			f.AddMessage("Successfully created category")
+			redirect = action.URL{
+				URL:   "/admin/",
+				Title: "Back to Admin Panel",
+			}
+		}
+
 		info := siteInfo.Get(ctx)
 
 		data := struct {
 			AdminModel
-			Form form.Form
+			action.Result
 		}{
 			AdminModel: AdminModel{
 				BaseModel: handler.BaseModel{
@@ -60,7 +69,10 @@ func CategoryCreatePageLink(h handler.Handler) handler.Handler {
 				},
 				User: user,
 			},
-			Form: f,
+			Result: action.Result{
+				Form:     f,
+				Redirect: redirect,
+			},
 		}
 
 		return h(link.PageContext(ctx, "page/admin/category-create", data), e, w)

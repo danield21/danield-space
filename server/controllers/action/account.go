@@ -16,13 +16,13 @@ import (
 
 const acctUsrKey = "username"
 const acctPwdKey = "password"
-const acctCfmPwdKey = "confirm-password"
+const acctCfmPwdKey = "password-confirm"
 const acctSprKey = "super"
 
-func UnpackAccount(values url.Values) (*account.Account, form.Form) {
+func UnpackAccount(values url.Values) (*account.Account, *form.Form) {
 	usrFld := form.NewField(acctUsrKey, values.Get(acctUsrKey))
 	if !form.NotEmpty(usrFld, "username is required") && !account.ValidUsername(usrFld.Value) {
-		usrFld.ErrorMessage = "username is not in a proper format"
+		form.Fail(usrFld, "username is not in a proper format")
 	}
 
 	pwdFld := form.NewField(acctPwdKey, values.Get(acctPwdKey))
@@ -32,12 +32,12 @@ func UnpackAccount(values url.Values) (*account.Account, form.Form) {
 	form.NotEmpty(pwdFld, "confirm password is required")
 
 	if pwdFld.Value != cfmPwdFld.Value {
-		pwdFld.ErrorMessage = "passwords do not match"
+		form.Fail(pwdFld, "passwords do not match")
 	}
 
 	sprFld := form.NewField(acctSprKey, values.Get(acctSprKey))
 
-	f := form.Form{usrFld, pwdFld, cfmPwdFld, sprFld}
+	f := form.NewSubmittedForm(usrFld, pwdFld, cfmPwdFld, sprFld)
 
 	if f.HasErrors() {
 		return nil, f
@@ -53,6 +53,13 @@ func UnpackAccount(values url.Values) (*account.Account, form.Form) {
 	return acct, f
 }
 
+func AccountToForm(acct *account.Account) *form.Form {
+	usrFld := form.NewField(acctUsrKey, acct.Username)
+	sprFld := form.NewBoolField(acctSprKey, acct.Super)
+
+	return form.NewForm(usrFld, sprFld)
+}
+
 func PutAccountLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 		r := handler.Request(ctx)
@@ -64,7 +71,7 @@ func PutAccountLink(h handler.Handler) handler.Handler {
 		}
 
 		acct, f := UnpackAccount(r.Form)
-		if acct == nil {
+		if f.HasErrors() {
 			return h(form.WithForm(ctx, f), e, w)
 		}
 
@@ -81,7 +88,9 @@ func PutAccountLink(h handler.Handler) handler.Handler {
 
 		if !current.Super || current.Username != user {
 			log.Warningf(ctx, "PutAccountLink - %s does not have access\n%v", user, err)
-			return ctx, status.ErrUnauthorized
+			f.AddErrorMessage("You do not have the the ability to do this")
+
+			return h(form.WithForm(ctx, f), e, w)
 		}
 
 		if !current.Super {
@@ -90,10 +99,8 @@ func PutAccountLink(h handler.Handler) handler.Handler {
 
 		err = account.Put(ctx, acct)
 		if err != nil {
-			errField := form.NewField("", "")
-			errField.ErrorMessage = "Unable to put into database"
-
-			f = append(f, errField)
+			log.Warningf(ctx, "PutAccountLink - Unable to put into database\n%v", err)
+			f.AddErrorMessage("Unable to put into database")
 		}
 
 		return h(form.WithForm(ctx, f), e, w)

@@ -12,13 +12,13 @@ import (
 
 const aboutKey = "about"
 
-func UnpackAbout(values url.Values) ([]byte, form.Form) {
-	abt := form.NewField(aboutKey, values.Get(aboutKey))
-	form.NotEmpty(abt, "Title is required")
+func UnpackAbout(values url.Values) ([]byte, *form.Form) {
+	abtfld := form.NewField(aboutKey, values.Get(aboutKey))
+	form.NotEmpty(abtfld, "Title is required")
 
-	f := form.Form{abt}
+	f := form.NewSubmittedForm(abtfld)
 
-	return []byte(abt.Value), f
+	return []byte(abtfld.Value), f
 }
 
 func PutAboutLink(h handler.Handler) handler.Handler {
@@ -30,16 +30,14 @@ func PutAboutLink(h handler.Handler) handler.Handler {
 		}
 
 		abt, f := UnpackAbout(r.Form)
-		if abt == nil {
+		if f.HasErrors() {
 			return h(form.WithForm(ctx, f), e, w)
 		}
 
 		err = about.Set(ctx, abt)
 		if err != nil {
-			errField := form.NewField("", "")
-			errField.ErrorMessage = "Unable to put into database"
-
-			f = append(f, errField)
+			f.AddErrorMessage("Unable to put into database")
+			f.Error = true
 			return h(form.WithForm(ctx, f), e, w)
 		}
 

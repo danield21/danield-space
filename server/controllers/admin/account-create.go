@@ -43,7 +43,9 @@ var AccountCreateActionHandler = handler.Chain(
 
 func AccountCreatePageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
+		var redirect action.URL
 		ses := handler.Session(ctx)
+		req := handler.Request(ctx)
 		f := form.AsForm(ctx)
 
 		user, signedIn := link.User(ses)
@@ -57,12 +59,28 @@ func AccountCreatePageLink(h handler.Handler) handler.Handler {
 			return ctx, status.ErrUnauthorized
 		}
 
+		target := req.Form.Get("account")
+		if f.IsEmpty() && target != "" {
+			tUser, err := account.Get(ctx, target)
+			if err == nil {
+				f = action.AccountToForm(tUser)
+			} else {
+				log.Warningf(ctx, "Unable to get account %s\n%v", target, err)
+			}
+		} else if f.IsSuccessful() {
+			f.AddMessage("Successfully created account")
+			redirect = action.URL{
+				URL:   "/admin/",
+				Title: "Back to Admin Panel",
+			}
+		}
+
 		info := siteInfo.Get(ctx)
 
 		data := struct {
 			AdminModel
+			action.Result
 			Super bool
-			Form  form.Form
 		}{
 			AdminModel: AdminModel{
 				BaseModel: handler.BaseModel{
@@ -70,8 +88,11 @@ func AccountCreatePageLink(h handler.Handler) handler.Handler {
 				},
 				User: user,
 			},
+			Result: action.Result{
+				Form:     f,
+				Redirect: redirect,
+			},
 			Super: current.Super,
-			Form:  f,
 		}
 
 		return h(link.PageContext(ctx, "page/admin/account-create", data), e, w)

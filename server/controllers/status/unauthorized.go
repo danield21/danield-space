@@ -31,7 +31,7 @@ func UnauthorizedBodyLink(h handler.Handler) handler.Handler {
 			handler.BaseModel
 			Redirect string `json: "-"`
 			Message  string
-			Form     form.Form
+			Form     *form.Form
 		}{
 			BaseModel: handler.BaseModel{
 				SiteInfo: info,

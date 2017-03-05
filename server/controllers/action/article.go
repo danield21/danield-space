@@ -22,7 +22,7 @@ const abstractKey = "abstract"
 const contentKey = "content"
 const catKey = "category"
 
-func UnpackArticle(ctx context.Context, values url.Values) (*articles.Article, form.Form) {
+func UnpackArticle(ctx context.Context, values url.Values) (*articles.Article, *form.Form) {
 	var (
 		err         error
 		category    *categories.Category
@@ -38,22 +38,22 @@ func UnpackArticle(ctx context.Context, values url.Values) (*articles.Article, f
 
 	urlFld := form.NewField(urlKey, values.Get(urlKey))
 	if form.NotEmpty(urlFld, "url is required") && !repository.ValidURLPart(urlFld.Value) {
-		urlFld.ErrorMessage = "url is not in a proper format"
+		form.Fail(urlFld, "url is not in a proper format")
 	}
 
 	catFld := form.NewField(catKey, values.Get(catKey))
 	if form.NotEmpty(catFld, "category is required") {
 		if !repository.ValidURLPart(catFld.Value) {
-			catFld.ErrorMessage = "category is not in a proper format"
+			form.Fail(catFld, "category is not in a proper format")
 		} else if category, err = categories.Get(ctx, catFld.Value); err != nil {
-			catFld.ErrorMessage = "unable to find specified category"
+			form.Fail(catFld, "unable to find specified category")
 		}
 	}
 
 	publishFld := form.NewField(publishKey, values.Get(publishKey))
 	if form.NotEmpty(publishFld, "publish is required") {
 		if publishDate, err = time.Parse("2006-01-02T15:04", publishFld.Value); err != nil {
-			publishFld.ErrorMessage = "unable to parse time"
+			form.Fail(publishFld, "unable to parse time")
 		}
 	}
 
@@ -63,18 +63,18 @@ func UnpackArticle(ctx context.Context, values url.Values) (*articles.Article, f
 	contentFld := form.NewField(contentKey, values.Get(contentKey))
 	if form.NotEmpty(contentFld, "publish is required") {
 		if content, err = repository.CleanHTML([]byte(contentFld.Value)); err != nil {
-			contentFld.ErrorMessage = "unable to parse content"
+			form.Fail(contentFld, "unable to parse content")
 		}
 	}
 
-	f := form.Form{
+	f := form.NewSubmittedForm(
 		titleFld,
 		authorFld,
 		catFld,
 		publishFld,
 		abstractFld,
 		contentFld,
-	}
+	)
 
 	if f.HasErrors() {
 		return nil, f
@@ -109,10 +109,7 @@ func PutArticleLink(h handler.Handler) handler.Handler {
 
 		err = articles.Set(ctx, art)
 		if err != nil {
-			errField := form.NewField("", "")
-			errField.ErrorMessage = "Unable to put into database"
-
-			f = append(f, errField)
+			f.AddErrorMessage("Unable to put into database")
 			return h(form.WithForm(ctx, f), e, w)
 		}
 

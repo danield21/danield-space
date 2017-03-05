@@ -61,7 +61,7 @@ func Put(ctx context.Context, account *Account) error {
 		account.DataElement = repository.WithOld("unknown", oldAcct.DataElement)
 	}
 
-	account.Key, err = datastore.Put(ctx, account.Key, &account)
+	account.Key, err = datastore.Put(ctx, account.Key, account)
 	return err
 }
 

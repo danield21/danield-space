@@ -1,18 +1,4 @@
-{{ if and (ne 0 (len .Form)) (not .Form.HasErrors) }}
-	<div class="cloud">
-		<p>Successfully logged in.<p>
-		<a href="/admin/" id="link-admin">Go to Admin Panel</a>
-		<script>
-		setTimeout(() => {
-			var link = document.getElementById("link-admin");
-			var event = document.createEvent("MouseEvents");
-			event.initEvent("click", true, true);
-			event.synthetic = true;
-			link.dispatchEvent(event, true);
-		}, 2000)
-		</script>
-	</div>
-{{end}}
+{{ template "templates/form-result" . }}
 <form action="/admin/signin" method="post">
 	<div class="cloud">
 		{{ $username := .Form.Get "username" }}

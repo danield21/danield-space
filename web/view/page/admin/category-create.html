@@ -1,10 +1,6 @@
 {{ template "core/admin-panel" . }}
+{{ template "templates/form-result" . }}
 <form action="/admin/category/create" method="post">
-	{{ if and (ne 0 (len .Form)) (not .Form.HasErrors) }}
-	<div class="cloud">
-		Category was successfully saved.
-	</div>
-	{{end}}
 	<div class="cloud">
 		{{ $title := .Form.Get "title" }}
 		<label for="form-title">Title</label>

@@ -6,16 +6,16 @@ type formKeyType string
 
 const formKey = formKeyType("form")
 
-func WithForm(ctx context.Context, form Form) context.Context {
+func WithForm(ctx context.Context, form *Form) context.Context {
 	return context.WithValue(ctx, formKey, form)
 }
 
-func AsForm(ctx context.Context) Form {
+func AsForm(ctx context.Context) *Form {
 	iForm := ctx.Value(formKey)
 	if iForm == nil {
 		return NewForm()
 	}
-	form, ok := iForm.(Form)
+	form, ok := iForm.(*Form)
 	if !ok {
 		return NewForm()
 	}

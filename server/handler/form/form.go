@@ -1,33 +1,79 @@
 package form
 
-type Form []*Field
+type Form struct {
+	Fields    []*Field
+	Messages  []string
+	Submitted bool
+	Error     bool
+}
+
+func NewForm(fields ...*Field) *Form {
+	f := new(Form)
+	for _, fld := range fields {
+		f.AddField(fld)
+	}
+	return f
+}
+
+func NewSubmittedForm(fields ...*Field) *Form {
+	f := NewForm(fields...)
+	f.Submitted = true
+	return f
+}
+
+func NewErrorForm(msg string) *Form {
+	f := new(Form)
+	f.AddErrorMessage(msg)
+	return f
+}
+
+func (f *Form) AddMessage(msg string) {
+	f.Messages = append(f.Messages, msg)
+}
+
+func (f *Form) AddErrorMessage(msg string) {
+	f.Error = true
+	f.Messages = append(f.Messages, msg)
+}
+
+func (f *Form) AddField(fld *Field) {
+	f.Fields = append(f.Fields, fld)
+}
 
 func (f Form) HasErrors() bool {
-	return len(f.GetErrorForm()) > 0
+	return f.Error || len(f.ErrorForm().Fields) > 0
 }
 
-func NewForm() Form {
-	return make([]*Field, 0)
+func (f Form) IsSuccessful() bool {
+	return !f.IsEmpty() && !f.HasErrors()
 }
 
-func NewErrorForm(errorMessage string) Form {
-	fld := NewField("", "")
-	fld.ErrorMessage = errorMessage
-	return Form{fld}
+func (f Form) IsEmpty() bool {
+	return len(f.Fields) == 0
 }
 
-func (f Form) GetErrorForm() Form {
+func (f *Form) ErrorForm() *Form {
 	errs := NewForm()
-	for _, fld := range f {
-		if fld != nil && fld.ErrorMessage != "" {
-			errs = append(errs, fld)
+	for _, fld := range f.Fields {
+		if fld != nil && fld.Error {
+			errs.Fields = append(errs.Fields, fld)
 		}
 	}
 	return errs
 }
 
+func (f *Form) FieldNames() []string {
+	var flds []string
+	for _, fld := range f.Fields {
+		if fld != nil && fld.Error {
+			flds = append(flds, fld.Field)
+		}
+	}
+	return flds
+}
+
 func (f Form) Get(field string) *Field {
-	for _, fld := range f {
+	for _, fld := range f.Fields {
 		if fld != nil && fld.Field == field {
 			return fld
 		}
@@ -36,7 +82,7 @@ func (f Form) Get(field string) *Field {
 }
 
 func (f Form) Has(field string) bool {
-	for _, fld := range f {
+	for _, fld := range f.Fields {
 		if fld != nil && fld.Field == field {
 			return false
 		}

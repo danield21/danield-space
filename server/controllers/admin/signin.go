@@ -41,20 +41,29 @@ var SignInActionHandler = handler.Chain(
 
 func SignInPageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
-		r := handler.Request(ctx)
 		info := siteInfo.Get(ctx)
 		f := form.AsForm(ctx)
 
+		result := action.Result{
+			Form: f,
+		}
+
+		if f.IsSuccessful() {
+			f.AddMessage("Successfully signed in")
+			result.Redirect = action.URL{
+				URL:   "/admin/",
+				Title: "Admin Panel",
+			}
+		}
+
 		data := struct {
 			handler.BaseModel
-			Redirect string
-			Form     form.Form
+			action.Result
 		}{
 			BaseModel: handler.BaseModel{
 				SiteInfo: info,
 			},
-			Form:     f,
-			Redirect: action.Redirect(r),
+			Result: result,
 		}
 
 		return h(link.PageContext(ctx, "page/admin/signin", data), e, w)

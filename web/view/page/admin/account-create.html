@@ -1,4 +1,5 @@
 {{ template "core/admin-panel" . }}
+{{ template "templates/form-result" . }}
 <form action="/admin/account/create" method="post">
     <div class="cloud">
         {{ $username := .Form.Get "username" }}

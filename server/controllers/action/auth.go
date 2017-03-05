@@ -14,14 +14,14 @@ import (
 const authUsrKey = "username"
 const authPwdKey = "password"
 
-func UnpackAuth(values url.Values) (string, []byte, form.Form) {
+func UnpackAuth(values url.Values) (string, []byte, *form.Form) {
 	username := form.NewField(authUsrKey, values.Get(authUsrKey))
 	form.NotEmpty(username, "Username is required")
 
 	password := form.NewField(authPwdKey, values.Get(authPwdKey))
 	form.NotEmpty(password, "Password is required")
 
-	return username.Value, []byte(password.Value), form.Form{username, password}
+	return username.Value, []byte(password.Value), form.NewSubmittedForm(username, password)
 }
 
 func AuthenicateLink(h handler.Handler) handler.Handler {
@@ -35,12 +35,12 @@ func AuthenicateLink(h handler.Handler) handler.Handler {
 		}
 
 		username, password, f := UnpackAuth(r.Form)
+		if f.HasErrors() {
+			return h(form.WithForm(ctx, f), e, w)
+		}
 
 		if !account.CanLogIn(ctx, username, password) {
-			errField := form.NewField("", "")
-			errField.ErrorMessage = "Unable to authenicate"
-
-			f = append(f, errField)
+			f.AddErrorMessage("Unable to authenicate")
 			return h(form.WithForm(ctx, f), e, w)
 		}
 
