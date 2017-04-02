@@ -4,24 +4,27 @@ import (
 	"html/template"
 	"io"
 	"net/http"
-
-	"google.golang.org/appengine"
+	"sync"
 
 	"github.com/gorilla/sessions"
 	"golang.org/x/net/context"
+	"google.golang.org/appengine"
 )
 
 //ProductionEnvironment contains all the data required to run the server
 type ProductionEnvironment struct {
 	Templates         *template.Template
 	GenerateTemplates <-chan *template.Template
+	WaitForView       sync.Mutex
 }
 
 //View generates a view based on the templates stored
 func (p *ProductionEnvironment) View(w io.Writer, theme, view string, data interface{}) error {
+	p.WaitForView.Lock()
 	if p.Templates == nil {
 		p.Templates = <-p.GenerateTemplates
 	}
+	p.WaitForView.Unlock()
 
 	return RenderTemplateWithTheme(p.Templates, w, theme, view, data)
 }
