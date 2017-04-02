@@ -19,9 +19,12 @@ function meetsRequirements() {
 	window.DOMParser
 }
 
+const MIN_HEIGHT = 20
+const MAX_HEIGHT = 200
+const AVG_HEIGHT = 100
+
 function prepare (svg) {
 	return new Promise((resolve, reject) => {
-		const MAX_HEIGHT = getBalloonHeight(MAX_HEIGHT_N)
 
 		const parser = new DOMParser()
 
@@ -37,7 +40,7 @@ function prepare (svg) {
 		const hHalf = screen.height / 2;
 
 		const position = {
-			top: util.inBetween(hHalf + hHalf * sdRand(), 150, screen.height - 150),
+			top: util.choosePoint(sdRand(), 0, hHalf, screen.height, MAX_HEIGHT),
 			left: screen.width + width
 		}
 		
@@ -129,7 +132,6 @@ function ascend(balloon) {
 	});
 }
 
-const MAX_HEIGHT_N = 2
 function getBalloonHeight(seed) {
-	return 100 + 40 * util.inBetween(seed, -MAX_HEIGHT_N, MAX_HEIGHT_N)
+	return util.choosePoint(seed, MIN_HEIGHT, AVG_HEIGHT, MAX_HEIGHT)
 }

@@ -111,7 +111,7 @@ function initSun(easel) {
 
 const balloons = {
 	MAX: 10,
-	EVERY: 10000
+	EVERY: 20000
 }
 function initBalloons(easel) {
 	const getBalloon = Bliss.fetch("/dist/svg/balloon.svg")
