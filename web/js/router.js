@@ -52,7 +52,7 @@ function next(url, perform) {
 }
 
 function submitForm(form) {
-	var url = form.action
+	var url = form.getAttribute("action")
 	var method = form.method
 	var data = Array.from(form.elements).reduce((encode, e) => {
 		if(e.name) {
@@ -65,7 +65,8 @@ function submitForm(form) {
 		data += "&"
 	}
 	data += "theme=none"
-	return Bliss.fetch(form.action, { responseType: "document", method, data}).then(response => {
+
+	return Bliss.fetch(url, { responseType: "document", method, data}).then(response => {
 		return response.responseXML ? Promise.resolve(response.responseXML) : Promise.reject(new Error("Did not get a document back from " + url + "?" + data))
 	}, e => {
 		return e.xhr.responseXML ? Promise.resolve(e.xhr.responseXML) : Promise.reject(new Error("Did not get a document back from " + url + "?" + data))
