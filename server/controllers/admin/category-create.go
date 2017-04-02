@@ -7,8 +7,8 @@ import (
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/handler/form"
-	"github.com/danield21/danield-space/server/handler/view"
+	"github.com/danield21/danield-space/server/form"
+	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
 )
@@ -64,7 +64,7 @@ func CategoryCreatePageLink(h handler.Handler) handler.Handler {
 			action.Result
 		}{
 			AdminModel: AdminModel{
-				BaseModel: handler.BaseModel{
+				BaseModel: view.BaseModel{
 					SiteInfo: info,
 				},
 				User: user,

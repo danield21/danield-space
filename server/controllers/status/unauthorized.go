@@ -6,8 +6,8 @@ import (
 
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/handler/form"
-	"github.com/danield21/danield-space/server/handler/view"
+	"github.com/danield21/danield-space/server/form"
+	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
 )
@@ -28,12 +28,12 @@ func UnauthorizedBodyLink(h handler.Handler) handler.Handler {
 		f := form.AsForm(ctx)
 
 		data := struct {
-			handler.BaseModel
+			view.BaseModel
 			Redirect string `json: "-"`
 			Message  string
 			Form     *form.Form
 		}{
-			BaseModel: handler.BaseModel{
+			BaseModel: view.BaseModel{
 				SiteInfo: info,
 			},
 			Redirect: r.URL.Path,

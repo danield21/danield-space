@@ -7,7 +7,7 @@ import (
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/handler/view"
+	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/gorilla/mux"
 )
 

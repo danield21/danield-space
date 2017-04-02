@@ -7,7 +7,7 @@ import (
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/handler/view"
+	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/repository/about"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
@@ -38,10 +38,10 @@ func AboutPageLink(h handler.Handler) handler.Handler {
 		}
 
 		data := struct {
-			handler.BaseModel
+			view.BaseModel
 			About template.HTML
 		}{
-			BaseModel: handler.BaseModel{
+			BaseModel: view.BaseModel{
 				SiteInfo: info,
 			},
 			About: abt,

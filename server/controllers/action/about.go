@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/handler/form"
 	"github.com/danield21/danield-space/server/repository/about"
 	"golang.org/x/net/context"
 )

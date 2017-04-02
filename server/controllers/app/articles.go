@@ -6,7 +6,7 @@ import (
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/handler/view"
+	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/repository/articles"
 	"github.com/danield21/danield-space/server/repository/categories"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
@@ -44,10 +44,10 @@ func ArticlePageLink(h handler.Handler) handler.Handler {
 		}
 
 		data := struct {
-			handler.BaseModel
+			view.BaseModel
 			Article *articles.Article
 		}{
-			BaseModel: handler.BaseModel{
+			BaseModel: view.BaseModel{
 				SiteInfo: info,
 			},
 			Article: a,

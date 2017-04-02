@@ -7,8 +7,8 @@ import (
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/handler/form"
-	"github.com/danield21/danield-space/server/handler/view"
+	"github.com/danield21/danield-space/server/form"
+	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
 )
@@ -57,10 +57,10 @@ func SignInPageLink(h handler.Handler) handler.Handler {
 		}
 
 		data := struct {
-			handler.BaseModel
+			view.BaseModel
 			action.Result
 		}{
-			BaseModel: handler.BaseModel{
+			BaseModel: view.BaseModel{
 				SiteInfo: info,
 			},
 			Result: result,

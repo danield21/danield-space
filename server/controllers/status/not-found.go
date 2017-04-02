@@ -7,8 +7,8 @@ import (
 	"google.golang.org/appengine/log"
 
 	"github.com/danield21/danield-space/server/controllers/link"
+	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/handler/view"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
 )
@@ -26,10 +26,10 @@ func NotFoundBodyLink(h handler.Handler) handler.Handler {
 		info := siteInfo.Get(ctx)
 
 		data := struct {
-			handler.BaseModel
+			view.BaseModel
 			Message string
 		}{
-			handler.BaseModel{
+			view.BaseModel{
 				SiteInfo: info,
 			},
 			"could not locate resource",

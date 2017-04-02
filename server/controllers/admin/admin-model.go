@@ -1,10 +1,8 @@
 package admin
 
-import (
-	"github.com/danield21/danield-space/server/handler"
-)
+import "github.com/danield21/danield-space/server/controllers/view"
 
 type AdminModel struct {
-	handler.BaseModel
+	view.BaseModel
 	User string
 }

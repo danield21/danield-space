@@ -5,7 +5,7 @@ import (
 	"net/url"
 
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/handler/form"
+	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/repository"
 	"github.com/danield21/danield-space/server/repository/categories"
 	"golang.org/x/net/context"

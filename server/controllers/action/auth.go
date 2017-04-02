@@ -6,7 +6,7 @@ import (
 
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/handler/form"
+	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/repository/account"
 	"golang.org/x/net/context"
 )
