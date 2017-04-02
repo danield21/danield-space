@@ -41,7 +41,7 @@ function prepare (svg) {
 			left: screen.width + width
 		}
 		
-		const speed = Math.sqrt(width*width*width) / 2;
+		const speed = Math.sqrt(width*width*width) / 4;
 		const color = Please.make_color({
 			saturation: .8 + Math.random() * .2,
 			value: .8 + Math.random() * .2
