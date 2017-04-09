@@ -1,3 +1,4 @@
 app/dist/*
 app/view/*
 node_modules/*
+.vscode/*
