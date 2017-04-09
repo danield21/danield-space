@@ -1,6 +1,7 @@
 package action
 
 import (
+	"errors"
 	"net/http"
 	"net/url"
 
@@ -8,72 +9,75 @@ import (
 
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/form"
+	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/account"
 	"golang.org/x/net/context"
 )
 
 const acctUsrKey = "username"
 const acctPwdKey = "password"
-const acctCfmPwdKey = "password-confirm"
+const acctCfmPwdKey = "passwordConfirm"
 const acctSprKey = "super"
 
-func UnpackAccount(values url.Values) (*account.Account, *form.Form) {
-	usrFld := form.NewField(acctUsrKey, values.Get(acctUsrKey))
-	if !form.NotEmpty(usrFld, "username is required") && !account.ValidUsername(usrFld.Value) {
+func UnpackAccount(values url.Values) (*account.Account, form.Form) {
+	frm := form.MakeForm()
+	usrFld := frm.AddFieldFromValue(acctUsrKey, values)
+	if !form.NotEmpty(usrFld, "username is required") && !account.ValidUsername(usrFld.Get()) {
 		form.Fail(usrFld, "username is not in a proper format")
 	}
 
-	pwdFld := form.NewField(acctPwdKey, values.Get(acctPwdKey))
+	pwdFld := frm.AddFieldFromValue(acctPwdKey, values)
 	form.NotEmpty(pwdFld, "password is required")
 
-	cfmPwdFld := form.NewField(acctCfmPwdKey, values.Get(acctCfmPwdKey))
-	form.NotEmpty(pwdFld, "confirm password is required")
+	cfmPwdFld := frm.AddFieldFromValue(acctCfmPwdKey, values)
+	form.NotEmpty(cfmPwdFld, "confirm password is required")
 
-	if pwdFld.Value != cfmPwdFld.Value {
+	if pwdFld.Error == nil && cfmPwdFld.Error == nil && pwdFld.Get() != cfmPwdFld.Get() {
 		form.Fail(pwdFld, "passwords do not match")
+		form.Fail(cfmPwdFld, "passwords do not match")
 	}
 
-	sprFld := form.NewField(acctSprKey, values.Get(acctSprKey))
+	sprFld := frm.AddFieldFromValue(acctSprKey, values)
 
-	f := form.NewSubmittedForm(usrFld, pwdFld, cfmPwdFld, sprFld)
+	frm.Submitted = true
 
-	if f.HasErrors() {
-		return nil, f
+	if frm.HasErrors() {
+		return nil, frm
 	}
 
 	acct := new(account.Account)
 	*acct = account.Account{
-		Username: usrFld.Value,
-		Super:    sprFld.Value != "",
+		Username: usrFld.Get(),
+		Super:    sprFld.Get() != "",
 	}
 
-	acct.Password([]byte(pwdFld.Value))
-	return acct, f
+	acct.Password([]byte(pwdFld.Get()))
+	return acct, frm
 }
 
-func AccountToForm(acct *account.Account) *form.Form {
-	usrFld := form.NewField(acctUsrKey, acct.Username)
-	sprFld := form.NewBoolField(acctSprKey, acct.Super)
+func AccountToForm(acct *account.Account) form.Form {
+	frm := form.MakeForm()
+	usrFld := new(form.Field)
+	usrFld.Values = []string{acct.Username}
 
-	return form.NewForm(usrFld, sprFld)
+	sprFld := new(form.Field)
+	if acct.Super {
+		sprFld.Values = []string{"true"}
+	} else {
+		sprFld.Values = []string{""}
+	}
+
+	frm.Fields[acctUsrKey] = usrFld
+	frm.Fields[acctSprKey] = sprFld
+
+	return frm
 }
 
 func PutAccountLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 		r := handler.Request(ctx)
 		ses := handler.Session(ctx)
-
-		err := r.ParseForm()
-		if err != nil {
-			return h(form.WithForm(ctx, form.NewErrorForm("Unable to parse form")), e, w)
-		}
-
-		acct, f := UnpackAccount(r.Form)
-		if f.HasErrors() {
-			return h(form.WithForm(ctx, f), e, w)
-		}
 
 		user, signedIn := link.User(ses)
 		if !signedIn {
@@ -86,11 +90,21 @@ func PutAccountLink(h handler.Handler) handler.Handler {
 			return ctx, status.ErrUnauthorized
 		}
 
+		err = r.ParseForm()
+		if err != nil {
+			return h(WithForm(ctx, form.Form{Error: errors.New("Unable to parse form")}), e, w)
+		}
+
+		acct, frm := UnpackAccount(r.Form)
+		if frm.HasErrors() {
+			return h(WithForm(ctx, frm), e, w)
+		}
+
 		if !current.Super || current.Username != user {
 			log.Warningf(ctx, "PutAccountLink - %s does not have access\n%v", user, err)
-			f.AddErrorMessage("You do not have the the ability to do this")
+			frm.Error = errors.New("You do not have the the ability to do this")
 
-			return h(form.WithForm(ctx, f), e, w)
+			return h(WithForm(ctx, frm), e, w)
 		}
 
 		if !current.Super {
@@ -100,9 +114,9 @@ func PutAccountLink(h handler.Handler) handler.Handler {
 		err = account.Put(ctx, acct)
 		if err != nil {
 			log.Warningf(ctx, "PutAccountLink - Unable to put into database\n%v", err)
-			f.AddErrorMessage("Unable to put into database")
+			frm.Error = errors.New("Unable to put into database")
 		}
 
-		return h(form.WithForm(ctx, f), e, w)
+		return h(WithForm(ctx, frm), e, w)
 	}
 }

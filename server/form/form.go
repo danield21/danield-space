@@ -1,92 +1,66 @@
 package form
 
+import (
+	"net/url"
+)
+
 type Form struct {
-	Fields    []*Field
-	Messages  []string
+	Fields    map[string]*Field
+	Error     error
 	Submitted bool
-	Error     bool
 }
 
-func NewForm(fields ...*Field) *Form {
-	f := new(Form)
-	for _, fld := range fields {
-		f.AddField(fld)
+func MakeForm() Form {
+	return Form{
+		Fields: make(map[string]*Field),
 	}
-	return f
 }
 
-func NewSubmittedForm(fields ...*Field) *Form {
-	f := NewForm(fields...)
-	f.Submitted = true
-	return f
-}
+func (f Form) AddFieldFromValue(name string, values url.Values) *Field {
+	fld := new(Field)
+	fld.Values = values[name]
 
-func NewErrorForm(msg string) *Form {
-	f := new(Form)
-	f.AddErrorMessage(msg)
-	return f
-}
+	f.Fields[name] = fld
 
-func (f *Form) AddMessage(msg string) {
-	f.Messages = append(f.Messages, msg)
-}
-
-func (f *Form) AddErrorMessage(msg string) {
-	f.Error = true
-	f.Messages = append(f.Messages, msg)
-}
-
-func (f *Form) AddField(fld *Field) {
-	f.Fields = append(f.Fields, fld)
+	return fld
 }
 
 func (f Form) HasErrors() bool {
-	return f.Error || len(f.ErrorForm().Fields) > 0
+	if f.Error != nil {
+		return true
+	}
+
+	for _, fld := range f.Fields {
+		if fld.Error != nil {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (f Form) IsSuccessful() bool {
-	return !f.IsEmpty() && !f.HasErrors()
+	return f.Submitted && !f.HasErrors()
 }
 
 func (f Form) IsEmpty() bool {
 	return len(f.Fields) == 0
 }
 
-func (f *Form) ErrorForm() *Form {
-	errs := NewForm()
-	for _, fld := range f.Fields {
-		if fld != nil && fld.Error {
-			errs.Fields = append(errs.Fields, fld)
+func (f Form) ErrorForm() Form {
+	errs := MakeForm()
+	for name, fld := range f.Fields {
+		if fld.Error != nil {
+			errs.Fields[name] = fld
 		}
 	}
 	return errs
 }
 
-func (f *Form) FieldNames() []string {
+func (f Form) FieldNames() []string {
 	var flds []string
-	for _, fld := range f.Fields {
-		if fld != nil && fld.Error {
-			flds = append(flds, fld.Field)
-		}
+	for name := range f.Fields {
+		flds = append(flds, name)
 	}
 	return flds
-}
-
-func (f Form) Get(field string) *Field {
-	for _, fld := range f.Fields {
-		if fld != nil && fld.Field == field {
-			return fld
-		}
-	}
-	return NewField(field, "")
-}
-
-func (f Form) Has(field string) bool {
-	for _, fld := range f.Fields {
-		if fld != nil && fld.Field == field {
-			return false
-		}
-	}
-
-	return true
 }

@@ -5,9 +5,8 @@ import (
 	"net/http"
 
 	"github.com/danield21/danield-space/server/controllers/link"
-	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/controllers/view"
+	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
 )
@@ -25,20 +24,17 @@ func UnauthorizedBodyLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 		info := siteInfo.Get(ctx)
 		r := handler.Request(ctx)
-		f := form.AsForm(ctx)
 
 		data := struct {
 			view.BaseModel
 			Redirect string `json: "-"`
 			Message  string
-			Form     *form.Form
 		}{
 			BaseModel: view.BaseModel{
 				SiteInfo: info,
 			},
 			Redirect: r.URL.Path,
 			Message:  "unauthorized to view this resource",
-			Form:     f,
 		}
 
 		newCtx := link.PageContext(ctx, "page/status/unauthorized", data)

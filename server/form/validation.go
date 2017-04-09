@@ -1,17 +1,19 @@
 package form
 
 import "strings"
+import "errors"
 
-func NotEmpty(f *Field, message string) bool {
-	if strings.Trim(f.Value, " ") == "" {
-		f.Error = true
-		f.Message = message
+func NotEmpty(fld *Field, msg string) bool {
+	if len(fld.Values) == 0 {
+		Fail(fld, msg)
+		return false
+	} else if len(fld.Values) == 1 && strings.Trim(fld.Get(), " ") == "" {
+		Fail(fld, msg)
 		return false
 	}
 	return true
 }
 
-func Fail(f *Field, msg string) {
-	f.Error = true
-	f.Message = msg
+func Fail(fld *Field, msg string) {
+	fld.Error = errors.New(msg)
 }

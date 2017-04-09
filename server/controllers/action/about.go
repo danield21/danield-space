@@ -1,6 +1,7 @@
 package action
 
 import (
+	"errors"
 	"net/http"
 	"net/url"
 
@@ -12,13 +13,15 @@ import (
 
 const aboutKey = "about"
 
-func UnpackAbout(values url.Values) ([]byte, *form.Form) {
-	abtfld := form.NewField(aboutKey, values.Get(aboutKey))
-	form.NotEmpty(abtfld, "Title is required")
+func UnpackAbout(values url.Values) ([]byte, form.Form) {
+	frm := form.MakeForm()
 
-	f := form.NewSubmittedForm(abtfld)
+	fld := frm.AddFieldFromValue(aboutKey, values)
+	form.NotEmpty(fld, "About is required")
 
-	return []byte(abtfld.Value), f
+	frm.Submitted = true
+
+	return []byte(fld.Get()), frm
 }
 
 func PutAboutLink(h handler.Handler) handler.Handler {
@@ -26,21 +29,19 @@ func PutAboutLink(h handler.Handler) handler.Handler {
 		r := handler.Request(ctx)
 		err := r.ParseForm()
 		if err != nil {
-			return h(form.WithForm(ctx, form.NewErrorForm("Unable to parse form")), e, w)
+			return h(WithForm(ctx, form.Form{Error: errors.New("Unable to parse form")}), e, w)
 		}
 
 		abt, f := UnpackAbout(r.Form)
 		if f.HasErrors() {
-			return h(form.WithForm(ctx, f), e, w)
+			return h(WithForm(ctx, f), e, w)
 		}
 
 		err = about.Set(ctx, abt)
 		if err != nil {
-			f.AddErrorMessage("Unable to put into database")
-			f.Error = true
-			return h(form.WithForm(ctx, f), e, w)
+			f.Error = errors.New("Unable to put into database")
 		}
 
-		return h(form.WithForm(ctx, f), e, w)
+		return h(WithForm(ctx, f), e, w)
 	}
 }

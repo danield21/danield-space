@@ -1,10 +1,19 @@
 {{ template "core/admin-panel" . }}
-{{ template "templates/form-result" . }}
+{{ if .Form.IsSuccessful }}
+<div class="cloud successful">
+   Successfully updated about page. <a href="/admin/">Back to admin portal</a>
+</div>
+{{ else if .Form.Error }}
+<div class="cloud error">
+	{{ .Form.Error}}
+</div>
+{{ end }}
 <form action="/admin/about" method="post">
 	<div class="cloud">
-		{{ $about := .Form.Get "about" }}
+		{{ $about := .Form.Fields.about }}
 		<label for="form-about">About</label>
-		<textarea name="about" id="form-about" required>{{ $about.Value }}</textarea>
+		<textarea name="about" id="form-about" required>{{ $about.Get }}</textarea>
+		{{ if $about.Error }}{{ $about.Error }}{{ end }}
 	</div>
     <button type="submit">Submit</button>
 </form>

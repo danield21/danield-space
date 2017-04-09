@@ -1,11 +1,12 @@
 package action
 
 import (
+	"errors"
 	"net/http"
 	"net/url"
 
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/form"
+	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository"
 	"github.com/danield21/danield-space/server/repository/categories"
 	"golang.org/x/net/context"
@@ -15,31 +16,33 @@ const catTitleKey = "title"
 const catURLKey = "url"
 const catDscKey = "description"
 
-func UnpackCategory(values url.Values) (*categories.Category, *form.Form) {
-	title := form.NewField(catTitleKey, values.Get(catTitleKey))
-	form.NotEmpty(title, "Title is required")
+func UnpackCategory(values url.Values) (*categories.Category, form.Form) {
+	frm := form.MakeForm()
 
-	urlFld := form.NewField(catURLKey, values.Get(catURLKey))
-	if !form.NotEmpty(urlFld, "URL is required") && !repository.ValidURLPart(urlFld.Value) {
+	ttlFld := frm.AddFieldFromValue(catTitleKey, values)
+	form.NotEmpty(ttlFld, "Title is required")
+
+	urlFld := frm.AddFieldFromValue(catURLKey, values)
+	if !form.NotEmpty(urlFld, "URL is required") && !repository.ValidURLPart(urlFld.Get()) {
 		form.Fail(urlFld, "url is not in a proper format")
 	}
 
-	description := form.NewField(catDscKey, values.Get(catDscKey))
-	form.NotEmpty(description, "Description is required")
+	dscFld := frm.AddFieldFromValue(catDscKey, values)
+	form.NotEmpty(dscFld, "Description is required")
 
-	f := form.NewSubmittedForm(title, urlFld, description)
+	frm.Submitted = true
 
-	if f.HasErrors() {
-		return nil, f
+	if frm.HasErrors() {
+		return nil, frm
 	}
 
 	category := new(categories.Category)
 	*category = categories.Category{
-		Title:       title.Value,
-		URL:         urlFld.Value,
-		Description: description.Value,
+		Title:       ttlFld.Get(),
+		URL:         urlFld.Get(),
+		Description: dscFld.Get(),
 	}
-	return category, f
+	return category, frm
 }
 
 func PutCategoryLink(h handler.Handler) handler.Handler {
@@ -47,20 +50,19 @@ func PutCategoryLink(h handler.Handler) handler.Handler {
 		r := handler.Request(ctx)
 		err := r.ParseForm()
 		if err != nil {
-			return h(form.WithForm(ctx, form.NewErrorForm("Unable to parse form")), e, w)
+			return h(WithForm(ctx, form.Form{Error: errors.New("Unable to parse form")}), e, w)
 		}
 
-		cat, f := UnpackCategory(r.Form)
+		cat, frm := UnpackCategory(r.Form)
 		if cat == nil {
-			return h(form.WithForm(ctx, f), e, w)
+			return h(WithForm(ctx, frm), e, w)
 		}
 
 		err = categories.Set(ctx, cat)
 		if err != nil {
-			f.AddErrorMessage("Unable to put into database")
-			return h(form.WithForm(ctx, f), e, w)
+			frm.Error = errors.New("Unable to put into database")
 		}
 
-		return h(form.WithForm(ctx, f), e, w)
+		return h(WithForm(ctx, frm), e, w)
 	}
 }

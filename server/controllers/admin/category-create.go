@@ -6,9 +6,8 @@ import (
 	"github.com/danield21/danield-space/server/controllers/action"
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
-	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/controllers/view"
+	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
 )
@@ -40,21 +39,12 @@ var CategoryCreateActionHandler = handler.Chain(
 
 func CategoryCreatePageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
-		var redirect action.URL
-		f := form.AsForm(ctx)
-		s := handler.Session(ctx)
+		frm := action.Form(ctx)
+		ses := handler.Session(ctx)
 
-		user, signedIn := link.User(s)
+		user, signedIn := link.User(ses)
 		if !signedIn {
 			return ctx, status.ErrUnauthorized
-		}
-
-		if f.IsSuccessful() {
-			f.AddMessage("Successfully created category")
-			redirect = action.URL{
-				URL:   "/admin/",
-				Title: "Back to Admin Panel",
-			}
 		}
 
 		info := siteInfo.Get(ctx)
@@ -70,8 +60,7 @@ func CategoryCreatePageLink(h handler.Handler) handler.Handler {
 				User: user,
 			},
 			Result: action.Result{
-				Form:     f,
-				Redirect: redirect,
+				Form: frm,
 			},
 		}
 

@@ -1,34 +1,22 @@
 package form
 
 type Field struct {
-	Field   string
-	Message string
-	Value   string
-	Error   bool
+	Error  error
+	Values []string
 }
 
-func NewField(fld, vl string) *Field {
-	field := new(Field)
-	*field = Field{fld, "", vl, false}
-	return field
-}
-
-func NewBoolField(fld string, vl bool) *Field {
-	if vl {
-		return NewField(fld, "true")
+func (f Field) Get() string {
+	if len(f.Values) == 0 {
+		return ""
 	}
-
-	return NewField(fld, "")
+	return f.Values[0]
 }
 
-func NewMessageField(fld, vl, msg string) *Field {
-	field := new(Field)
-	*field = Field{fld, msg, vl, false}
-	return field
-}
-
-func NewErrorField(fld, vl, msg string) *Field {
-	field := new(Field)
-	*field = Field{fld, msg, vl, true}
-	return field
+func (f Field) Has(value string) bool {
+	for _, v := range f.Values {
+		if v == value {
+			return true
+		}
+	}
+	return false
 }

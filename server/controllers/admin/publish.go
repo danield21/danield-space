@@ -6,9 +6,8 @@ import (
 	"github.com/danield21/danield-space/server/controllers/action"
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
-	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/controllers/view"
+	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/categories"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
@@ -43,9 +42,8 @@ var PublishActionHandler = handler.Chain(
 //Publish handles the index page
 func PublishPageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
-		var redirect action.URL
 		ses := handler.Session(ctx)
-		f := form.AsForm(ctx)
+		frm := action.Form(ctx)
 
 		user, signedIn := link.User(ses)
 		if !signedIn {
@@ -57,14 +55,6 @@ func PublishPageLink(h handler.Handler) handler.Handler {
 		cats, err := categories.GetAll(ctx)
 		if err != nil {
 			log.Warningf(ctx, "admin.Publish - Unable to get types of articles\n%v", err)
-		}
-
-		if f.IsSuccessful() {
-			f.AddMessage("Successfully published article")
-			redirect = action.URL{
-				URL:   "/admin/",
-				Title: "Back to Admin Panel",
-			}
 		}
 
 		data := struct {
@@ -79,8 +69,7 @@ func PublishPageLink(h handler.Handler) handler.Handler {
 				User: user,
 			},
 			Result: action.Result{
-				Form:     f,
-				Redirect: redirect,
+				Form: frm,
 			},
 			Categories: cats,
 		}

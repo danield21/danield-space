@@ -8,9 +8,8 @@ import (
 	"github.com/danield21/danield-space/server/controllers/action"
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
-	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/controllers/view"
+	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/account"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
@@ -43,10 +42,9 @@ var AccountCreateActionHandler = handler.Chain(
 
 func AccountCreatePageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
-		var redirect action.URL
 		ses := handler.Session(ctx)
 		req := handler.Request(ctx)
-		f := form.AsForm(ctx)
+		frm := action.Form(ctx)
 
 		user, signedIn := link.User(ses)
 		if !signedIn {
@@ -60,18 +58,12 @@ func AccountCreatePageLink(h handler.Handler) handler.Handler {
 		}
 
 		target := req.Form.Get("account")
-		if f.IsEmpty() && target != "" {
+		if frm.IsEmpty() && target != "" {
 			tUser, err := account.Get(ctx, target)
 			if err == nil {
-				f = action.AccountToForm(tUser)
+				frm = action.AccountToForm(tUser)
 			} else {
 				log.Warningf(ctx, "Unable to get account %s\n%v", target, err)
-			}
-		} else if f.IsSuccessful() {
-			f.AddMessage("Successfully created account")
-			redirect = action.URL{
-				URL:   "/admin/",
-				Title: "Back to Admin Panel",
 			}
 		}
 
@@ -89,8 +81,7 @@ func AccountCreatePageLink(h handler.Handler) handler.Handler {
 				User: user,
 			},
 			Result: action.Result{
-				Form:     f,
-				Redirect: redirect,
+				Form: frm,
 			},
 			Super: current.Super,
 		}

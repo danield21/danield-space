@@ -6,9 +6,9 @@ import (
 	"github.com/danield21/danield-space/server/controllers/action"
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
-	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/controllers/view"
+	"github.com/danield21/danield-space/server/form"
+	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/about"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
@@ -42,34 +42,27 @@ var AboutActionHandler = handler.Chain(
 
 func AboutPageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
-		var redirect action.URL
-		f := form.AsForm(ctx)
-		s := handler.Session(ctx)
+		frm := action.Form(ctx)
+		ses := handler.Session(ctx)
 
-		user, signedIn := link.User(s)
+		user, signedIn := link.User(ses)
 		if !signedIn {
 			return ctx, status.ErrUnauthorized
 		}
 
-		if f.IsEmpty() {
+		if frm.IsEmpty() {
 			html, err := about.Get(ctx)
 			if err == nil {
-				fld := form.NewField("about", string(html))
-				f.AddField(fld)
+				abtFld := new(form.Field)
+				abtFld.Values = []string{string(html)}
+				frm.Fields["about"] = abtFld
 			} else {
 				log.Warningf(ctx, "Unable to get about summary\n%v", err)
-			}
-		} else if f.IsSuccessful() {
-			f.AddMessage("Successfully saved About summary")
-			redirect = action.URL{
-				URL:   "/admin/",
-				Title: "Back to Admin Panel",
 			}
 		}
 
 		result := action.Result{
-			Form:     f,
-			Redirect: redirect,
+			Form: frm,
 		}
 
 		info := siteInfo.Get(ctx)

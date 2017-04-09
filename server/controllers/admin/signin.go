@@ -6,9 +6,8 @@ import (
 	"github.com/danield21/danield-space/server/controllers/action"
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
-	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/controllers/view"
+	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
 )
@@ -42,18 +41,10 @@ var SignInActionHandler = handler.Chain(
 func SignInPageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 		info := siteInfo.Get(ctx)
-		f := form.AsForm(ctx)
+		frm := action.Form(ctx)
 
 		result := action.Result{
-			Form: f,
-		}
-
-		if f.IsSuccessful() {
-			f.AddMessage("Successfully signed in")
-			result.Redirect = action.URL{
-				URL:   "/admin/",
-				Title: "Admin Panel",
-			}
+			Form: frm,
 		}
 
 		data := struct {

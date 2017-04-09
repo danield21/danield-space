@@ -4,9 +4,13 @@ import (
 	"net/http"
 	"net/url"
 
+	"google.golang.org/appengine/log"
+
+	"errors"
+
 	"github.com/danield21/danield-space/server/controllers/link"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/form"
+	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/account"
 	"golang.org/x/net/context"
 )
@@ -14,14 +18,17 @@ import (
 const authUsrKey = "username"
 const authPwdKey = "password"
 
-func UnpackAuth(values url.Values) (string, []byte, *form.Form) {
-	username := form.NewField(authUsrKey, values.Get(authUsrKey))
+func UnpackAuth(values url.Values) (string, []byte, form.Form) {
+	frm := form.MakeForm()
+	username := frm.AddFieldFromValue(authUsrKey, values)
 	form.NotEmpty(username, "Username is required")
 
-	password := form.NewField(authPwdKey, values.Get(authPwdKey))
+	password := frm.AddFieldFromValue(authPwdKey, values)
 	form.NotEmpty(password, "Password is required")
 
-	return username.Value, []byte(password.Value), form.NewSubmittedForm(username, password)
+	frm.Submitted = true
+
+	return username.Get(), []byte(password.Get()), frm
 }
 
 func AuthenicateLink(h handler.Handler) handler.Handler {
@@ -31,22 +38,23 @@ func AuthenicateLink(h handler.Handler) handler.Handler {
 
 		err := r.ParseForm()
 		if err != nil {
-			return h(form.WithForm(ctx, form.NewErrorForm("Unable to process request")), e, w)
+			return h(WithForm(ctx, form.Form{Error: errors.New("Unable to parse form")}), e, w)
 		}
 
-		username, password, f := UnpackAuth(r.Form)
-		if f.HasErrors() {
-			return h(form.WithForm(ctx, f), e, w)
+		username, password, frm := UnpackAuth(r.Form)
+		if frm.HasErrors() {
+			return h(WithForm(ctx, frm), e, w)
 		}
 
 		if !account.CanLogIn(ctx, username, password) {
-			f.AddErrorMessage("Unable to authenicate")
-			return h(form.WithForm(ctx, f), e, w)
+			log.Infof(ctx, "%s attempted to login with incorrect password", username)
+			frm.Error = errors.New("Unable to authenicate")
+			return h(WithForm(ctx, frm), e, w)
 		}
 
 		link.SetUser(s, username)
 
-		return h(form.WithForm(ctx, f), e, w)
+		return h(WithForm(ctx, frm), e, w)
 	}
 }
 

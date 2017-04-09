@@ -1,13 +1,24 @@
-{{ template "templates/form-result" . }}
+{{ if .Form.IsSuccessful }}
+<div class="cloud successful">
+   Successfully signed in. <a href="/admin/">Back to admin portal</a>
+</div>
+{{ else if .Form.Error }}
+<div class="cloud error">
+	{{ .Form.Error}}
+</div>
+{{ end }}
 <form action="/admin/signin" method="post">
 	<div class="cloud">
-		{{ $username := .Form.Get "username" }}
+		{{ $username := .Form.Fields.username }}
 		<label for="form-username">Username</label>
-		<input type="text" name="username" id="form-username" value="{{ $username.Value }}">
+		<input type="text" name="username" id="form-username" value="{{ $username.Get }}">
+		{{ if $username.Error }}{{ $username.Error }}{{ end }}
 	</div>
 	<div class="cloud">
+		{{ $password := .Form.Fields.password }}
 		<label for="form-password">Password</label>
 		<input type="password" name="password" id="form-password">
+		{{ if $password.Error }}{{ $password.Error }}{{ end }}
 	</div>
 	<div>
 		<button>Sign-In</button>
