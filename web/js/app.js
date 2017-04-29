@@ -145,6 +145,14 @@ function initRouting(main) {
 	})
 }
 
+const transitionChildrenClass = "transition-children"
+function transitionTarget(elem) {
+	if(!elem.classList.contains(transitionChildrenClass) || elem.children == null || elem.children.length == 0) {
+		return [elem]
+	}
+	return Array.from(elem.children).reduce((list, e) => list.concat(transitionTarget(e)), [])
+}
+
 function transitionOut(main) {
 	let transition
 	const resolvable = {}
@@ -153,14 +161,16 @@ function transitionOut(main) {
 		resolvable.reject = reject;
 	})
 	const func = () => {
+		let children = Array.from(main.children)
+		let targets = children.reduce((list, e) => list.concat(transitionTarget(e)), [])
 		Anime({
-			targets: main.children,
+			targets: targets,
 			duration: 500,
 			easing: "linear",
 			translateY: (_, i) => `-${(i+1) * 100}px`,
 			opacity: 0,
 			complete: () => {
-				Array.from(main.children).forEach(child => main.removeChild(child))
+				children.forEach(child => main.removeChild(child))
 				window.dispatchEvent(new Event("resize"))
 				resolvable.resolve()
 			}
@@ -181,12 +191,13 @@ function transitionIn(main) {
 		resolvable.reject = reject;
 	})
 	const func = ([_, frag]) => {
-		Array.from(frag.children).forEach((c, i) => {
-			c.style.transform = `translateY(-${(i+1) * 100}px)`
-			c.style.opacity = "0"
+		let targets = Array.from(frag.children).reduce((list, e) => list.concat(transitionTarget(e)), [])
+		targets.forEach((c, i) => {
+				c.style.transform = `translateY(-${(i+1) * 100}px)`
+				c.style.opacity = "0"
 		})
 		Anime({
-			targets: frag.children,
+			targets: targets,
 			duration: 500,
 			easing: "linear",
 			translateY: "0",

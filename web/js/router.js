@@ -40,6 +40,14 @@ function firstForm(element) {
 	return firstForm(element.parentElement)
 }
 
+function isExternalLink(a) {
+    return a.hostname.length && window.location.hostname !== a.hostname;
+}
+
+function dontLoadAjax(e) {
+	return e.classList.contains("router-no-spa")
+}
+
 function next(url, perform) {
 	return perform.then(html => {
 		window.history.pushState(html.body.innerHTML, window.document.title, url)
@@ -102,7 +110,7 @@ function handleRouting(transitionOut, transitionIn) {
 
 		let a = firstA(e.target)
 
-		if(a == null) {
+		if(a == null || isExternalLink(a) || dontLoadAjax(a)) {
 			return;
 		}
 

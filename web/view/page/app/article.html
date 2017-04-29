@@ -1,6 +1,6 @@
-<h1>{{ .Article.Title }}</h1>
-<span class="published">Published by {{ .Article.Author }} <time datetime="{{ machineTime .Article.PublishDate }}">{{ humanTime .Article.PublishDate }}</time></span>
-<div class="cloud">
+<article class="full-article use-children">
+    <h1>{{ .Article.Title }}</h1>
+    <span class="published">Published by {{ .Article.Author }} <time datetime="{{ machineTime .Article.PublishDate }}">{{ humanTime .Article.PublishDate }}</time></span>
     <p>{{ .Article.Abstract }}</p>
-</div>
-{{ .Article.Content }}
+    {{ .Article.Content }}
+</article>

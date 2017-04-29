@@ -8,7 +8,7 @@
 	{{ .Form.Error}}
 </div>
 {{ end }}
-<form action="/admin/account/create" method="post">
+<form action="/admin/account/create" method="post" class="use-children">
     <div class="cloud">
         {{ $username := .Form.Fields.username }}
         <label for="form-username">Username</label>

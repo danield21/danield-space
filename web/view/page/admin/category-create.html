@@ -8,7 +8,7 @@
 	{{ .Form.Error}}
 </div>
 {{ end }}
-<form action="/admin/category/create" method="post">
+<form action="/admin/category/create" method="post" class="use-children">
 	<div class="cloud">
 		{{ $title := .Form.Fields.title }}
 		<label for="form-title">Title</label>
