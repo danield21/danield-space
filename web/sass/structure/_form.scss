@@ -1,35 +1,27 @@
-html, body {
-    font-family: 'Raleway', sans-serif;
-    color: $font-color;
-    margin: 0;
+form {
+	.cloud {
+		margin: 1rem;
+		padding: 1rem;
+
+		&.error {
+			background-color: rgba($fire-color, .8);
+			font-weight: bold;
+		}
+
+		&.successful {
+			background-color: rgba($green-color, .8);
+			font-weight: bold;
+		}
+	}
 }
 
-body {
-    background: $skyblue-color;
+label {
+	vertical-align: top;
 }
 
-.sand {
-    background-color: $sand-color;
-    width: 100%;
-}
-
-.mountain {
-    width: 100%;
-}
-
-.cloud {
-    border-radius: 8px;
-    background-color: rgba($cloud-color, .8);
-    padding: 4%;
-}
-
-.published {
-    font-size: .8rem;
-}
-
-a {
-    text-decoration: underline;
-    color: $link-color;
+label + textarea {
+	width: 70%;
+	height: 5rem;
 }
 
 input[type="text"], input[type="password"], input[type="datetime-local"], textarea, select {

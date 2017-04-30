@@ -9,7 +9,7 @@ import (
 )
 
 var DefaultAbout = []byte(
-	"<p>My name is Daniel Juan Dominguez, and I am a developer.</p>",
+	"<section>My name is Daniel Juan Dominguez, and I am a developer.</section>",
 )
 
 const bucketKey = "about-page"

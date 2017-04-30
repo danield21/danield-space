@@ -1,0 +1,29 @@
+html, body {
+    font-family: 'Raleway', sans-serif;
+    color: $font-color;
+    margin: 0;
+}
+
+body {
+    background: $skyblue-color;
+}
+
+.sand {
+    background-color: $sand-color;
+    width: 100%;
+}
+
+.mountain {
+    width: 100%;
+}
+
+.cloud {
+    border-radius: 8px;
+    background-color: rgba($cloud-color, .8);
+    padding: 4%;
+}
+
+a {
+    text-decoration: underline;
+    color: $link-color;
+}
