@@ -1,18 +1,16 @@
 package action
 
 import (
+	"errors"
 	"net/http"
 	"net/url"
-
-	"google.golang.org/appengine/log"
-
-	"errors"
 
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/account"
 	"golang.org/x/net/context"
+	"google.golang.org/appengine/log"
 )
 
 const authUsrKey = "username"
@@ -20,13 +18,13 @@ const authPwdKey = "password"
 
 func UnpackAuth(values url.Values) (string, []byte, form.Form) {
 	frm := form.MakeForm()
+	frm.Submitted = true
+
 	username := frm.AddFieldFromValue(authUsrKey, values)
 	form.NotEmpty(username, "Username is required")
 
 	password := frm.AddFieldFromValue(authPwdKey, values)
 	form.NotEmpty(password, "Password is required")
-
-	frm.Submitted = true
 
 	return username.Get(), []byte(password.Get()), frm
 }

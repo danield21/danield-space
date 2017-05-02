@@ -1,11 +1,10 @@
 package articles
 
 import (
+	"html/template"
 	"log"
 	"strings"
 	"time"
-
-	"html/template"
 
 	"github.com/danield21/danield-space/server/repository"
 	"github.com/danield21/danield-space/server/repository/categories"

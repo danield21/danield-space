@@ -1,9 +1,8 @@
 package view
 
 import (
-	"net/http"
-
 	"encoding/json"
+	"net/http"
 
 	"github.com/danield21/danield-space/server/handler"
 	"golang.org/x/net/context"

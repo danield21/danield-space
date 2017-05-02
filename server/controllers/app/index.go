@@ -2,7 +2,6 @@ package app
 
 import (
 	"net/http"
-
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/handler"

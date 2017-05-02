@@ -1,7 +1,9 @@
 package form
 
-import "strings"
-import "errors"
+import (
+	"errors"
+	"strings"
+)
 
 func NotEmpty(fld *Field, msg string) bool {
 	if len(fld.Values) == 0 {

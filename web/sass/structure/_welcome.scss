@@ -6,26 +6,22 @@
     display: -moz-flex;
     display: -webkit-flex;
     display: flex;
-
     -webkit-justify-content: space-around;
     justify-content: space-around;
     -webkit-flex-flow: row wrap;
     flex-flow: row wrap;
     -webkit-align-items: stretch;
     align-items: stretch;
-
-	h1 {
-		text-align: left;
+    h1 {
+        text-align: left;
         flex-grow: 1;
-	}
-
-	form {
-		text-align: right;
+    }
+    form {
+        text-align: right;
         flex-grow: 1;
-
-		button {
-			padding: .7rem;
-			font-size: 1.5rem;
-		}
-	}
+        button {
+            padding: .7rem;
+            font-size: 1.5rem;
+        }
+    }
 }

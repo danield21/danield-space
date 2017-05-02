@@ -1,6 +1,8 @@
 package repository
 
-import "regexp"
+import (
+	"regexp"
+)
 
 //ValidURLPart is a helper function to determine if a entered url can be valid
 func ValidURLPart(urlPart string) bool {

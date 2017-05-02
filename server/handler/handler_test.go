@@ -1,13 +1,12 @@
 package handler_test
 
 import (
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"io"
-
-	"github.com/danield21/danield-space/server/handler"
+	"github.com/danield21/danield-space/server"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -24,7 +23,7 @@ func TestApplyHandler(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		e := handler.TestingEnvironment{Templates: nil, Ctx: context.TODO()}
+		e := server.TestingEnvironment{Templates: nil, Ctx: context.TODO()}
 		h := handler.Apply(e, test.Handler)
 		s := httptest.NewServer(h)
 		defer s.Close()
@@ -61,7 +60,7 @@ func TestChainHandler(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		e := handler.TestingEnvironment{Templates: nil, Ctx: context.TODO()}
+		e := server.TestingEnvironment{Templates: nil, Ctx: context.TODO()}
 		h := handler.Apply(e, test.Handler)
 		s := httptest.NewServer(h)
 		defer s.Close()
@@ -84,7 +83,7 @@ func TestChainHandler(t *testing.T) {
 }
 
 func TestPrepareHandler(t *testing.T) {
-	e := handler.TestingEnvironment{Templates: nil, Ctx: context.TODO()}
+	e := server.TestingEnvironment{Templates: nil, Ctx: context.TODO()}
 
 	tests := []struct {
 		Handler http.HandlerFunc
@@ -120,25 +119,25 @@ func TestPrepareHandler(t *testing.T) {
 	}
 }
 
-func mockHandler1(ctx context.Context, e handler.Environment, w http.ResponseWriter) error {
+func mockHandler1(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 	w.Write([]byte("World"))
-	return nil
+	return ctx, nil
 }
 
-func mockHandler2(ctx context.Context, e handler.Environment, w http.ResponseWriter) error {
+func mockHandler2(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 	w.Write([]byte("Person"))
-	return nil
+	return ctx, nil
 }
 
 func mockLink1(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) error {
+	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 		w.Write([]byte("Hello, "))
 		return h(ctx, e, w)
 	}
 }
 
 func mockLink2(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) error {
+	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 		w.Write([]byte("Goodbye, "))
 		return h(ctx, e, w)
 	}

@@ -3,7 +3,6 @@ package repository
 import (
 	"bytes"
 	"html/template"
-
 	"regexp"
 
 	"github.com/microcosm-cc/bluemonday"

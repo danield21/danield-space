@@ -32,6 +32,7 @@ func UnpackArticle(ctx context.Context, values url.Values) (*articles.Article, f
 	)
 
 	frm := form.MakeForm()
+	frm.Submitted = true
 
 	titleFld := frm.AddFieldFromValue(titleKey, values)
 	form.NotEmpty(titleFld, "title is required")
@@ -69,8 +70,6 @@ func UnpackArticle(ctx context.Context, values url.Values) (*articles.Article, f
 			form.Fail(contentFld, "unable to parse content")
 		}
 	}
-
-	frm.Submitted = true
 
 	if frm.HasErrors() {
 		return nil, frm

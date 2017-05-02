@@ -15,11 +15,10 @@ const aboutKey = "about"
 
 func UnpackAbout(values url.Values) ([]byte, form.Form) {
 	frm := form.MakeForm()
+	frm.Submitted = true
 
 	fld := frm.AddFieldFromValue(aboutKey, values)
 	form.NotEmpty(fld, "About is required")
-
-	frm.Submitted = true
 
 	return []byte(fld.Get()), frm
 }

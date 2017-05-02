@@ -1,15 +1,13 @@
-{{ template "core/admin-panel" . }}
-{{ $isSuper := .Super }}
-{{ range $i, $accounts := .Accounts }}
-    <div class="cloud">
-        <div class="welcome-panel">
-            <h1>{{ $accounts.Username }}</h1>
-            {{ if $isSuper }}
-            <form action="/admin/account/delete" method="post">
-                <button type="submit" value="{{ $accounts.Username }}" name="account">Delete Account</button>
-            </form>
-            {{ end }}
-        </div>
-        <a href="/admin/account/create?account={{ $accounts.Username }}">Change Password</a>
+{{ template "core/admin-panel" . }}{{ $isSuper := .Super }}{{ range $i, $accounts := .Accounts }}
+<div class="cloud">
+    <div class="welcome-panel">
+        <h1>{{ $accounts.Username }}</h1>
+        {{ if $isSuper }}
+        <form action="/admin/account/delete" method="post">
+            <button type="submit" value="{{ $accounts.Username }}" name="account">Delete Account</button>
+        </form>
+        {{ end }}
     </div>
+    <a href="/admin/account/create?account={{ $accounts.Username }}">Change Password</a>
+</div>
 {{ end }}

@@ -3,8 +3,8 @@ package link
 import (
 	"net/http"
 
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/controllers/view"
+	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/theme"
 	"golang.org/x/net/context"
 )

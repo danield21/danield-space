@@ -1,6 +1,6 @@
-(function () {
+(function() {
     var typesToPatch = ['DocumentType', 'Element', 'CharacterData'],
-        remove = function () {
+        remove = function() {
             // The check here seems pointless, since we're not adding this
             // method to the prototypes of any any elements that CAN be the
             // root of the DOM. However, it's required by spec (see point 1 of
@@ -12,7 +12,7 @@
             }
         };
 
-    for (var i=0; i<typesToPatch.length; i++) {
+    for (var i = 0; i < typesToPatch.length; i++) {
         var type = typesToPatch[i];
         if (window[type] && !window[type].prototype.remove) {
             window[type].prototype.remove = remove;

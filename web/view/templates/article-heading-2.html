@@ -1,9 +1,9 @@
 <article class="cloud">
-	<a href="/publications{{ .Path }}">
-		<h2>{{ .Heading }}</h2>
-		<span class="published">Published by {{ .Author }} <time datetime="{{ machineTime .PublishDate }}">{{ humanTime .PublishDate }}</time></span>
-		<p>
-			{{ .Abstract }}
-		</p>
-	</a>
+    <a href="/publications{{ .Path }}">
+        <h2>{{ .Heading }}</h2>
+        <span class="published">Published by {{ .Author }} <time datetime="{{ machineTime .PublishDate }}">{{ humanTime .PublishDate }}</time></span>
+        <p>
+            {{ .Abstract }}
+        </p>
+    </a>
 </article>

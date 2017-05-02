@@ -1,13 +1,13 @@
 <div class="cloud">
-    <p>You have successfully signed out.<p>
+    <p>You have successfully signed out.</p>
     <a href="/" id="link-home">Back to homepage</a>
     <script>
-    setTimeout(() => {
-        var link = document.getElementById("link-home");
-        var event = document.createEvent("MouseEvents");
-        event.initEvent("click", true, true);
-        event.synthetic = true;
-        link.dispatchEvent(event, true);
-    }, 2000)
+        setTimeout(() => {
+            var link = document.getElementById("link-home");
+            var event = document.createEvent("MouseEvents");
+            event.initEvent("click", true, true);
+            event.synthetic = true;
+            link.dispatchEvent(event, true);
+        }, 2000)
     </script>
 </div>

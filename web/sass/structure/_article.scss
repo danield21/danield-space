@@ -1,19 +1,18 @@
 article {
-	& > a {
-		color: initial;
-		text-decoration: none;
-		display: block;
-
-		&:hover > h1, &:hover > h2 {
-    			text-decoration: underline;
-		}
-	}
-
-	.published {
-		font-size: .8rem;
-	}
+    &>a {
+        color: initial;
+        text-decoration: none;
+        display: block;
+        &:hover>h1,
+        &:hover>h2 {
+            text-decoration: underline;
+        }
+    }
+    .published {
+        font-size: .8rem;
+    }
 }
 
 section {
-	margin: 10px;
+    margin: 10px;
 }

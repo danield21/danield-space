@@ -1,10 +1,10 @@
 {{ range .Publications }}
-	<section>
-		{{ template "templates/article-list" . }}
-		<a href="/publications/{{ .Category.URL }}">See more {{ asTitle .Category.Title }} articles</a>
-	</section>
+<section>
+    {{ template "templates/article-list" . }}
+    <a href="/publications/{{ .Category.URL }}">See more {{ asTitle .Category.Title }} articles</a>
+</section>
 {{ else }}
 <div class="cloud">
-	There is currently nothing published at the moment
+    There is currently nothing published at the moment
 </div>
 {{ end }}

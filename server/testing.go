@@ -21,13 +21,11 @@ func (t TestingEnvironment) View(w io.Writer, theme, view string, data interface
 }
 
 //Session gets a mock session
-func (t TestingEnvironment) Session(r *http.Request) (session *sessions.Session) {
-	session = GetSession(r)
-	return
+func (t TestingEnvironment) Session(r *http.Request) *sessions.Session {
+	return GetSession(r)
 }
 
 //Context gets a mock context
-func (t TestingEnvironment) Context(r *http.Request) (ctx context.Context) {
-	ctx = t.Ctx
-	return
+func (t TestingEnvironment) Context(r *http.Request) context.Context {
+	return t.Ctx
 }

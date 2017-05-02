@@ -4,13 +4,12 @@ import (
 	"errors"
 	"net/http"
 
-	"google.golang.org/appengine/log"
-
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
+	"google.golang.org/appengine/log"
 )
 
 var ErrNotFound = errors.New("resource not found")

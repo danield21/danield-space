@@ -5,14 +5,13 @@ import (
 	"net/http"
 	"net/url"
 
-	"google.golang.org/appengine/log"
-
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/account"
 	"golang.org/x/net/context"
+	"google.golang.org/appengine/log"
 )
 
 const acctUsrKey = "username"
@@ -22,6 +21,8 @@ const acctSprKey = "super"
 
 func UnpackAccount(values url.Values) (*account.Account, form.Form) {
 	frm := form.MakeForm()
+	frm.Submitted = true
+
 	usrFld := frm.AddFieldFromValue(acctUsrKey, values)
 	if !form.NotEmpty(usrFld, "username is required") && !account.ValidUsername(usrFld.Get()) {
 		form.Fail(usrFld, "username is not in a proper format")
@@ -39,8 +40,6 @@ func UnpackAccount(values url.Values) (*account.Account, form.Form) {
 	}
 
 	sprFld := frm.AddFieldFromValue(acctSprKey, values)
-
-	frm.Submitted = true
 
 	if frm.HasErrors() {
 		return nil, frm

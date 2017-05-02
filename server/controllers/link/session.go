@@ -3,11 +3,10 @@ package link
 import (
 	"net/http"
 
-	"google.golang.org/appengine/log"
-
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/gorilla/sessions"
 	"golang.org/x/net/context"
+	"google.golang.org/appengine/log"
 )
 
 const UserKey = "user"

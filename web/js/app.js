@@ -2,7 +2,7 @@ require("./shim")
 
 const Anime = require("animejs")
 const Coordinates = require('./coordinate')
-const Balloons =  require('./balloons')
+const Balloons = require('./balloons')
 const Stick = require('./stick')
 const util = require("./util")
 const router = require("./router")
@@ -10,207 +10,209 @@ const Sun = require("./sun")
 const Modernizr = require("modernizr")
 
 exports.imports = {
-	Anime,
-	meetsRequirements,
-	router
+    Anime,
+    meetsRequirements,
+    router
 }
 
 function meetsRequirements() {
-	return Modernizr.eventlistener &&
-	Modernizr.queryselector &&
-	Modernizr.es5 &&
-	Modernizr.promises
+    return Modernizr.eventlistener &&
+        Modernizr.queryselector &&
+        Modernizr.es5 &&
+        Modernizr.promises
 }
 
 function styleDesert(mainCloud, desert) {
-	mainCloud.style.marginBottom = 0
-	desert.style.visibility = "hidden"
-	return new Promise((resolve) => {
-		setTimeout(() => {
-			desert.style.visibility = "visible"
-			let screen = util.screenSize()
-			mainCloud.style.marginBottom = (screen.height - 300) + "px"
-			resolve()
-		}, 0)
-	})
+    mainCloud.style.marginBottom = 0
+    desert.style.visibility = "hidden"
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            desert.style.visibility = "visible"
+            let screen = util.screenSize()
+            mainCloud.style.marginBottom = (screen.height - 300) + "px"
+            resolve()
+        }, 0)
+    })
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-	if(!meetsRequirements()) {
-		return
-	}
+    if (!meetsRequirements()) {
+        return
+    }
 
-	const main = Bliss("main")
-	const easel = Bliss("#sky-easel")
+    const main = Bliss("main")
+    const easel = Bliss("#sky-easel")
 
-	initEasel(easel)
+    initEasel(easel)
 
-	if(Balloons.meetsRequirements()) {
-		initBalloons(easel)
-	}
+    if (Balloons.meetsRequirements()) {
+        initBalloons(easel)
+    }
 
-	initSun(easel)
+    initSun(easel)
 
-	if(router.meetsRequirements()) {
-		initRouting(main)
-	}
+    if (router.meetsRequirements()) {
+        initRouting(main)
+    }
 
-	let mainCloud = Bliss("body > .cloud")
-	let desert = Bliss("body > footer > .sand")
-	let styleFunc = styleDesert.bind(null, mainCloud, desert)
+    let mainCloud = Bliss("body > .cloud")
+    let desert = Bliss("body > footer > .sand")
+    let styleFunc = styleDesert.bind(null, mainCloud, desert)
 
-	let mountainRange = document.getElementById("mountain-range");
-	let stickFunc = Stick.toBottom(mountainRange);
-	let raiseEasel = () => {
-		var height = util.screenSize().height
-		const offset = Bliss(".sand").getBoundingClientRect().top
-		if(offset < height) {
-			easel.style.transform = `translateY(-${height - offset}px)`
-		} else {
-			easel.style.transform = null
-		}
-	}
+    let mountainRange = document.getElementById("mountain-range");
+    let stickFunc = Stick.toBottom(mountainRange);
+    let raiseEasel = () => {
+        var height = util.screenSize().height
+        const offset = Bliss(".sand").getBoundingClientRect().top
+        if (offset < height) {
+            easel.style.transform = `translateY(-${height - offset}px)`
+        } else {
+            easel.style.transform = null
+        }
+    }
 
-	Bliss.$(".js-fillNow").forEach(button => {
-		button.addEventListener('click', e => {
-			var id = e.target.dataset.target
-			var input = document.getElementById(id)
-			util.setDateTimeInputToNow(input)
-		})
-	})
+    Bliss.$(".js-fillNow").forEach(button => {
+        button.addEventListener('click', e => {
+            var id = e.target.dataset.target
+            var input = document.getElementById(id)
+            util.setDateTimeInputToNow(input)
+        })
+    })
 
-	styleFunc()
-		.then(stickFunc)
-		.then(raiseEasel)
-	window.addEventListener('load', () => {
-		styleFunc()
-			.then(stickFunc)
-			.then(raiseEasel)
-	})
-	window.addEventListener('resize', () => {
-		styleFunc()
-			.then(stickFunc)
-			.then(raiseEasel)
-	})
-	document.addEventListener('scroll', () => {
-		stickFunc().then(raiseEasel)
-	})
+    styleFunc()
+        .then(stickFunc)
+        .then(raiseEasel)
+    window.addEventListener('load', () => {
+        styleFunc()
+            .then(stickFunc)
+            .then(raiseEasel)
+    })
+    window.addEventListener('resize', () => {
+        styleFunc()
+            .then(stickFunc)
+            .then(raiseEasel)
+    })
+    document.addEventListener('scroll', () => {
+        stickFunc().then(raiseEasel)
+    })
 })
 
 function initEasel(easel) {
-	easel.style.position = 'fixed'
-	easel.style.top = 0
+    easel.style.position = 'fixed'
+    easel.style.top = 0
 }
 
 function initSun(easel) {
-	const sun = Sun.create(1000)
-	Sun.setColor(sun, "#FFF250", "#FFFFFF")
-	easel.appendChild(sun)
+    const sun = Sun.create(1000)
+    Sun.setColor(sun, "#FFF250", "#FFFFFF")
+    easel.appendChild(sun)
 }
 
 
 const balloons = {
-	MAX: 10,
-	EVERY: 20000
+    MAX: 10,
+    EVERY: 20000
 }
+
 function initBalloons(easel) {
-	const getBalloon = Bliss.fetch("/dist/svg/balloon.svg")
-	setInterval(() => {
-		if(easel.childNodes.length >= balloons.MAX || (document.hidden || document.msHidden || document.webkitHidden)) {
-			return
-		}
-		getBalloon.then(Balloons.prepare)
-			.then(Balloons.drawOn(easel))
-			.then(Balloons.fly)
-	}, balloons.EVERY)
+    const getBalloon = Bliss.fetch("/dist/svg/balloon.svg")
+    setInterval(() => {
+        if (easel.childNodes.length >= balloons.MAX || (document.hidden || document.msHidden || document.webkitHidden)) {
+            return
+        }
+        getBalloon.then(Balloons.prepare)
+            .then(Balloons.drawOn(easel))
+            .then(Balloons.fly)
+    }, balloons.EVERY)
 }
 
 function initRouting(main) {
-	router.init()
+    router.init()
 
-	window.addEventListener('click', e => {
-		const outStruct = transitionOut(main)
-		const inStruct = transitionIn(main)
-		router.handleRouting(outStruct.func, inStruct.func)(e)
-	})
+    window.addEventListener('click', e => {
+        const outStruct = transitionOut(main)
+        const inStruct = transitionIn(main)
+        router.handleRouting(outStruct.func, inStruct.func)(e)
+    })
 
-	window.addEventListener('submit', e => {
-		const outStruct = transitionOut(main)
-		const inStruct = transitionIn(main)
-		router.handleForm(outStruct.func, inStruct.func)(e)
-	})
-	window.addEventListener("popstate", e => {
-		main.innerHTML = e.state
-		window.dispatchEvent(new Event("resize"))
-	})
+    window.addEventListener('submit', e => {
+        const outStruct = transitionOut(main)
+        const inStruct = transitionIn(main)
+        router.handleForm(outStruct.func, inStruct.func)(e)
+    })
+    window.addEventListener("popstate", e => {
+        main.innerHTML = e.state
+        window.dispatchEvent(new Event("resize"))
+    })
 }
 
 const transitionChildrenClass = "transition-children"
+
 function transitionTarget(elem) {
-	if(!elem.classList.contains(transitionChildrenClass) || elem.children == null || elem.children.length == 0) {
-		return [elem]
-	}
-	return Array.from(elem.children).reduce((list, e) => list.concat(transitionTarget(e)), [])
+    if (!elem.classList.contains(transitionChildrenClass) || elem.children == null || elem.children.length == 0) {
+        return [elem]
+    }
+    return Array.from(elem.children).reduce((list, e) => list.concat(transitionTarget(e)), [])
 }
 
 function transitionOut(main) {
-	let transition
-	const resolvable = {}
-	const promise = new Promise((resolve, reject) => {
-		resolvable.resolve = resolve;
-		resolvable.reject = reject;
-	})
-	const func = () => {
-		let children = Array.from(main.children)
-		let targets = children.reduce((list, e) => list.concat(transitionTarget(e)), [])
-		Anime({
-			targets: targets,
-			duration: 500,
-			easing: "linear",
-			translateY: (_, i) => `-${(i+1) * 100}px`,
-			opacity: 0,
-			complete: () => {
-				children.forEach(child => main.removeChild(child))
-				window.dispatchEvent(new Event("resize"))
-				resolvable.resolve()
-			}
-		})
-		return transition.promise
-	}
+    let transition
+    const resolvable = {}
+    const promise = new Promise((resolve, reject) => {
+        resolvable.resolve = resolve;
+        resolvable.reject = reject;
+    })
+    const func = () => {
+        let children = Array.from(main.children)
+        let targets = children.reduce((list, e) => list.concat(transitionTarget(e)), [])
+        Anime({
+            targets: targets,
+            duration: 500,
+            easing: "linear",
+            translateY: (_, i) => `-${(i+1) * 100}px`,
+            opacity: 0,
+            complete: () => {
+                children.forEach(child => main.removeChild(child))
+                window.dispatchEvent(new Event("resize"))
+                resolvable.resolve()
+            }
+        })
+        return transition.promise
+    }
 
-	transition = { promise, func }
+    transition = { promise, func }
 
-	return transition
+    return transition
 }
 
 function transitionIn(main) {
-	let transition
-	const resolvable = {}
-	const promise = new Promise((resolve, reject) => {
-		resolvable.resolve = resolve;
-		resolvable.reject = reject;
-	})
-	const func = ([_, frag]) => {
-		let targets = Array.from(frag.children).reduce((list, e) => list.concat(transitionTarget(e)), [])
-		targets.forEach((c, i) => {
-				c.style.transform = `translateY(-${(i+1) * 100}px)`
-				c.style.opacity = "0"
-		})
-		Anime({
-			targets: targets,
-			duration: 500,
-			easing: "linear",
-			translateY: "0",
-			opacity: 1,
-			complete: () => {
-				resolvable.resolve()
-			}
-		})
-		main.appendChild(frag)
-		return transition.promise
-	}
+    let transition
+    const resolvable = {}
+    const promise = new Promise((resolve, reject) => {
+        resolvable.resolve = resolve;
+        resolvable.reject = reject;
+    })
+    const func = ([_, frag]) => {
+        let targets = Array.from(frag.children).reduce((list, e) => list.concat(transitionTarget(e)), [])
+        targets.forEach((c, i) => {
+            c.style.transform = `translateY(-${(i+1) * 100}px)`
+            c.style.opacity = "0"
+        })
+        Anime({
+            targets: targets,
+            duration: 500,
+            easing: "linear",
+            translateY: "0",
+            opacity: 1,
+            complete: () => {
+                resolvable.resolve()
+            }
+        })
+        main.appendChild(frag)
+        return transition.promise
+    }
 
-	transition = { promise, func }
+    transition = { promise, func }
 
-	return transition
+    return transition
 }

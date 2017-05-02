@@ -18,6 +18,7 @@ const catDscKey = "description"
 
 func UnpackCategory(values url.Values) (*categories.Category, form.Form) {
 	frm := form.MakeForm()
+	frm.Submitted = true
 
 	ttlFld := frm.AddFieldFromValue(catTitleKey, values)
 	form.NotEmpty(ttlFld, "Title is required")
@@ -29,8 +30,6 @@ func UnpackCategory(values url.Values) (*categories.Category, form.Form) {
 
 	dscFld := frm.AddFieldFromValue(catDscKey, values)
 	form.NotEmpty(dscFld, "Description is required")
-
-	frm.Submitted = true
 
 	if frm.HasErrors() {
 		return nil, frm
