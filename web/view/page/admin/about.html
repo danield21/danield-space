@@ -1,19 +1,17 @@
-{{ template "core/admin-panel" . }}
-{{ if .Form.IsSuccessful }}
+{{ template "core/admin-panel" . }} {{ if .Form.IsSuccessful }}
 <div class="cloud successful">
-   Successfully updated about page. <a href="/admin/">Back to admin portal</a>
+    Successfully updated about page. <a href="/admin/">Back to admin portal</a>
 </div>
 {{ else if .Form.Error }}
 <div class="cloud error">
-	{{ .Form.Error}}
+    {{ .Form.Error}}
 </div>
 {{ end }}
 <form action="/admin/about" method="post" class="use-children">
-	<div class="cloud">
-		{{ $about := .Form.Fields.about }}
-		<label for="form-about">About</label>
-		<textarea name="about" id="form-about" required>{{ $about.Get }}</textarea>
-		{{ if $about.Error }}{{ $about.Error }}{{ end }}
-	</div>
+    <div class="cloud">
+        {{ $about := .Form.Fields.about }}
+        <label for="form-about">About</label>
+        <textarea name="about" id="form-about" required style="height: 10rem;">{{ $about.Get }}</textarea> {{ if $about.Error }}{{ $about.Error }}{{ end }}
+    </div>
     <button type="submit">Submit</button>
 </form>

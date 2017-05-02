@@ -6,8 +6,8 @@ import (
 	"github.com/danield21/danield-space/server/controllers/admin"
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/controllers/view"
+	"github.com/danield21/danield-space/server/handler"
 	"github.com/gorilla/mux"
 )
 
@@ -58,6 +58,10 @@ func Admin(e handler.Environment, r *mux.Router) {
 	r.HandleFunc("/site-info", handler.Apply(e, admin.SiteInfoHeadersHandler)).
 		Methods(http.MethodHead)
 	r.HandleFunc("/site-info", handler.Apply(e, admin.SiteInfoPageHandler)).
+		Methods(http.MethodGet, http.MethodPost)
+	r.HandleFunc("/site-info/manage", handler.Apply(e, admin.SiteInfoManageHeadersHandler)).
+		Methods(http.MethodHead)
+	r.HandleFunc("/site-info/manage", handler.Apply(e, admin.SiteInfoManagePageHandler)).
 		Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/category", handler.Apply(e, admin.CategoryHeadersHandler)).
 		Methods(http.MethodHead)
