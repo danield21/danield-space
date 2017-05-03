@@ -1,7 +1,7 @@
 /* eslint-env node */
 var path = require('path'),
     WebpackCopy = require('copy-webpack-plugin'),
-    ExtractTextPlugin = require('extract-text-webpack-plugin');
+    ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 module.exports = {
     entry: {
