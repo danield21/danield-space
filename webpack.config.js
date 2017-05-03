@@ -1,7 +1,7 @@
-var webpack = require('webpack'),
-    path = require('path'),
-    WebpackCopy = require('copy-webpack-plugin')
-ExtractTextPlugin = require("extract-text-webpack-plugin");
+/* eslint-disable */
+var path = require('path'),
+    WebpackCopy = require('copy-webpack-plugin'),
+    ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
     entry: {
@@ -17,14 +17,14 @@ module.exports = {
         rules: [{
                 test: /\.modernizrrc(\.json)?$/,
                 use: [
-                    "modernizr-loader",
-                    "json-loader"
+                    'modernizr-loader',
+                    'json-loader'
                 ]
             },
             {
                 test: /\.js$/,
                 use: [{
-                    loader: "babel-loader",
+                    loader: 'babel-loader',
                     options: {
                         presets: ['es2015']
                     }
@@ -33,10 +33,10 @@ module.exports = {
             {
                 test: /\.scss$/,
                 use: ExtractTextPlugin.extract({
-                    fallback: "style-loader",
+                    fallback: 'style-loader',
                     use: [
-                        "css-loader",
-                        "sass-loader"
+                        'css-loader',
+                        'sass-loader'
                     ]
                 })
             }
@@ -44,15 +44,15 @@ module.exports = {
     },
     plugins: [
         new WebpackCopy([
-            { from: path.join("web", "view"), to: path.join("..", "view") },
-            { from: path.join("web", "svg"), to: path.join("svg") },
-            { from: path.join("web", "lib"), to: path.join("js") }
+            { from: path.join('web', 'view'), to: path.join('..', 'view') },
+            { from: path.join('web', 'svg'), to: path.join('svg') },
+            { from: path.join('web', 'lib'), to: path.join('js') }
         ]),
-        new ExtractTextPlugin("css/[name].css")
+        new ExtractTextPlugin('css/[name].css')
     ],
     resolve: {
         alias: {
-            modernizr$: path.resolve(__dirname, "web/js/.modernizrrc")
+            modernizr$: path.resolve(__dirname, 'web/js/.modernizrrc')
         }
     }
-};
+}
