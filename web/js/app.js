@@ -1,13 +1,12 @@
-require("./shim")
+require('./shim')
 
-const Anime = require("animejs")
-const Coordinates = require('./coordinate')
+const Anime = require('animejs')
 const Balloons = require('./balloons')
 const Stick = require('./stick')
-const util = require("./util")
-const router = require("./router")
-const Sun = require("./sun")
-const Modernizr = require("modernizr")
+const util = require('./util')
+const router = require('./router')
+const Sun = require('./sun')
+const Modernizr = require('modernizr')
 
 exports.imports = {
     Anime,
@@ -24,12 +23,12 @@ function meetsRequirements() {
 
 function styleDesert(mainCloud, desert) {
     mainCloud.style.marginBottom = 0
-    desert.style.visibility = "hidden"
+    desert.style.visibility = 'hidden'
     return new Promise((resolve) => {
         setTimeout(() => {
-            desert.style.visibility = "visible"
+            desert.style.visibility = 'visible'
             let screen = util.screenSize()
-            mainCloud.style.marginBottom = (screen.height - 300) + "px"
+            mainCloud.style.marginBottom = (screen.height - 300) + 'px'
             resolve()
         }, 0)
     })
@@ -40,8 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return
     }
 
-    const main = Bliss("main")
-    const easel = Bliss("#sky-easel")
+    const main = Bliss('main')
+    const easel = Bliss('#sky-easel')
 
     initEasel(easel)
 
@@ -55,15 +54,15 @@ document.addEventListener('DOMContentLoaded', () => {
         initRouting(main)
     }
 
-    let mainCloud = Bliss("body > .cloud")
-    let desert = Bliss("body > footer > .sand")
+    let mainCloud = Bliss('body > .cloud')
+    let desert = Bliss('body > footer > .sand')
     let styleFunc = styleDesert.bind(null, mainCloud, desert)
 
-    let mountainRange = document.getElementById("mountain-range");
-    let stickFunc = Stick.toBottom(mountainRange);
+    let mountainRange = document.getElementById('mountain-range')
+    let stickFunc = Stick.toBottom(mountainRange)
     let raiseEasel = () => {
         var height = util.screenSize().height
-        const offset = Bliss(".sand").getBoundingClientRect().top
+        const offset = Bliss('.sand').getBoundingClientRect().top
         if (offset < height) {
             easel.style.transform = `translateY(-${height - offset}px)`
         } else {
@@ -71,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    Bliss.$(".js-fillNow").forEach(button => {
+    Bliss.$('.js-fillNow').forEach(button => {
         button.addEventListener('click', e => {
             var id = e.target.dataset.target
             var input = document.getElementById(id)
@@ -104,7 +103,7 @@ function initEasel(easel) {
 
 function initSun(easel) {
     const sun = Sun.create(1000)
-    Sun.setColor(sun, "#FFF250", "#FFFFFF")
+    Sun.setColor(sun, '#FFF250', '#FFFFFF')
     easel.appendChild(sun)
 }
 
@@ -115,7 +114,7 @@ const balloons = {
 }
 
 function initBalloons(easel) {
-    const getBalloon = Bliss.fetch("/dist/svg/balloon.svg")
+    const getBalloon = Bliss.fetch('/dist/svg/balloon.svg')
     setInterval(() => {
         if (easel.childNodes.length >= balloons.MAX || (document.hidden || document.msHidden || document.webkitHidden)) {
             return
@@ -140,13 +139,13 @@ function initRouting(main) {
         const inStruct = transitionIn(main)
         router.handleForm(outStruct.func, inStruct.func)(e)
     })
-    window.addEventListener("popstate", e => {
+    window.addEventListener('popstate', e => {
         main.innerHTML = e.state
-        window.dispatchEvent(new Event("resize"))
+        window.dispatchEvent(new Event('resize'))
     })
 }
 
-const transitionChildrenClass = "transition-children"
+const transitionChildrenClass = 'transition-children'
 
 function transitionTarget(elem) {
     if (!elem.classList.contains(transitionChildrenClass) || elem.children == null || elem.children.length == 0) {
@@ -159,8 +158,8 @@ function transitionOut(main) {
     let transition
     const resolvable = {}
     const promise = new Promise((resolve, reject) => {
-        resolvable.resolve = resolve;
-        resolvable.reject = reject;
+        resolvable.resolve = resolve
+        resolvable.reject = reject
     })
     const func = () => {
         let children = Array.from(main.children)
@@ -168,12 +167,12 @@ function transitionOut(main) {
         Anime({
             targets: targets,
             duration: 500,
-            easing: "linear",
+            easing: 'linear',
             translateY: (_, i) => `-${(i+1) * 100}px`,
             opacity: 0,
             complete: () => {
                 children.forEach(child => main.removeChild(child))
-                window.dispatchEvent(new Event("resize"))
+                window.dispatchEvent(new Event('resize'))
                 resolvable.resolve()
             }
         })
@@ -189,20 +188,20 @@ function transitionIn(main) {
     let transition
     const resolvable = {}
     const promise = new Promise((resolve, reject) => {
-        resolvable.resolve = resolve;
-        resolvable.reject = reject;
+        resolvable.resolve = resolve
+        resolvable.reject = reject
     })
     const func = ([_, frag]) => {
         let targets = Array.from(frag.children).reduce((list, e) => list.concat(transitionTarget(e)), [])
         targets.forEach((c, i) => {
             c.style.transform = `translateY(-${(i+1) * 100}px)`
-            c.style.opacity = "0"
+            c.style.opacity = '0'
         })
         Anime({
             targets: targets,
             duration: 500,
-            easing: "linear",
-            translateY: "0",
+            easing: 'linear',
+            translateY: '0',
             opacity: 1,
             complete: () => {
                 resolvable.resolve()

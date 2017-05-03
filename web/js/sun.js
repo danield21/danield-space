@@ -6,8 +6,8 @@ module.exports = {
 function create(size) {
     const radius = size / 2
 
-    const sun = document.createElement("div")
-    sun.classList.add("sun")
+    const sun = document.createElement('div')
+    sun.classList.add('sun')
 
     sun.style.position = 'fixed'
     sun.style.top = 0

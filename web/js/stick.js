@@ -1,5 +1,5 @@
-exports.toBottom = (element, up = 0) => {
-    const wrapper = document.createElement("div")
+exports.toBottom = (element, _up = 0) => {
+    const wrapper = document.createElement('div')
     element.parentNode.insertBefore(wrapper, element.nextSibling)
 
     return () => {
@@ -9,16 +9,16 @@ exports.toBottom = (element, up = 0) => {
         if (rect.top + rect.height > size.height) {
             const elementRect = element.getBoundingClientRect()
 
-            element.style.position = "fixed"
+            element.style.position = 'fixed'
             element.style.bottom = 0
-            wrapper.style.height = elementRect.height + "px"
+            wrapper.style.height = elementRect.height + 'px'
         } else {
-            element.style.position = "relative"
+            element.style.position = 'relative'
             element.style.bottom = null
             wrapper.style.height = 0
         }
         return new Promise(resolve => { resolve() })
-    };
+    }
 }
 
 function screenSize() {

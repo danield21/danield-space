@@ -1,4 +1,4 @@
-const Modernizr = require("modernizr")
+const Modernizr = require('modernizr')
 
 module.exports = {
     firstA,
@@ -17,11 +17,11 @@ function meetsRequirements() {
 
 function init() {
     const page = window.location.origin + window.location.pathname
-    window.history.replaceState(Bliss("main").innerHTML, window.document.title, page)
+    window.history.replaceState(Bliss('main').innerHTML, window.document.title, page)
 }
 
 function firstA(element) {
-    if (element.tagName.toUpperCase() == "A") {
+    if (element.tagName.toUpperCase() == 'A') {
         return element
     }
     if (element.parentElement == null) {
@@ -31,7 +31,7 @@ function firstA(element) {
 }
 
 function firstForm(element) {
-    if (element.tagName.toUpperCase() == "FORM") {
+    if (element.tagName.toUpperCase() == 'FORM') {
         return element
     }
     if (element.parentElement == null) {
@@ -41,11 +41,11 @@ function firstForm(element) {
 }
 
 function isExternalLink(a) {
-    return a.hostname.length && window.location.hostname !== a.hostname;
+    return a.hostname.length && window.location.hostname !== a.hostname
 }
 
 function dontLoadAjax(e) {
-    return e.classList.contains("router-no-spa")
+    return e.classList.contains('router-no-spa')
 }
 
 function next(url, perform) {
@@ -60,58 +60,58 @@ function next(url, perform) {
 }
 
 function submitForm(form) {
-    var url = form.getAttribute("action")
+    var url = form.getAttribute('action')
     var method = form.method
     var data = Array.from(form.elements).reduce((encode, e) => {
         if (e.name) {
-            if (encode) encode += "&"
-            return encode + encodeURIComponent(e.name) + "=" + encodeURIComponent(e.value)
+            if (encode) encode += '&'
+            return encode + encodeURIComponent(e.name) + '=' + encodeURIComponent(e.value)
         }
         return encode
-    }, "")
-    if (data !== "") {
-        data += "&"
+    }, '')
+    if (data !== '') {
+        data += '&'
     }
-    data += "theme=none"
+    data += 'theme=none'
 
-    return Bliss.fetch(url, { responseType: "document", method, data }).then(response => {
-        return response.responseXML ? Promise.resolve(response.responseXML) : Promise.reject(new Error("Did not get a document back from " + url + "?" + data))
+    return Bliss.fetch(url, { responseType: 'document', method, data }).then(response => {
+        return response.responseXML ? Promise.resolve(response.responseXML) : Promise.reject(new Error('Did not get a document back from ' + url + '?' + data))
     }, e => {
-        return e.xhr.responseXML ? Promise.resolve(e.xhr.responseXML) : Promise.reject(new Error("Did not get a document back from " + url + "?" + data))
+        return e.xhr.responseXML ? Promise.resolve(e.xhr.responseXML) : Promise.reject(new Error('Did not get a document back from ' + url + '?' + data))
     })
 }
 
 function navigate(a) {
-    if (a && a.tagName.toUpperCase() != "A" && a.href) {
-        return Promise.reject(new Error("Provided value is not an A element with an href"))
+    if (a && a.tagName.toUpperCase() != 'A' && a.href) {
+        return Promise.reject(new Error('Provided value is not an A element with an href'))
     }
     var url = a.href
 
     var queryRegex = /\?[\w\d%=\[\]&]+$/
     if (url.match(queryRegex)) {
-        url += "&"
+        url += '&'
     } else {
-        url += "?"
+        url += '?'
     }
-    url += "theme=none"
+    url += 'theme=none'
 
-    return Bliss.fetch(url, { responseType: "document" }).then(response => {
-        return response.responseXML ? Promise.resolve(response.responseXML) : Promise.reject(new Error("Did not get a document back from " + url))
+    return Bliss.fetch(url, { responseType: 'document' }).then(response => {
+        return response.responseXML ? Promise.resolve(response.responseXML) : Promise.reject(new Error('Did not get a document back from ' + url))
     }, e => {
-        return e.xhr.responseXML ? Promise.resolve(e.xhr.responseXML) : Promise.reject(new Error("Did not get a document back from " + url))
+        return e.xhr.responseXML ? Promise.resolve(e.xhr.responseXML) : Promise.reject(new Error('Did not get a document back from ' + url))
     })
 }
 
 function handleRouting(transitionOut, transitionIn) {
     return e => {
         if (e.defaultPrevented) {
-            return;
+            return
         }
 
         let a = firstA(e.target)
 
         if (a == null || isExternalLink(a) || dontLoadAjax(a)) {
-            return;
+            return
         }
 
         e.preventDefault()
@@ -126,13 +126,13 @@ function handleRouting(transitionOut, transitionIn) {
 function handleForm(transitionOut, transitionIn) {
     return e => {
         if (e.defaultPrevented) {
-            return;
+            return
         }
 
         let form = firstForm(e.target)
 
         if (form == null) {
-            return;
+            return
         }
 
         e.preventDefault()
