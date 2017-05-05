@@ -9,4 +9,8 @@
     <p>{{.Description}}</p>
     <a href="/admin/category/create?id={{ .URL }}">Edit Category</a>
 </div>
+{{ else }}
+<div class="cloud">
+    There are currently no categories.
+</div>
 {{ end }}
