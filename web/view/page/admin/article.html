@@ -1,1 +1,16 @@
-{{ template "core/admin-panel" . }}
+{{ template "core/admin-panel" . }} {{ range .Articles }}
+<div class="cloud">
+    <div class="right-controls">
+        <h1>{{ .Title }}</h1>
+        <form action="/admin/article/delete" method="post">
+            <button type="submit" value="{{ .URL }}" name="account">Delete Article</button>
+        </form>
+    </div>
+    <p>{{.Abstract}}</p>
+    <a href="/admin/article/publish?id={{ .URL }}">Edit Article</a>
+</div>
+{{ else }}
+<div class="cloud">
+    There are currently no articles.
+</div>
+{{ end }}

@@ -8,24 +8,23 @@ import (
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/articles"
-	"github.com/danield21/danield-space/server/repository/categories"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
 )
 
-var IndexHeadersHandler = AdminHeadersHandler
+var ArticlesHeadersHandler = AdminHeadersHandler
 
-var IndexPageHandler = handler.Chain(
+var ArticlesPageHandler = handler.Chain(
 	view.HTMLHandler,
 	handler.ToLink(handler.Chain(
-		IndexHeadersHandler,
-		IndexPageLink,
+		ArticlesHeadersHandler,
+		ArticlePageLink,
 		link.Theme,
 		status.LinkAll,
 	)),
 )
 
-func IndexPageLink(h handler.Handler) handler.Handler {
+func ArticlePageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 		ses := handler.Session(ctx)
 
@@ -35,13 +34,11 @@ func IndexPageLink(h handler.Handler) handler.Handler {
 		}
 
 		info := siteInfo.Get(ctx)
-		cats, _ := categories.GetAll(ctx)
-		arts, _ := articles.GetAll(ctx, 1)
+		arts, _ := articles.GetAll(ctx, -1)
 
 		data := struct {
 			AdminModel
-			HasCategories bool
-			HasArticles   bool
+			Articles []*articles.Article
 		}{
 			AdminModel: AdminModel{
 				BaseModel: view.BaseModel{
@@ -49,10 +46,9 @@ func IndexPageLink(h handler.Handler) handler.Handler {
 				},
 				User: user,
 			},
-			HasCategories: len(cats) > 0,
-			HasArticles:   len(arts) > 0,
+			Articles: arts,
 		}
 
-		return h(link.PageContext(ctx, "page/admin/index", data), e, w)
+		return h(link.PageContext(ctx, "page/admin/article", data), e, w)
 	}
 }

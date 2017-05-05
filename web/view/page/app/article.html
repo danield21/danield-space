@@ -1,6 +1,8 @@
 <article class="generated-html use-children">
-    <h1>{{ .Article.Title }}</h1>
-    <span class="published">Published by {{ .Article.Author }} <time datetime="{{ machineTime .Article.PublishDate }}">{{ humanTime .Article.PublishDate }}</time></span>
-    <p>{{ .Article.Abstract }}</p>
+    <section>
+        <h1>{{ .Article.Title }}</h1>
+        <span class="published">Published by {{ .Article.Author }} <time datetime="{{ machineTime .Article.PublishDate }}">{{ humanTime .Article.PublishDate }}</time></span>
+        <p>{{ .Article.Abstract }}</p>
+    </section>
     {{ .Article.Content }}
 </article>
