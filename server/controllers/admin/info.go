@@ -12,32 +12,32 @@ import (
 	"golang.org/x/net/context"
 )
 
-var SiteInfoManageHeadersHandler = view.HeaderHandler(http.StatusOK,
+var SiteInfoHeadersHandler = view.HeaderHandler(http.StatusOK,
 	view.Header{"Content-Type", view.HTMLContentType},
 )
 
-var SiteInfoManagePageHandler = handler.Chain(
+var SiteInfoPageHandler = handler.Chain(
 	view.HTMLHandler,
 	handler.ToLink(handler.Chain(
 		SiteInfoHeadersHandler,
-		SiteInfoManagePageLink,
+		SiteInfoPageLink,
 		link.Theme,
 		status.LinkAll,
 	)),
 )
 
-var SiteInfoManageActionHandler = handler.Chain(
+var SiteInfoActionHandler = handler.Chain(
 	view.HTMLHandler,
 	handler.ToLink(handler.Chain(
 		SiteInfoHeadersHandler,
-		SiteInfoManagePageLink,
+		SiteInfoPageLink,
 		action.PutSiteInfoLink,
 		link.Theme,
 		status.LinkAll,
 	)),
 )
 
-func SiteInfoManagePageLink(h handler.Handler) handler.Handler {
+func SiteInfoPageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 		frm := action.Form(ctx)
 		ses := handler.Session(ctx)

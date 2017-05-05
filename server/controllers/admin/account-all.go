@@ -13,21 +13,21 @@ import (
 	"google.golang.org/appengine/log"
 )
 
-var AccountAllHeadersHandler = view.HeaderHandler(http.StatusOK,
+var AccountHeadersHandler = view.HeaderHandler(http.StatusOK,
 	view.Header{"Content-Type", view.HTMLContentType},
 )
 
-var AccountAllPageHandler = handler.Chain(
+var AccountPageHandler = handler.Chain(
 	view.HTMLHandler,
 	handler.ToLink(handler.Chain(
-		AccountAllHeadersHandler,
-		AccountAllPageLink,
+		AccountHeadersHandler,
+		AccountPageLink,
 		link.Theme,
 		status.LinkAll,
 	)),
 )
 
-func AccountAllPageLink(h handler.Handler) handler.Handler {
+func AccountPageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 		ses := handler.Session(ctx)
 

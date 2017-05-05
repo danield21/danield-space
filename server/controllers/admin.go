@@ -45,10 +45,6 @@ func Admin(e handler.Environment, r *mux.Router) {
 		Methods(http.MethodHead)
 	r.HandleFunc("/account", handler.Apply(e, admin.AccountPageHandler)).
 		Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/account/all", handler.Apply(e, admin.AccountAllHeadersHandler)).
-		Methods(http.MethodHead)
-	r.HandleFunc("/account/all", handler.Apply(e, admin.AccountAllPageHandler)).
-		Methods(http.MethodGet)
 	r.HandleFunc("/account/create", handler.Apply(e, admin.AccountCreateHeadersHandler)).
 		Methods(http.MethodHead)
 	r.HandleFunc("/account/create", handler.Apply(e, admin.AccountCreatePageHandler)).
@@ -58,10 +54,6 @@ func Admin(e handler.Environment, r *mux.Router) {
 	r.HandleFunc("/site-info", handler.Apply(e, admin.SiteInfoHeadersHandler)).
 		Methods(http.MethodHead)
 	r.HandleFunc("/site-info", handler.Apply(e, admin.SiteInfoPageHandler)).
-		Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/site-info/manage", handler.Apply(e, admin.SiteInfoManageHeadersHandler)).
-		Methods(http.MethodHead)
-	r.HandleFunc("/site-info/manage", handler.Apply(e, admin.SiteInfoManagePageHandler)).
 		Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/category", handler.Apply(e, admin.CategoryHeadersHandler)).
 		Methods(http.MethodHead)

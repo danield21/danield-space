@@ -1,1 +1,57 @@
-{{ template "core/admin-panel" . }} {{ template "templates/admin-article" . }} {{ template "templates/admin-category" . }} {{ template "templates/admin-account" . }} {{ template "templates/admin-about" . }} {{ template "templates/admin-site-info" . }}
+{{ template "core/admin-panel" . }}
+<div class="cloud">
+    <h1>Articles</h1>
+    <ul>
+        {{ if .HasCategories }}
+        <li>
+            <a href="/admin/article/publish">Publish new article</a>
+        </li>
+        {{ if .HasArticles }}
+        <li>
+            <a href="/admin/article">Manage articles</a>
+        </li>
+        {{ end }} {{ else }}
+        <li>Please create a category first</li>
+        {{ end }}
+    </ul>
+</div>
+<div class="cloud">
+    <h1>Categories</h1>
+    <ul>
+        <li>
+            <a href="/admin/category/create">Create New Category</a>
+        </li>
+        {{ if .HasCategories }}
+        <li>
+            <a href="/admin/category">Manage Categories</a>
+        </li>
+        {{ end }}
+    </ul>
+</div>
+<div class="cloud">
+    <h1>Accounts</h1>
+    <ul>
+        <li>
+            <a href="/admin/account/create">Create new account</a>
+        </li>
+        <li>
+            <a href="/admin/account">Manage accounts</a>
+        </li>
+    </ul>
+</div>
+<div class="cloud">
+    <h1>About</h1>
+    <ul>
+        <li>
+            <a href="/admin/about">Edit About</a>
+        </li>
+    </ul>
+</div>
+<div class="cloud">
+    <h1>Site Information</h1>
+    <ul>
+        <li>
+            <a href="/admin/site-info">Manage site info</a>
+        </li>
+    </ul>
+</div>
