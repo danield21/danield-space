@@ -1,6 +1,6 @@
 {{ template "core/admin-panel" . }}{{ $isSuper := .Super }}{{ range $i, $accounts := .Accounts }}
 <div class="cloud">
-    <div class="welcome-panel">
+    <div class="right-controls">
         <h1>{{ $accounts.Username }}</h1>
         {{ if $isSuper }}
         <form action="/admin/account/delete" method="post">

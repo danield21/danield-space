@@ -1,1 +1,12 @@
-{{ template "core/admin-panel" . }}
+{{ template "core/admin-panel" . }} {{ range .Categories }}
+<div class="cloud">
+    <div class="right-controls">
+        <h1>{{ .Title }}</h1>
+        <form action="/admin/account/delete" method="post">
+            <button type="submit" value="{{ .URL }}" name="account">Delete Category</button>
+        </form>
+    </div>
+    <p>{{.Description}}</p>
+    <a href="/admin/category/create?id={{ .URL }}">Edit Category</a>
+</div>
+{{ end }}
