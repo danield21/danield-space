@@ -11,13 +11,12 @@ import (
 
 var languageRegexp *regexp.Regexp = regexp.MustCompile("langauge-[\\w\\-]+")
 
-func CleanHTML(dirtyHTML []byte) (cleanHTML template.HTML, err error) {
+func CleanHTML(dirtyHTML []byte) (template.HTML, error) {
 
 	reader := bytes.NewReader(dirtyHTML)
 	htmlNodes, pErr := html.Parse(reader)
 	if pErr != nil {
-		err = pErr
-		return
+		return "", pErr
 	}
 
 	var renderedHTML bytes.Buffer
@@ -26,7 +25,7 @@ func CleanHTML(dirtyHTML []byte) (cleanHTML template.HTML, err error) {
 	policy := bluemonday.NewPolicy()
 	policy.AllowElements(
 		"i", "b", "strong", "em",
-		"a", "p",
+		"a", "p", "section",
 		"h1", "h2", "h3", "h4", "h5", "h6",
 		"pre", "code",
 		"li", "ol", "ul",
@@ -36,7 +35,6 @@ func CleanHTML(dirtyHTML []byte) (cleanHTML template.HTML, err error) {
 	policy.RequireParseableURLs(true)
 	policy.AllowRelativeURLs(true)
 	policy.RequireNoFollowOnFullyQualifiedLinks(true)
-	policy.SanitizeBytes(renderedHTML.Bytes())
-	cleanHTML = template.HTML(dirtyHTML)
-	return
+	cleanHTML := policy.SanitizeBytes(renderedHTML.Bytes())
+	return template.HTML(cleanHTML), nil
 }
