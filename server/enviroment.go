@@ -26,7 +26,7 @@ func (p *ProductionEnvironment) View(w io.Writer, theme, view string, data inter
 	}
 	p.WaitForView.Unlock()
 
-	return RenderTemplateWithTheme(p.Templates, w, theme, view, data)
+	return RenderTemplateWithTheme(p.Templates, w, view, data)
 }
 
 //Session gets the session using a secure key

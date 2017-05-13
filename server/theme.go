@@ -4,19 +4,13 @@ import (
 	"bytes"
 	"html/template"
 	"io"
-
-	"github.com/danield21/danield-space/server/repository/theme"
 )
 
 //RenderTemplateWithTheme is a helper function to render golang templates with a theme
-func RenderTemplateWithTheme(t *template.Template, w io.Writer, useTheme, view string, data interface{}) error {
-	if !theme.ValidTheme(useTheme) {
-		return theme.ErrInvalidTheme
-	}
-
+func RenderTemplateWithTheme(t *template.Template, w io.Writer, view string, data interface{}) error {
 	var buffer = new(bytes.Buffer)
 
-	err := t.ExecuteTemplate(buffer, "theme/"+useTheme+"/head", data)
+	err := t.ExecuteTemplate(buffer, "core/head", data)
 	if err != nil {
 		return err
 	}
@@ -24,7 +18,7 @@ func RenderTemplateWithTheme(t *template.Template, w io.Writer, useTheme, view s
 	if err != nil {
 		return err
 	}
-	err = t.ExecuteTemplate(buffer, "theme/"+useTheme+"/footer", data)
+	err = t.ExecuteTemplate(buffer, "core/footer", data)
 	if err != nil {
 		return err
 	}

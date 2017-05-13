@@ -1,5 +1,8 @@
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-    <title>Ballooneer's Code</title>
+    <title>{{.SiteInfo.Title}}</title>
     <meta charset="UTF-8">
     <meta name="theme-color" content="#222222">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,3 +14,11 @@
     <script src="/dist/js/bliss.min.js" defer></script>
     <script src="/dist/js/app.js" defer></script>
 </head>
+
+<body>
+    <div id="sky-easel"></div>
+    <div class="cloud">
+        <header>
+            {{template "core/navigation" .}}
+        </header>
+        <main>
