@@ -114,6 +114,9 @@ const balloons = {
 
 function initBalloons(easel) {
     Bliss.fetch('/dist/svg/balloon.svg').then(svg => {
+        const intID = setInterval(addBalloon, balloons.EVERY)
+        addBalloon()
+
         function addBalloon() {
             if (easel.childNodes.length >= balloons.MAX_AMOUNT || (document.hidden || document.msHidden || document.webkitHidden)) {
                 return
@@ -135,9 +138,8 @@ function initBalloons(easel) {
                 .then(Balloons.drawOn(easel))
                 .then(Balloons.fly)
                 .then(Balloons.remove(easel))
+                .catch(() => clearInterval(intID))
         }
-        addBalloon()
-        setInterval(addBalloon, balloons.EVERY)
     })
 }
 
