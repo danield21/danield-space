@@ -1,133 +1,39 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="800"
    height="1000"
    viewBox="0 0 800.00001 1000"
-   id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
-   sodipodi:docname="balloon.svg">
-  <defs
-     id="defs4">
-    <linearGradient
-       inkscape:collect="always"
-       id="fireGradient">
-      <stop
-         style="stop-color:#ffa610;stop-opacity:0.45490196"
-         offset="0"
-         id="stop4221" />
-      <stop
-         style="stop-color:#c79c06;stop-opacity:0"
-         offset="1"
-         id="stop4223" />
-    </linearGradient>
-    <radialGradient
-       inkscape:collect="always"
-       xlink:href="#fireGradient"
-       id="fireRedialGradient"
-       cx="396.96979"
-       cy="901.03595"
-       fx="396.96979"
-       fy="901.03595"
-       r="400.00024"
-       gradientTransform="matrix(0.99999937,-0.00112552,0.00252538,2.2437427,-2.2752069,-1070.3761)"
-       gradientUnits="userSpaceOnUse" />
-  </defs>
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="0.98994949"
-     inkscape:cx="157.99245"
-     inkscape:cy="497.83077"
-     inkscape:document-units="px"
-     inkscape:current-layer="layer2"
-     showgrid="false"
-     units="px"
-     inkscape:window-width="1920"
-     inkscape:window-height="1163"
-     inkscape:window-x="3840"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1" />
-  <metadata
-     id="metadata7">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
+   class="balloon">
   <g
-     inkscape:label="base"
-     inkscape:groupmode="layer"
      id="base"
      transform="translate(0,-52.36216)"
      style="display:inline">
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1"
        d="m 375,952.36216 5,60.00004"
-       id="string1"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cc"/>
+       id="string1"/>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1"
        d="m 390,952.36216 2.5,60.00004"
-       id="string2"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cc" />
+       id="string2"/>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1"
        d="M 409.10714,951.4693 407.5,1012.3622"
-       id="string3"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cc" />
+       id="string3"/>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1"
        d="m 425,952.36216 -5,60.00004"
-       id="string4"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cc" />
+       id="string4"/>
     <path
        style="fill:#e9bf3f;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 380,1012.3622 40,0 -5,40 -30,0 z"
-       id="basket"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccc" />
+       id="basket"/>
     <path
        style="fill:#94fcd9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 299.99967,52.36216 c -509.71115,159.84026 -291.6179458,504.53107 74.99992,900 l 50.00041,0 c 366.61785,-395.46893 584.7111,-740.15974 75,-900 z"
-       id="balloon"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccc" />
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="night"
-     inkscape:label="night"
-     style="display:inline">
-    <path
-       transform="translate(0,-52.36216)"
-       style="opacity:1;fill:url(#fireRedialGradient);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 300.00011,52.36216 c -509.71115,159.84026 -291.617941,504.53107 74.99992,900 l 50.00041,0 c 366.61785,-395.46893 584.71106,-740.15974 75,-900 z"
-       id="flame"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccc" />
+       id="balloon"/>
   </g>
 </svg>
