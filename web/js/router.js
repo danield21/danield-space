@@ -50,9 +50,10 @@ function dontLoadAjax(e) {
 
 function next(url, perform) {
     return perform.then(html => {
-        window.history.pushState(html.body.innerHTML, window.document.title, url)
+        const main = Bliss('main', html)
+        window.history.pushState(main.innerHTML, window.document.title, url)
         const frag = document.createDocumentFragment()
-        Array.from(html.body.children).forEach(c => frag.appendChild(c))
+        Array.from(main.children).forEach(c => frag.appendChild(c))
         return Promise.resolve(frag)
     }, e => {
         return Promise.reject(e)
@@ -69,10 +70,6 @@ function submitForm(form) {
         }
         return encode
     }, '')
-    if (data !== '') {
-        data += '&'
-    }
-    data += 'theme=none'
 
     return Bliss.fetch(url, { responseType: 'document', method, data }).then(response => {
         return response.responseXML ? Promise.resolve(response.responseXML) : Promise.reject(new Error('Did not get a document back from ' + url + '?' + data))
@@ -85,17 +82,9 @@ function navigate(a) {
     if (a && a.tagName.toUpperCase() != 'A' && a.href) {
         return Promise.reject(new Error('Provided value is not an A element with an href'))
     }
-    var url = a.href
+    const url = a.href
 
-    var queryRegex = /\?[\w\d%=\[\]&]+$/
-    if (url.match(queryRegex)) {
-        url += '&'
-    } else {
-        url += '?'
-    }
-    url += 'theme=none'
-
-    return Bliss.fetch(url, { responseType: 'document' }).then(response => {
+    return Bliss.fetch(a.href, { responseType: 'document' }).then(response => {
         return response.responseXML ? Promise.resolve(response.responseXML) : Promise.reject(new Error('Did not get a document back from ' + url))
     }, e => {
         return e.xhr.responseXML ? Promise.resolve(e.xhr.responseXML) : Promise.reject(new Error('Did not get a document back from ' + url))
