@@ -2,14 +2,15 @@ const anime = require('animejs')
 const Modernizr = require('modernizr')
 
 module.exports = {
-    drawOn,
-    fly,
     meetsRequirements,
     parseSVG,
     size,
     position,
     storeIds,
-    color
+    color,
+    drawOn,
+    fly,
+    remove
 }
 
 function meetsRequirements() {
@@ -94,15 +95,21 @@ function drawOn(easel) {
     }
 }
 
+function remove(easel) {
+    return (balloon) => {
+        easel.removeChild(balloon.root)
+        return Promise.resolve(balloon)
+    }
+}
+
 function fly(balloon) {
-    ascend(balloon)()
+    return ascend(balloon).apply()
 }
 
 function descend(balloon) {
     return function() {
         if (balloon.position.left < -balloon.width) {
-            balloon.root.remove()
-            return
+            return Promise.resolve(balloon)
         }
 
         balloon.position.left -= balloon.speed
@@ -122,8 +129,7 @@ function descend(balloon) {
 function ascend(balloon) {
     return function() {
         if (balloon.position.left < -balloon.width) {
-            balloon.root.remove()
-            return
+            return Promise.resolve(balloon)
         }
 
         const climb = (balloon.speed + 100) / 20

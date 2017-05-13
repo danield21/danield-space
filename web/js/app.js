@@ -134,6 +134,7 @@ function initBalloons(easel) {
                 .then(Balloons.color(hexColor))
                 .then(Balloons.drawOn(easel))
                 .then(Balloons.fly)
+                .then(Balloons.remove(easel))
         }
         addBalloon()
         setInterval(addBalloon, balloons.EVERY)
