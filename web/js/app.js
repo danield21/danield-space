@@ -1,5 +1,3 @@
-require('./shim')
-
 const Anime = require('animejs')
 const Balloons = require('./balloons')
 const Stick = require('./stick')
