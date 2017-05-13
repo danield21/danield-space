@@ -65,7 +65,7 @@ func addTo(views *template.Template, funcs template.FuncMap) func(string, os.Fil
 		viewName := getViewName(path)
 
 		views.AddParseTree(viewName, view.Tree)
-		log.Printf("INFO: Adding to view [%s]", viewName)
+		log.Printf("DEBUG: Adding to view [%s]", viewName)
 
 		return nil
 	}
