@@ -19,9 +19,9 @@ function meetsRequirements() {
         window.DOMParser
 }
 
-const MIN_HEIGHT = 20
-const MAX_HEIGHT = 200
-const AVG_HEIGHT = 100
+const MIN_HEIGHT = 100
+const MAX_HEIGHT = 300
+const AVG_HEIGHT = 200
 
 function prepare(svg) {
     return new Promise((resolve, _reject) => {
