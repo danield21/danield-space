@@ -7,12 +7,8 @@ const util = require('./util')
 const router = require('./router')
 const Sun = require('./sun')
 const Modernizr = require('modernizr')
-
-exports.imports = {
-    Anime,
-    meetsRequirements,
-    router
-}
+const Please = require('pleasejs')
+const sdRand = require('gauss-random')
 
 function meetsRequirements() {
     return Modernizr.eventlistener &&
@@ -109,20 +105,39 @@ function initSun(easel) {
 
 
 const balloons = {
-    MAX: 10,
-    EVERY: 20000
+    MAX_AMOUNT: 10,
+    EVERY: 20000,
+    MIN_HEIGHT: 100,
+    AVG_HEIGHT: 150,
+    MAX_HEIGHT: 200
 }
 
 function initBalloons(easel) {
-    const getBalloon = Bliss.fetch('/dist/svg/balloon.svg')
-    setInterval(() => {
-        if (easel.childNodes.length >= balloons.MAX || (document.hidden || document.msHidden || document.webkitHidden)) {
-            return
+    Bliss.fetch('/dist/svg/balloon.svg').then(svg => {
+        function addBalloon() {
+            if (easel.childNodes.length >= balloons.MAX_AMOUNT || (document.hidden || document.msHidden || document.webkitHidden)) {
+                return
+            }
+            const screen = util.screenSize()
+            const hHalf = screen.height / 2
+            const top = util.choosePoint(sdRand(), 0, hHalf, screen.height - balloons.MAX_HEIGHT)
+            const left = screen.width
+            const hexColor = Please.make_color({
+                saturation: .8 + Math.random() * .2,
+                value: .8 + Math.random() * .2
+            })[0]
+            const height = util.choosePoint(sdRand(), balloons.MIN_HEIGHT, balloons.AVG_HEIGHT, balloons.MAX_HEIGHT)
+            Balloons.parseSVG(svg)
+                .then(Balloons.size(height))
+                .then(Balloons.position(top, left))
+                .then(Balloons.storeIds)
+                .then(Balloons.color(hexColor))
+                .then(Balloons.drawOn(easel))
+                .then(Balloons.fly)
         }
-        getBalloon.then(Balloons.prepare)
-            .then(Balloons.drawOn(easel))
-            .then(Balloons.fly)
-    }, balloons.EVERY)
+        addBalloon()
+        setInterval(addBalloon, balloons.EVERY)
+    })
 }
 
 function initRouting(main) {
