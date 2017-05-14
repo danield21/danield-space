@@ -1,17 +1,27 @@
-package bucket
+package repository
 
 import (
+	"errors"
+
 	"github.com/danield21/danield-space/server/models"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"
 )
 
+type Bucket struct{}
+
 const entity = "Bucket"
 
+//ErrFieldNotFound appears when the field request does not exist in the database
+var ErrFieldNotFound = errors.New("field not found")
+
+//ErrNilItem appears when item parameter is nil
+var ErrNilItem = errors.New("err was nil")
+
 //Get gets an item from the bucket with the same field
-func Get(ctx context.Context, field string) (*Item, error) {
-	var items []*Item
+func (b Bucket) Get(ctx context.Context, field string) (*models.Item, error) {
+	var items []*models.Item
 
 	q := datastore.NewQuery(entity).Filter("Field =", field).Limit(1)
 
@@ -30,10 +40,10 @@ func Get(ctx context.Context, field string) (*Item, error) {
 
 //GetAll gets all items with the fields listed.
 //If there are fields missing, then
-func GetAll(ctx context.Context, fields ...string) (have []*Item, missing []string) {
+func (b Bucket) GetAll(ctx context.Context, fields ...string) (have []*models.Item, missing []string) {
 
 	for _, f := range fields {
-		item, err := Get(ctx, f)
+		item, err := b.Get(ctx, f)
 		if err != nil {
 			missing = append(missing, f)
 		} else {
@@ -45,12 +55,12 @@ func GetAll(ctx context.Context, fields ...string) (have []*Item, missing []stri
 }
 
 //Set sets the field with item
-func Set(ctx context.Context, item *Item) error {
+func (b Bucket) Set(ctx context.Context, item *models.Item) error {
 	if item == nil {
 		return ErrNilItem
 	}
 
-	oldItem, err := Get(ctx, item.Field)
+	oldItem, err := b.Get(ctx, item.Field)
 
 	if err != nil {
 		log.Warningf(ctx, "bucket.Set - Unable to get previous item, creating new\n%v", err)
@@ -70,7 +80,7 @@ func Set(ctx context.Context, item *Item) error {
 //so field will be overwritten as it loops through.
 //Latest value survives
 //No transaction, so if any fail, it will not rollback any successful
-func SetAll(ctx context.Context, items ...*Item) error {
+func (b Bucket) SetAll(ctx context.Context, items ...*models.Item) error {
 	var (
 		fields []string
 		keys   []*datastore.Key
@@ -88,7 +98,7 @@ func SetAll(ctx context.Context, items ...*Item) error {
 		fields = append(fields, item.Field)
 	}
 
-	have, missing := GetAll(ctx, fields...)
+	have, missing := b.GetAll(ctx, fields...)
 
 CheckingForNew:
 	for _, i := range items {
@@ -129,8 +139,8 @@ CheckingForNew:
 	return nil
 }
 
-func Default(ctx context.Context, defaultItem *Item) *Item {
-	var items []*Item
+func (b Bucket) Default(ctx context.Context, defaultItem *models.Item) *models.Item {
+	var items []*models.Item
 
 	if defaultItem == nil {
 		return nil
@@ -153,14 +163,14 @@ func Default(ctx context.Context, defaultItem *Item) *Item {
 	return defaultItem
 }
 
-func DefaultAll(ctx context.Context, defaultItems ...*Item) []*Item {
+func (b Bucket) DefaultAll(ctx context.Context, defaultItems ...*models.Item) []*models.Item {
 	if defaultItems == nil {
 		return nil
 	}
 
 	var (
 		fields       []string
-		missingItems []*Item
+		missingItems []*models.Item
 		keys         []*datastore.Key
 		err          error
 	)
@@ -172,7 +182,7 @@ func DefaultAll(ctx context.Context, defaultItems ...*Item) []*Item {
 		fields = append(fields, item.Field)
 	}
 
-	have, missing := GetAll(ctx, fields...)
+	have, missing := b.GetAll(ctx, fields...)
 
 CheckingForNew:
 	for _, m := range missing {
@@ -182,7 +192,7 @@ CheckingForNew:
 			}
 			log.Infof(ctx, "Field %s missing, using default \"%s\"", m, i.Value)
 
-			newItem := new(Item)
+			newItem := new(models.Item)
 			*newItem = *i
 
 			newItem.DataElement = models.WithNew("site")

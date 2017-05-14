@@ -3,8 +3,8 @@ package about
 import (
 	"html/template"
 
+	"github.com/danield21/danield-space/server/models"
 	"github.com/danield21/danield-space/server/repository"
-	"github.com/danield21/danield-space/server/repository/bucket"
 	"golang.org/x/net/context"
 )
 
@@ -13,6 +13,8 @@ var DefaultAbout = []byte(
 )
 
 const bucketKey = "about-page"
+
+var bucket = repository.Bucket{}
 
 func Get(c context.Context) (template.HTML, error) {
 	item, err := aboutToItem(DefaultAbout)
@@ -34,11 +36,11 @@ func Set(c context.Context, about []byte) error {
 	return err
 }
 
-func aboutToItem(about []byte) (*bucket.Item, error) {
+func aboutToItem(about []byte) (*models.Item, error) {
 	clean, err := repository.CleanHTML(about)
-	return bucket.NewItem(bucketKey, string(clean), "[]byte"), err
+	return models.NewItem(bucketKey, string(clean), "[]byte"), err
 }
 
-func itemToAbout(item *bucket.Item) (template.HTML, error) {
+func itemToAbout(item *models.Item) (template.HTML, error) {
 	return repository.CleanHTML([]byte(item.Value))
 }

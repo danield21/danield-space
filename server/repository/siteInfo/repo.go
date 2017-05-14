@@ -1,7 +1,8 @@
 package siteInfo
 
 import (
-	"github.com/danield21/danield-space/server/repository/bucket"
+	"github.com/danield21/danield-space/server/models"
+	"github.com/danield21/danield-space/server/repository"
 	"golang.org/x/net/context"
 )
 
@@ -10,6 +11,8 @@ const titleField = bucketPrefix + "title"
 const linkField = bucketPrefix + "link"
 const ownerField = bucketPrefix + "owner"
 const descriptionField = bucketPrefix + "description"
+
+var bucket = repository.Bucket{}
 
 //Default has default information about the site
 var Default = SiteInfo{
@@ -36,16 +39,16 @@ func Set(c context.Context, info SiteInfo) error {
 	return err
 }
 
-func siteInfoToItems(info SiteInfo) []*bucket.Item {
-	return []*bucket.Item{
-		bucket.NewItem(titleField, info.Title, "string"),
-		bucket.NewItem(linkField, info.Link, "string"),
-		bucket.NewItem(ownerField, info.Owner, "string"),
-		bucket.NewItem(descriptionField, info.Description, "string"),
+func siteInfoToItems(info SiteInfo) []*models.Item {
+	return []*models.Item{
+		models.NewItem(titleField, info.Title, "string"),
+		models.NewItem(linkField, info.Link, "string"),
+		models.NewItem(ownerField, info.Owner, "string"),
+		models.NewItem(descriptionField, info.Description, "string"),
 	}
 }
 
-func itemsToSiteInfo(items []*bucket.Item) SiteInfo {
+func itemsToSiteInfo(items []*models.Item) SiteInfo {
 	var info SiteInfo
 	for _, item := range items {
 		switch item.Field {
