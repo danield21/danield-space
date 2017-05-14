@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/danield21/danield-space/server/handler"
 	"github.com/gorilla/sessions"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine"
@@ -16,6 +17,7 @@ type ProductionEnvironment struct {
 	Templates         *template.Template
 	GenerateTemplates <-chan *template.Template
 	WaitForView       sync.Mutex
+	Connections       handler.RepositoryConnections
 }
 
 //View generates a view based on the templates stored
@@ -39,4 +41,8 @@ func (p *ProductionEnvironment) Session(r *http.Request) (session *sessions.Sess
 func (p *ProductionEnvironment) Context(r *http.Request) (ctx context.Context) {
 	ctx = appengine.NewContext(r)
 	return
+}
+
+func (p *ProductionEnvironment) RepositoryConnections() handler.RepositoryConnections {
+	return p.Connections
 }
