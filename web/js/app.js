@@ -117,7 +117,7 @@ function initBalloons(easel) {
         addBalloon()
 
         function addBalloon() {
-            if (easel.childNodes.length >= balloons.MAX_AMOUNT || (document.hidden || document.msHidden || document.webkitHidden)) {
+            if (Bliss.$('.svg-balloon', easel).length >= balloons.MAX_AMOUNT || (document.hidden || document.msHidden || document.webkitHidden)) {
                 return
             }
             const screen = util.screenSize()
