@@ -21,7 +21,6 @@ var SignOutPageHandler = handler.Chain(
 	handler.ToLink(handler.Chain(
 		SignOutHeadersHandler,
 		SignOutPageLink,
-		link.Theme,
 		status.LinkAll,
 	)),
 )
@@ -33,7 +32,6 @@ var SignOutActionHandler = handler.Chain(
 		SignOutPageLink,
 		link.SaveSession,
 		action.UnauthenicateLink,
-		link.Theme,
 		status.LinkAll,
 	)),
 )

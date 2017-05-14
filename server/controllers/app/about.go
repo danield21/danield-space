@@ -23,7 +23,6 @@ var AboutPageHandler = handler.Chain(
 	handler.ToLink(handler.Chain(
 		AboutHeadersHandler,
 		AboutPageLink,
-		link.Theme,
 		status.LinkAll,
 	)),
 )

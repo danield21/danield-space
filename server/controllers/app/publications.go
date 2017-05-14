@@ -28,7 +28,6 @@ var PublicationsPageHandler = handler.Chain(
 	handler.ToLink(handler.Chain(
 		PublicationsHeadersHandler,
 		PublicationsPageLink,
-		link.Theme,
 		status.LinkAll,
 	)),
 )

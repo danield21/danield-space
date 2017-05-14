@@ -30,10 +30,10 @@ func TestIndex(t *testing.T) {
 	view.Parse("Hello, World!")
 	head := template.New("")
 	head.Parse("Foo")
-	view.AddParseTree("theme/balloon/head", head.Tree)
+	view.AddParseTree("core/head", head.Tree)
 	foot := template.New("")
 	foot.Parse("Bar")
-	view.AddParseTree("theme/balloon/footer", foot.Tree)
+	view.AddParseTree("core/footer", foot.Tree)
 
 	ctx, done, err := aetest.NewContext()
 	require.NoError(t, err, "Error in creating context")

@@ -6,8 +6,8 @@ import (
 	"io"
 )
 
-//RenderTemplateWithTheme is a helper function to render golang templates with a theme
-func RenderTemplateWithTheme(t *template.Template, w io.Writer, view string, data interface{}) error {
+//RenderTemplate is a helper function to render golang templates
+func RenderTemplate(t *template.Template, w io.Writer, view string, data interface{}) error {
 	var buffer = new(bytes.Buffer)
 
 	err := t.ExecuteTemplate(buffer, "core/head", data)

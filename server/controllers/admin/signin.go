@@ -21,7 +21,6 @@ var SignInPageHandler = handler.Chain(
 	handler.ToLink(handler.Chain(
 		SignInHeadersHandler,
 		SignInPageLink,
-		link.Theme,
 		status.LinkAll,
 	)),
 )
@@ -33,7 +32,6 @@ var SignInActionHandler = handler.Chain(
 		SignInPageLink,
 		link.SaveSession,
 		action.AuthenicateLink,
-		link.Theme,
 		status.LinkAll,
 	)),
 )

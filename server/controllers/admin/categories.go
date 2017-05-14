@@ -19,7 +19,6 @@ var CategoryPageHandler = handler.Chain(
 	handler.ToLink(handler.Chain(
 		CategoryHeadersHandler,
 		CategoryPageLink,
-		link.Theme,
 		status.LinkAll,
 	)),
 )

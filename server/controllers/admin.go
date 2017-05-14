@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/danield21/danield-space/server/controllers/admin"
-	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
@@ -13,7 +12,7 @@ import (
 
 //Admin configures the handlers for admin handlers
 func Admin(e handler.Environment, r *mux.Router) {
-	r.NotFoundHandler = handler.Prepare(e, view.HTMLHandler, handler.ToLink(status.NotFoundPageHandler), link.Theme)
+	r.NotFoundHandler = handler.Prepare(e, view.HTMLHandler, handler.ToLink(status.NotFoundPageHandler))
 
 	r.HandleFunc("/", handler.Apply(e, admin.IndexHeadersHandler)).
 		Methods(http.MethodHead)

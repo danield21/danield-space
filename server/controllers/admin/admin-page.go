@@ -21,7 +21,6 @@ func NewAdminPageHandler(page string) handler.Handler {
 		handler.ToLink(handler.Chain(
 			AdminHeadersHandler,
 			AdminPageLink(page),
-			link.Theme,
 			status.LinkAll,
 		)),
 	)

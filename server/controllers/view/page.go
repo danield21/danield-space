@@ -13,13 +13,9 @@ func HTMLHandler(ctx context.Context, e handler.Environment, w http.ResponseWrit
 	if err != nil {
 		return ctx, err
 	}
-	theme, err := Theme(ctx)
-	if err != nil {
-		return ctx, err
-	}
 	data := Data(ctx)
 
-	return ctx, e.View(w, theme, page, data)
+	return ctx, e.View(w, page, data)
 }
 
 func JSONHandler(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {

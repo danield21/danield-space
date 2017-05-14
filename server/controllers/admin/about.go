@@ -24,7 +24,6 @@ var AboutPageHandler = handler.Chain(
 	handler.ToLink(handler.Chain(
 		AboutHeadersHandler,
 		AboutPageLink,
-		link.Theme,
 		status.LinkAll,
 	)),
 )
@@ -35,7 +34,6 @@ var AboutActionHandler = handler.Chain(
 		AboutHeadersHandler,
 		AboutPageLink,
 		action.PutAboutLink,
-		link.Theme,
 		status.LinkAll,
 	)),
 )

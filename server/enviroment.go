@@ -19,14 +19,14 @@ type ProductionEnvironment struct {
 }
 
 //View generates a view based on the templates stored
-func (p *ProductionEnvironment) View(w io.Writer, theme, view string, data interface{}) error {
+func (p *ProductionEnvironment) View(w io.Writer, view string, data interface{}) error {
 	p.WaitForView.Lock()
 	if p.Templates == nil {
 		p.Templates = <-p.GenerateTemplates
 	}
 	p.WaitForView.Unlock()
 
-	return RenderTemplateWithTheme(p.Templates, w, view, data)
+	return RenderTemplate(p.Templates, w, view, data)
 }
 
 //Session gets the session using a secure key

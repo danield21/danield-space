@@ -19,7 +19,6 @@ var ArticlesPageHandler = handler.Chain(
 	handler.ToLink(handler.Chain(
 		ArticlesHeadersHandler,
 		ArticlePageLink,
-		link.Theme,
 		status.LinkAll,
 	)),
 )

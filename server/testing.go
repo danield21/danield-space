@@ -16,8 +16,8 @@ type TestingEnvironment struct {
 }
 
 //View creates a mock view
-func (t TestingEnvironment) View(w io.Writer, theme, view string, data interface{}) error {
-	return RenderTemplateWithTheme(t.Templates, w, view, data)
+func (t TestingEnvironment) View(w io.Writer, view string, data interface{}) error {
+	return RenderTemplate(t.Templates, w, view, data)
 }
 
 //Session gets a mock session

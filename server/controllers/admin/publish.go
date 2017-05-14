@@ -23,7 +23,6 @@ var PublishPageHandler = handler.Chain(
 	handler.ToLink(handler.Chain(
 		PublishHeadersHandler,
 		PublishPageLink,
-		link.Theme,
 		status.LinkAll,
 	)),
 )
@@ -34,7 +33,6 @@ var PublishActionHandler = handler.Chain(
 		PublishHeadersHandler,
 		PublishPageLink,
 		action.PutArticleLink,
-		link.Theme,
 		status.LinkAll,
 	)),
 )

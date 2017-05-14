@@ -22,7 +22,6 @@ var AccountPageHandler = handler.Chain(
 	handler.ToLink(handler.Chain(
 		AccountHeadersHandler,
 		AccountPageLink,
-		link.Theme,
 		status.LinkAll,
 	)),
 )

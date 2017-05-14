@@ -21,7 +21,6 @@ var SiteInfoPageHandler = handler.Chain(
 	handler.ToLink(handler.Chain(
 		SiteInfoHeadersHandler,
 		SiteInfoPageLink,
-		link.Theme,
 		status.LinkAll,
 	)),
 )
@@ -32,7 +31,6 @@ var SiteInfoActionHandler = handler.Chain(
 		SiteInfoHeadersHandler,
 		SiteInfoPageLink,
 		action.PutSiteInfoLink,
-		link.Theme,
 		status.LinkAll,
 	)),
 )

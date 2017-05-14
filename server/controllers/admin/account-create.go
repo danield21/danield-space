@@ -23,7 +23,6 @@ var AccountCreatePageHandler = handler.Chain(
 	handler.ToLink(handler.Chain(
 		AccountCreateHeadersHandler,
 		AccountCreatePageLink,
-		link.Theme,
 		status.LinkAll,
 	)),
 )
@@ -34,7 +33,6 @@ var AccountCreateActionHandler = handler.Chain(
 		AccountCreateHeadersHandler,
 		AccountCreatePageLink,
 		action.PutAccountLink,
-		link.Theme,
 		status.LinkAll,
 	)),
 )

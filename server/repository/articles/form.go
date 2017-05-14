@@ -6,7 +6,6 @@ import (
 
 	"github.com/danield21/danield-space/server/repository"
 	"github.com/danield21/danield-space/server/repository/categories"
-	"github.com/danield21/danield-space/server/repository/theme"
 	"golang.org/x/net/context"
 )
 
@@ -30,7 +29,7 @@ var ErrNoContent = errors.New("No content")
 
 func (f FormArticle) Unpack(ctx context.Context) (*Article, error) {
 
-	if !theme.ValidTheme(f.URL) {
+	if !repository.ValidURLPart(f.URL) {
 		return nil, ErrURLBadFormat
 	}
 
@@ -62,14 +61,14 @@ func (f FormArticle) Unpack(ctx context.Context) (*Article, error) {
 }
 
 func parseURL(url string) (string, error) {
-	if !theme.ValidTheme(url) {
+	if !repository.ValidURLPart(url) {
 		return "", ErrURLBadFormat
 	}
 	return url, nil
 }
 
 func parseCategory(ctx context.Context, catURL string) (*categories.Category, error) {
-	if !theme.ValidTheme(catURL) {
+	if !repository.ValidURLPart(catURL) {
 		return nil, ErrCategoryBadFormat
 	}
 	return categories.Get(ctx, catURL)

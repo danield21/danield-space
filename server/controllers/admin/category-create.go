@@ -21,7 +21,6 @@ var CategoryCreatePageHandler = handler.Chain(
 	handler.ToLink(handler.Chain(
 		CategoryCreateHeadersHandler,
 		CategoryCreatePageLink,
-		link.Theme,
 		status.LinkAll,
 	)),
 )
@@ -32,7 +31,6 @@ var CategoryCreateActionHandler = handler.Chain(
 		CategoryCreateHeadersHandler,
 		CategoryCreatePageLink,
 		action.PutCategoryLink,
-		link.Theme,
 		status.LinkAll,
 	)),
 )

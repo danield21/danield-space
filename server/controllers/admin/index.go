@@ -20,7 +20,6 @@ var IndexPageHandler = handler.Chain(
 	handler.ToLink(handler.Chain(
 		IndexHeadersHandler,
 		IndexPageLink,
-		link.Theme,
 		status.LinkAll,
 	)),
 )

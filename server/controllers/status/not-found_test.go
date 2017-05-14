@@ -22,10 +22,10 @@ func TestNotFound(t *testing.T) {
 	view.Parse(", ")
 	head := template.New("")
 	head.Parse("Hello")
-	view.AddParseTree("theme/balloon/head", head.Tree)
+	view.AddParseTree("core/head", head.Tree)
 	foot := template.New("")
 	foot.Parse("World")
-	view.AddParseTree("theme/balloon/footer", foot.Tree)
+	view.AddParseTree("core/footer", foot.Tree)
 
 	ctx, done, err := aetest.NewContext()
 	require.NoError(t, err, "TestIndexHead.TestIndex - Error in creating context")
