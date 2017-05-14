@@ -1,4 +1,5 @@
 const Modernizr = require('modernizr')
+const util = require('./util')
 
 module.exports = {
     firstA,
@@ -21,23 +22,11 @@ function init() {
 }
 
 function firstA(element) {
-    if (element.tagName.toUpperCase() == 'A') {
-        return element
-    }
-    if (element.parentElement == null) {
-        return null
-    }
-    return firstA(element.parentElement)
+    return util.findAncestor(element, e => e.tagName.toUpperCase() == 'A')
 }
 
 function firstForm(element) {
-    if (element.tagName.toUpperCase() == 'FORM') {
-        return element
-    }
-    if (element.parentElement == null) {
-        return null
-    }
-    return firstForm(element.parentElement)
+    return util.findAncestor(element, e => e.tagName.toUpperCase() == 'FORM')
 }
 
 function isExternalLink(a) {

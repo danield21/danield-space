@@ -2,7 +2,8 @@ module.exports = {
     screenSize,
     setDateTimeInputToNow,
     choosePoint,
-    scrollToTop
+    scrollToTop,
+    findAncestor
 }
 
 function screenSize() {
@@ -41,4 +42,14 @@ function scrollToTop(scrollDuration) {
             window.scrollBy(0, scrollStep)
         } else clearInterval(scrollInterval)
     }, 15)
+}
+
+function findAncestor(element, match) {
+    if (match(element)) {
+        return element
+    }
+    if (element.parentElement == null) {
+        return null
+    }
+    return findAncestor(element.parentElement)
 }
