@@ -144,19 +144,17 @@ function initBalloons(easel) {
 function initRouting(main) {
     router.init()
 
+    const outFunc = transitionOut(main)
+    const inFunc = transitionIn(main)
+
     window.addEventListener('click', e => {
-        const outStruct = transitionOut(main)
-        const inStruct = transitionIn(main)
-        router.handleRouting(outStruct.func, inStruct.func)(e)
+        router.handleRouting(outFunc, inFunc)(e)
     })
 
     window.addEventListener('submit', e => {
-        const outStruct = transitionOut(main)
-        const inStruct = transitionIn(main)
-        router.handleForm(outStruct.func, inStruct.func)(e)
+        router.handleForm(outFunc, inFunc)(e)
     })
     window.addEventListener('popstate', e => {
-        scrollToTop(250)
         main.innerHTML = e.state
         window.dispatchEvent(new Event('resize'))
     })
@@ -172,34 +170,22 @@ function transitionTarget(elem) {
 }
 
 function transitionOut(main) {
-    let transition
-    const resolvable = {}
-    const promise = new Promise((resolve, reject) => {
-        resolvable.resolve = resolve
-        resolvable.reject = reject
-    })
-    const func = () => {
+    return () => {
         let children = Array.from(main.children)
         let targets = children.reduce((list, e) => list.concat(transitionTarget(e)), [])
         scrollToTop(250)
-        Anime({
+        const a = Anime({
             targets: targets,
             duration: 500,
             easing: 'linear',
             translateY: (_, i) => `-${(i+1) * 100}px`,
-            opacity: 0,
-            complete: () => {
-                children.forEach(child => main.removeChild(child))
-                window.dispatchEvent(new Event('resize'))
-                resolvable.resolve()
-            }
+            opacity: 0
         })
-        return transition.promise
+        return a.finished.then(() => {
+            children.forEach(child => main.removeChild(child))
+            window.dispatchEvent(new Event('resize'))
+        })
     }
-
-    transition = { promise, func }
-
-    return transition
 }
 
 function scrollToTop(scrollDuration) {
@@ -212,33 +198,20 @@ function scrollToTop(scrollDuration) {
 }
 
 function transitionIn(main) {
-    let transition
-    const resolvable = {}
-    const promise = new Promise((resolve, reject) => {
-        resolvable.resolve = resolve
-        resolvable.reject = reject
-    })
-    const func = ([_, frag]) => {
+    return ([_, frag]) => {
         let targets = Array.from(frag.children).reduce((list, e) => list.concat(transitionTarget(e)), [])
         targets.forEach((c, i) => {
             c.style.transform = `translateY(-${(i+1) * 100}px)`
             c.style.opacity = '0'
         })
-        Anime({
+        const a = Anime({
             targets: targets,
             duration: 500,
             easing: 'linear',
             translateY: '0',
-            opacity: 1,
-            complete: () => {
-                resolvable.resolve()
-            }
+            opacity: 1
         })
         main.appendChild(frag)
-        return transition.promise
+        return a.finished
     }
-
-    transition = { promise, func }
-
-    return transition
 }
