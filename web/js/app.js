@@ -64,12 +64,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    Bliss.$('.js-fillNow').forEach(button => {
-        button.addEventListener('click', e => {
-            var id = e.target.dataset.target
-            var input = document.getElementById(id)
+    document.addEventListener('click', e => {
+        const button = util.findAncestor(e.target, element => element.classList.contains('js-fillNow'))
+        if (button != null) {
+            const id = button.dataset.target
+            const input = document.getElementById(id)
             util.setDateTimeInputToNow(input)
-        })
+        }
     })
 
     styleFunc()
