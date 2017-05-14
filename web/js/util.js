@@ -1,7 +1,8 @@
 module.exports = {
     screenSize,
     setDateTimeInputToNow,
-    choosePoint
+    choosePoint,
+    scrollToTop
 }
 
 function screenSize() {
@@ -31,4 +32,13 @@ function choosePoint(z, min, mean, max) {
 function setDateTimeInputToNow(input) {
     var now = new Date()
     input.value = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().substring(0, 19)
+}
+
+function scrollToTop(scrollDuration) {
+    const scrollStep = -window.scrollY / (scrollDuration / 15)
+    const scrollInterval = setInterval(function() {
+        if (window.scrollY != 0) {
+            window.scrollBy(0, scrollStep)
+        } else clearInterval(scrollInterval)
+    }, 15)
 }

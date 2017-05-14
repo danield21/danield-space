@@ -173,7 +173,7 @@ function transitionOut(main) {
     return () => {
         let children = Array.from(main.children)
         let targets = children.reduce((list, e) => list.concat(transitionTarget(e)), [])
-        scrollToTop(250)
+        util.scrollToTop(250)
         const a = Anime({
             targets: targets,
             duration: 500,
@@ -186,15 +186,6 @@ function transitionOut(main) {
             window.dispatchEvent(new Event('resize'))
         })
     }
-}
-
-function scrollToTop(scrollDuration) {
-    const scrollStep = -window.scrollY / (scrollDuration / 15)
-    const scrollInterval = setInterval(function() {
-        if (window.scrollY != 0) {
-            window.scrollBy(0, scrollStep)
-        } else clearInterval(scrollInterval)
-    }, 15)
 }
 
 function transitionIn(main) {
