@@ -3,7 +3,7 @@ package session
 import (
 	"time"
 
-	"github.com/danield21/danield-space/server/repository"
+	"github.com/danield21/danield-space/server/models"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
 )
@@ -43,7 +43,7 @@ func GetAllSince(ctx context.Context, t time.Time) ([]*Key, error) {
 func Put(ctx context.Context, key *Key) error {
 	var err error
 
-	key.DataElement = repository.WithNew("site")
+	key.DataElement = models.WithNew("site")
 
 	dKey := datastore.NewIncompleteKey(ctx, entity, nil)
 	dKey, err = datastore.Put(ctx, dKey, key)

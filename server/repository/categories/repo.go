@@ -3,7 +3,7 @@ package categories
 import (
 	"errors"
 
-	"github.com/danield21/danield-space/server/repository"
+	"github.com/danield21/danield-space/server/models"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
 )
@@ -54,10 +54,10 @@ func Set(ctx context.Context, cat *Category) error {
 	oldCat, err := Get(ctx, cat.URL)
 
 	if err != nil {
-		cat.DataElement = repository.WithNew(repository.WithPerson(ctx))
+		cat.DataElement = models.WithNew(models.WithPerson(ctx))
 		cat.Key = datastore.NewIncompleteKey(ctx, entity, nil)
 	} else {
-		cat.DataElement = repository.WithOld(repository.WithPerson(ctx), oldCat.DataElement)
+		cat.DataElement = models.WithOld(models.WithPerson(ctx), oldCat.DataElement)
 	}
 
 	cat.Key, err = datastore.Put(ctx, cat.Key, cat)

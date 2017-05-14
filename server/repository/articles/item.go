@@ -6,13 +6,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/danield21/danield-space/server/models"
 	"github.com/danield21/danield-space/server/repository"
 	"github.com/danield21/danield-space/server/repository/categories"
 )
 
 //Article contains information about articles written on this website.
 type Article struct {
-	repository.DataElement
+	models.DataElement
 	Title       string
 	Author      string
 	URL         string

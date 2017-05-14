@@ -1,7 +1,7 @@
 package bucket
 
 import (
-	"github.com/danield21/danield-space/server/repository"
+	"github.com/danield21/danield-space/server/models"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"
@@ -55,10 +55,10 @@ func Set(ctx context.Context, item *Item) error {
 	if err != nil {
 		log.Warningf(ctx, "bucket.Set - Unable to get previous item, creating new\n%v", err)
 
-		item.DataElement = repository.WithNew(repository.WithPerson(ctx))
+		item.DataElement = models.WithNew(models.WithPerson(ctx))
 		item.Key = datastore.NewIncompleteKey(ctx, entity, nil)
 	} else {
-		item.DataElement = repository.WithOld(repository.WithPerson(ctx), oldItem.DataElement)
+		item.DataElement = models.WithOld(models.WithPerson(ctx), oldItem.DataElement)
 	}
 
 	item.Key, err = datastore.Put(ctx, item.Key, item)
@@ -97,7 +97,7 @@ CheckingForNew:
 				continue
 			}
 
-			i.DataElement = repository.WithNew(repository.WithPerson(ctx))
+			i.DataElement = models.WithNew(models.WithPerson(ctx))
 			i.Key = datastore.NewIncompleteKey(ctx, entity, nil)
 			have = append(have, i)
 
@@ -109,7 +109,7 @@ CheckingForNew:
 				continue
 			}
 
-			i.DataElement = repository.WithOld(repository.WithPerson(ctx), h.DataElement)
+			i.DataElement = models.WithOld(models.WithPerson(ctx), h.DataElement)
 		}
 	}
 
@@ -144,7 +144,7 @@ func Default(ctx context.Context, defaultItem *Item) *Item {
 
 	log.Infof(ctx, "Field %s missing, using default %s", defaultItem.Field, defaultItem.Value)
 	key := datastore.NewIncompleteKey(ctx, entity, nil)
-	defaultItem.DataElement = repository.WithNew("site")
+	defaultItem.DataElement = models.WithNew("site")
 
 	if key, err := datastore.Put(ctx, key, defaultItem); err != nil {
 		defaultItem.Key = key
@@ -185,7 +185,7 @@ CheckingForNew:
 			newItem := new(Item)
 			*newItem = *i
 
-			newItem.DataElement = repository.WithNew("site")
+			newItem.DataElement = models.WithNew("site")
 			missingItems = append(missingItems, newItem)
 			have = append(have, newItem)
 			keys = append(keys, datastore.NewIncompleteKey(ctx, entity, nil))

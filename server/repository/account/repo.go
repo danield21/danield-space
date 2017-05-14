@@ -3,7 +3,7 @@ package account
 import (
 	"errors"
 
-	"github.com/danield21/danield-space/server/repository"
+	"github.com/danield21/danield-space/server/models"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"
@@ -54,10 +54,10 @@ func Put(ctx context.Context, account *Account) error {
 
 	oldAcct, err := Get(ctx, account.Username)
 	if err != nil {
-		account.DataElement = repository.WithNew("unknown")
+		account.DataElement = models.WithNew("unknown")
 		account.Key = datastore.NewIncompleteKey(ctx, entity, nil)
 	} else {
-		account.DataElement = repository.WithOld("unknown", oldAcct.DataElement)
+		account.DataElement = models.WithOld("unknown", oldAcct.DataElement)
 	}
 
 	account.Key, err = datastore.Put(ctx, account.Key, account)
@@ -70,7 +70,7 @@ func CanLogIn(ctx context.Context, username string, password []byte) bool {
 	if err != nil || len(accounts) == 0 {
 		log.Warningf(ctx, "admin.IsAdmin - Unable to retrieve Admin accounts from database, using default\n")
 		accounts = append(accounts, &Default)
-		Default.DataElement = repository.WithNew("site")
+		Default.DataElement = models.WithNew("site")
 		Default.Key = datastore.NewIncompleteKey(ctx, entity, nil)
 		_, err = datastore.Put(ctx, Default.Key, accounts[0])
 		if err != nil {

@@ -3,12 +3,12 @@ package account
 import (
 	"regexp"
 
-	"github.com/danield21/danield-space/server/repository"
+	"github.com/danield21/danield-space/server/models"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Account struct {
-	repository.DataElement
+	models.DataElement
 	Username string
 	Hashword []byte
 	Super    bool

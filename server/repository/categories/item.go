@@ -1,11 +1,11 @@
 package categories
 
 import (
-	"github.com/danield21/danield-space/server/repository"
+	"github.com/danield21/danield-space/server/models"
 )
 
 type Category struct {
-	repository.DataElement
+	models.DataElement
 	Title       string
 	URL         string
 	Description string

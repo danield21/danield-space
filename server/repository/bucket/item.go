@@ -1,11 +1,11 @@
 package bucket
 
 import (
-	"github.com/danield21/danield-space/server/repository"
+	"github.com/danield21/danield-space/server/models"
 )
 
 type Item struct {
-	repository.DataElement
+	models.DataElement
 	Field string
 	Value string
 	Type  string

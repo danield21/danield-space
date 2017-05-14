@@ -1,11 +1,11 @@
 package session
 
 import (
-	"github.com/danield21/danield-space/server/repository"
+	"github.com/danield21/danield-space/server/models"
 )
 
 type Key struct {
-	repository.DataElement
+	models.DataElement
 	Hash  []byte
 	Block []byte
 }
