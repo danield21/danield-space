@@ -32,7 +32,7 @@ function choosePoint(z, min, mean, max) {
 
 function setDateTimeInputToNow(input) {
     var now = new Date()
-    input.value = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().substring(0, 19)
+    input.value = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().substring(0, 16)
 }
 
 function scrollToTop(scrollDuration) {
@@ -51,5 +51,5 @@ function findAncestor(element, match) {
     if (element.parentElement == null) {
         return null
     }
-    return findAncestor(element.parentElement)
+    return findAncestor(element.parentElement, match)
 }
