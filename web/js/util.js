@@ -1,5 +1,7 @@
-function inBetween(value, min, max) {
-    return Math.min(Math.max(value, min), max)
+module.exports = {
+    screenSize,
+    setDateTimeInputToNow,
+    choosePoint
 }
 
 function screenSize() {
@@ -29,11 +31,4 @@ function choosePoint(z, min, mean, max) {
 function setDateTimeInputToNow(input) {
     var now = new Date()
     input.value = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().substring(0, 19)
-}
-
-module.exports = {
-    inBetween,
-    screenSize,
-    setDateTimeInputToNow,
-    choosePoint
 }
