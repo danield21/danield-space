@@ -51,7 +51,11 @@ function dontLoadAjax(e) {
 function next(url, perform) {
     return perform.then(html => {
         const main = Bliss('main', html)
-        window.history.pushState(main.innerHTML, window.document.title, url)
+        if (window.location.href !== url) {
+            window.history.pushState(main.innerHTML, window.document.title, url)
+        } else {
+            window.history.replaceState(main.innerHTML, window.document.title, url)
+        }
         const frag = document.createDocumentFragment()
         Array.from(main.children).forEach(c => frag.appendChild(c))
         return Promise.resolve(frag)
