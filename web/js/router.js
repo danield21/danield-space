@@ -2,7 +2,6 @@ const Modernizr = require('modernizr')
 const util = require('./util')
 
 module.exports = {
-    firstA,
     init,
     next,
     meetsRequirements,
@@ -19,14 +18,6 @@ function meetsRequirements() {
 function init() {
     const page = window.location.origin + window.location.pathname
     window.history.replaceState(Bliss('main').innerHTML, window.document.title, page)
-}
-
-function firstA(element) {
-    return util.findAncestor(element, e => e.tagName.toUpperCase() == 'A')
-}
-
-function firstForm(element) {
-    return util.findAncestor(element, e => e.tagName.toUpperCase() == 'FORM')
 }
 
 function isExternalLink(a) {
@@ -90,7 +81,7 @@ function handleRouting(transitionOut, transitionIn) {
             return
         }
 
-        let a = firstA(e.target)
+        let a = util.findAncestor(e.target, e => e.tagName.toUpperCase() == 'A')
 
         if (a == null || isExternalLink(a) || dontLoadAjax(a)) {
             return
@@ -111,7 +102,7 @@ function handleForm(transitionOut, transitionIn) {
             return
         }
 
-        let form = firstForm(e.target)
+        let form = util.findAncestor(e.target, e => e.tagName.toUpperCase() == 'FORM')
 
         if (form == null) {
             return
