@@ -13,5 +13,5 @@ type Environment interface {
 	View(w io.Writer, view string, data interface{}) error
 	Context(r *http.Request) context.Context
 	Session(r *http.Request) *sessions.Session
-	RepositoryConnections() RepositoryConnections
+	Repository() Repositories
 }

@@ -8,7 +8,6 @@ import (
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/repository/about"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
@@ -31,7 +30,7 @@ func AboutPageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 		info := siteInfo.Get(ctx)
 
-		abt, err := about.Get(ctx)
+		abt, err := e.Repository().About().Get(ctx)
 		if err != nil {
 			log.Errorf(ctx, "app.AboutPageLink - Unable to get About page\n%v", err)
 		}

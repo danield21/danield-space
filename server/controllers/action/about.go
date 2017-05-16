@@ -7,7 +7,6 @@ import (
 
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/repository/about"
 	"golang.org/x/net/context"
 )
 
@@ -36,7 +35,7 @@ func PutAboutLink(h handler.Handler) handler.Handler {
 			return h(WithForm(ctx, f), e, w)
 		}
 
-		err = about.Set(ctx, abt)
+		err = e.Repository().About().Set(ctx, abt)
 		if err != nil {
 			f.Error = errors.New("Unable to put into database")
 		}

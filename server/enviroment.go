@@ -17,7 +17,7 @@ type ProductionEnvironment struct {
 	Templates         *template.Template
 	GenerateTemplates <-chan *template.Template
 	WaitForView       sync.Mutex
-	Connections       handler.RepositoryConnections
+	Connections       handler.Repositories
 }
 
 //View generates a view based on the templates stored
@@ -43,6 +43,6 @@ func (p *ProductionEnvironment) Context(r *http.Request) (ctx context.Context) {
 	return
 }
 
-func (p *ProductionEnvironment) RepositoryConnections() handler.RepositoryConnections {
+func (p *ProductionEnvironment) Repository() handler.Repositories {
 	return p.Connections
 }

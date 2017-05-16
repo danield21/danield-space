@@ -9,7 +9,6 @@ import (
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/repository/about"
 	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
@@ -49,7 +48,7 @@ func AboutPageLink(h handler.Handler) handler.Handler {
 		}
 
 		if frm.IsEmpty() {
-			html, err := about.Get(ctx)
+			html, err := e.Repository().About().Get(ctx)
 			if err == nil {
 				abtFld := new(form.Field)
 				abtFld.Values = []string{string(html)}

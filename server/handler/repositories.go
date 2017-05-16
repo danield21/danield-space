@@ -4,10 +4,15 @@ import (
 	"github.com/danield21/danield-space/server/models"
 )
 
-type RepositoryConnections interface {
-	BucketConnection
+type Repositories interface {
+	BucketRepository
+	AboutRepository
 }
 
-type BucketConnection interface {
+type BucketRepository interface {
 	Bucket() models.BucketRepository
+}
+
+type AboutRepository interface {
+	About() models.AboutRepository
 }
