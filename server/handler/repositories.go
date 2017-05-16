@@ -5,5 +5,9 @@ import (
 )
 
 type RepositoryConnections interface {
+	BucketConnection
+}
+
+type BucketConnection interface {
 	Bucket() models.BucketRepository
 }
