@@ -1,9 +1,16 @@
-package siteInfo
+package models
 
 import (
 	"regexp"
 	"strings"
+
+	"golang.org/x/net/context"
 )
+
+type SiteInfoRepository interface {
+	Get(ctx context.Context) SiteInfo
+	Set(ctx context.Context, info SiteInfo) error
+}
 
 //SiteInfo is a struct containing information about the website
 type SiteInfo struct {

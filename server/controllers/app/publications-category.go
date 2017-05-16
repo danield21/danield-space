@@ -9,7 +9,6 @@ import (
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/articles"
 	"github.com/danield21/danield-space/server/repository/categories"
-	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"github.com/gorilla/mux"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
@@ -34,7 +33,7 @@ func PublicationsCategoryPageLink(h handler.Handler) handler.Handler {
 		r := handler.Request(ctx)
 		vars := mux.Vars(r)
 
-		info := siteInfo.Get(ctx)
+		info := e.Repository().SiteInfo().Get(ctx)
 
 		cat, err := categories.Get(ctx, vars["category"])
 		if err != nil {

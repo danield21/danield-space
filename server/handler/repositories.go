@@ -7,6 +7,7 @@ import (
 type Repositories interface {
 	BucketRepository
 	AboutRepository
+	SiteInfoRepository
 }
 
 type BucketRepository interface {
@@ -15,4 +16,8 @@ type BucketRepository interface {
 
 type AboutRepository interface {
 	About() models.AboutRepository
+}
+
+type SiteInfoRepository interface {
+	SiteInfo() models.SiteInfoRepository
 }

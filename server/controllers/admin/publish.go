@@ -9,7 +9,6 @@ import (
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/categories"
-	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
@@ -48,7 +47,7 @@ func PublishPageLink(h handler.Handler) handler.Handler {
 			return ctx, status.ErrUnauthorized
 		}
 
-		info := siteInfo.Get(ctx)
+		info := e.Repository().SiteInfo().Get(ctx)
 
 		cats, err := categories.GetAll(ctx)
 		if err != nil {

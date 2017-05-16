@@ -8,7 +8,6 @@ import (
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/account"
-	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
@@ -41,7 +40,7 @@ func AccountPageLink(h handler.Handler) handler.Handler {
 			return ctx, status.ErrUnauthorized
 		}
 
-		info := siteInfo.Get(ctx)
+		info := e.Repository().SiteInfo().Get(ctx)
 		accnts, err := account.GetAll(ctx)
 		if err != nil {
 			log.Debugf(ctx, "AccountAllPageLink - Unable to get all acounts\n%v", err)

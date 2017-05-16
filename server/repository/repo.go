@@ -1,8 +1,9 @@
-package siteInfo
+package repository
 
 import (
+	"errors"
+
 	"github.com/danield21/danield-space/server/models"
-	"github.com/danield21/danield-space/server/repository"
 	"golang.org/x/net/context"
 )
 
@@ -12,10 +13,15 @@ const linkField = bucketPrefix + "link"
 const ownerField = bucketPrefix + "owner"
 const descriptionField = bucketPrefix + "description"
 
-var bucket = repository.Bucket{}
+//ErrSiteInfo appears when site is unable to get information about itself from the database
+var ErrSiteInfo = errors.New("Unable to get site information")
+
+type SiteInfo struct {
+	Bucket models.BucketRepository
+}
 
 //Default has default information about the site
-var Default = SiteInfo{
+var Default = models.SiteInfo{
 	Title:       "Ballooneer's Code",
 	Link:        "http://danield.space",
 	Owner:       "Daniel J Dominguez",
@@ -23,23 +29,23 @@ var Default = SiteInfo{
 }
 
 //Get gets all information about the site
-func Get(c context.Context) SiteInfo {
+func (s SiteInfo) Get(c context.Context) models.SiteInfo {
 	items := siteInfoToItems(Default)
 
-	fields := bucket.DefaultAll(c, items...)
+	fields := s.Bucket.DefaultAll(c, items...)
 
 	return itemsToSiteInfo(fields)
 }
 
-func Set(c context.Context, info SiteInfo) error {
+func (s SiteInfo) Set(c context.Context, info models.SiteInfo) error {
 	items := siteInfoToItems(info)
 
-	err := bucket.SetAll(c, items...)
+	err := s.Bucket.SetAll(c, items...)
 
 	return err
 }
 
-func siteInfoToItems(info SiteInfo) []*models.Item {
+func siteInfoToItems(info models.SiteInfo) []*models.Item {
 	return []*models.Item{
 		models.NewItem(titleField, info.Title, "string"),
 		models.NewItem(linkField, info.Link, "string"),
@@ -48,8 +54,8 @@ func siteInfoToItems(info SiteInfo) []*models.Item {
 	}
 }
 
-func itemsToSiteInfo(items []*models.Item) SiteInfo {
-	var info SiteInfo
+func itemsToSiteInfo(items []*models.Item) models.SiteInfo {
+	var info models.SiteInfo
 	for _, item := range items {
 		switch item.Field {
 		case titleField:

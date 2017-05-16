@@ -9,7 +9,6 @@ import (
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
@@ -62,7 +61,7 @@ func AboutPageLink(h handler.Handler) handler.Handler {
 			Form: frm,
 		}
 
-		info := siteInfo.Get(ctx)
+		info := e.Repository().SiteInfo().Get(ctx)
 
 		data := struct {
 			AdminModel

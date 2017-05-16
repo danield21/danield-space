@@ -7,7 +7,6 @@ import (
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
@@ -22,7 +21,7 @@ var NotFoundHeaderHandler handler.Handler = view.HeaderHandler(http.StatusNotFou
 
 func NotFoundBodyLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
-		info := siteInfo.Get(ctx)
+		info := e.Repository().SiteInfo().Get(ctx)
 
 		data := struct {
 			view.BaseModel

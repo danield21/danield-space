@@ -9,7 +9,6 @@ import (
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/articles"
 	"github.com/danield21/danield-space/server/repository/categories"
-	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
 )
 
@@ -33,7 +32,7 @@ func IndexPageLink(h handler.Handler) handler.Handler {
 			return ctx, status.ErrUnauthorized
 		}
 
-		info := siteInfo.Get(ctx)
+		info := e.Repository().SiteInfo().Get(ctx)
 		cats, _ := categories.GetAll(ctx)
 		arts, _ := articles.GetAll(ctx, 1)
 

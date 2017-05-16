@@ -8,7 +8,6 @@ import (
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
 )
 
@@ -45,7 +44,7 @@ func SiteInfoPageLink(h handler.Handler) handler.Handler {
 			return ctx, status.ErrUnauthorized
 		}
 
-		info := siteInfo.Get(ctx)
+		info := e.Repository().SiteInfo().Get(ctx)
 
 		if frm.IsEmpty() {
 			frm = action.RepackSiteInfo(info)

@@ -7,7 +7,7 @@ import (
 
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/repository/siteInfo"
+	"github.com/danield21/danield-space/server/models"
 	"golang.org/x/net/context"
 )
 
@@ -16,7 +16,7 @@ const siteOwnerKey = "owner"
 const siteDescriptionKey = "description"
 const siteLinkKey = "link"
 
-func UnpackSiteInfo(ctx context.Context, values url.Values) (*siteInfo.SiteInfo, form.Form) {
+func UnpackSiteInfo(ctx context.Context, values url.Values) (*models.SiteInfo, form.Form) {
 	frm := form.MakeForm()
 	frm.Submitted = true
 
@@ -36,8 +36,8 @@ func UnpackSiteInfo(ctx context.Context, values url.Values) (*siteInfo.SiteInfo,
 		return nil, frm
 	}
 
-	s := new(siteInfo.SiteInfo)
-	*s = siteInfo.SiteInfo{
+	s := new(models.SiteInfo)
+	*s = models.SiteInfo{
 		Title:       titleFld.Get(),
 		Owner:       ownerFld.Get(),
 		Description: dscFld.Get(),
@@ -47,7 +47,7 @@ func UnpackSiteInfo(ctx context.Context, values url.Values) (*siteInfo.SiteInfo,
 	return s, frm
 }
 
-func RepackSiteInfo(info siteInfo.SiteInfo) form.Form {
+func RepackSiteInfo(info models.SiteInfo) form.Form {
 	frm := form.MakeForm()
 
 	titleFld := new(form.Field)
@@ -82,7 +82,7 @@ func PutSiteInfoLink(h handler.Handler) handler.Handler {
 			return h(WithForm(ctx, frm), e, w)
 		}
 
-		err = siteInfo.Set(ctx, *info)
+		err = e.Repository().SiteInfo().Set(ctx, *info)
 		if err != nil {
 			frm.Error = errors.New("Unable to put into database")
 			return h(WithForm(ctx, frm), e, w)

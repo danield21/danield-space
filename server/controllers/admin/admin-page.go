@@ -7,7 +7,6 @@ import (
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
 )
 
@@ -37,7 +36,7 @@ func AdminPageLink(page string) handler.Link {
 				return ctx, status.ErrUnauthorized
 			}
 
-			info := siteInfo.Get(ctx)
+			info := e.Repository().SiteInfo().Get(ctx)
 
 			data := struct {
 				AdminModel

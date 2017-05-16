@@ -9,7 +9,6 @@ import (
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/articles"
 	"github.com/danield21/danield-space/server/repository/categories"
-	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
@@ -35,7 +34,7 @@ var PublicationsPageHandler = handler.Chain(
 //Publications handles the index page
 func PublicationsPageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
-		info := siteInfo.Get(ctx)
+		info := e.Repository().SiteInfo().Get(ctx)
 
 		articleMap, err := articles.GetMapKeyedByCategory(ctx, 10)
 		if err != nil {

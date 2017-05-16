@@ -9,7 +9,6 @@ import (
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/account"
-	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
@@ -64,7 +63,7 @@ func AccountCreatePageLink(h handler.Handler) handler.Handler {
 			}
 		}
 
-		info := siteInfo.Get(ctx)
+		info := e.Repository().SiteInfo().Get(ctx)
 
 		data := struct {
 			AdminModel

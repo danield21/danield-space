@@ -8,7 +8,6 @@ import (
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/repository/articles"
-	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
 )
 
@@ -32,7 +31,7 @@ func ArticlePageLink(h handler.Handler) handler.Handler {
 			return ctx, status.ErrUnauthorized
 		}
 
-		info := siteInfo.Get(ctx)
+		info := e.Repository().SiteInfo().Get(ctx)
 		arts, _ := articles.GetAll(ctx, -1)
 
 		data := struct {

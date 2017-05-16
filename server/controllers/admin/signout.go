@@ -8,7 +8,6 @@ import (
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/repository/siteInfo"
 	"golang.org/x/net/context"
 )
 
@@ -38,7 +37,7 @@ var SignOutActionHandler = handler.Chain(
 
 func SignOutPageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
-		info := siteInfo.Get(ctx)
+		info := e.Repository().SiteInfo().Get(ctx)
 
 		data := struct {
 			view.BaseModel
