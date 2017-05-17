@@ -20,17 +20,9 @@ type SiteInfo struct {
 	Bucket models.BucketRepository
 }
 
-//Default has default information about the site
-var Default = models.SiteInfo{
-	Title:       "Ballooneer's Code",
-	Link:        "http://danield.space",
-	Owner:       "Daniel J Dominguez",
-	Description: "Sometimes, having a lofty head is necessary. This is a site is dedicated to having an overview discussion to code, without worrying too much about implementation. Of course, we will be touching the ground to get a better view of what may need to happen, but for the most part we will care about the overall look and feel.",
-}
-
 //Get gets all information about the site
 func (s SiteInfo) Get(c context.Context) models.SiteInfo {
-	items := siteInfoToItems(Default)
+	items := siteInfoToItems(models.DefaultSiteInfo)
 
 	fields := s.Bucket.DefaultAll(c, items...)
 

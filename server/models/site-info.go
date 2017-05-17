@@ -7,6 +7,14 @@ import (
 	"golang.org/x/net/context"
 )
 
+//Default has default information about the site
+var DefaultSiteInfo = SiteInfo{
+	Title:       "Ballooneer's Code",
+	Link:        "http://danield.space",
+	Owner:       "Daniel J Dominguez",
+	Description: "Sometimes, having a lofty head is necessary. This is a site is dedicated to having an overview discussion to code, without worrying too much about implementation. Of course, we will be touching the ground to get a better view of what may need to happen, but for the most part we will care about the overall look and feel.",
+}
+
 type SiteInfoRepository interface {
 	Get(ctx context.Context) SiteInfo
 	Set(ctx context.Context, info SiteInfo) error
