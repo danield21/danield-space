@@ -7,10 +7,6 @@ import (
 	"golang.org/x/net/context"
 )
 
-var DefaultAbout = []byte(
-	"<section>My name is Daniel Juan Dominguez, and I am a developer.</section>",
-)
-
 const bucketKey = "about-page"
 
 type About struct {
@@ -18,7 +14,7 @@ type About struct {
 }
 
 func (a About) Get(c context.Context) (template.HTML, error) {
-	item, err := aboutToItem(DefaultAbout)
+	item, err := aboutToItem(models.DefaultAbout)
 	if err != nil {
 		return "", err
 	}
