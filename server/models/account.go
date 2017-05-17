@@ -1,17 +1,25 @@
-package account
+package models
 
 import (
 	"regexp"
 
-	"github.com/danield21/danield-space/server/models"
 	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/net/context"
 )
 
 type Account struct {
-	models.DataElement
+	DataElement
 	Username string
 	Hashword []byte
 	Super    bool
+}
+
+//DefaultAccount is the default account
+//Be sure to change it
+var DefaultAccount = Account{Username: "Root", Hashword: nil, Super: true}
+
+func init() {
+	DefaultAccount.Password([]byte("ThisIsAVerySimplePassword!"))
 }
 
 var validUsername = regexp.MustCompile("^[a-zA-Z][\\w\\d]{5,}$")
@@ -34,4 +42,12 @@ func ClearPassword(password []byte) {
 
 func ValidUsername(username string) bool {
 	return validUsername.MatchString(username)
+}
+
+type AccountRepository interface {
+	GetAll(ctx context.Context) ([]*Account, error)
+	Get(ctx context.Context, username string) (*Account, error)
+	Put(ctx context.Context, account *Account) error
+	CanLogIn(ctx context.Context, username string, password []byte) bool
+	ChangePassword(ctx context.Context, username string, password []byte) error
 }

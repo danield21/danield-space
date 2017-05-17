@@ -8,7 +8,6 @@ import (
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/repository/account"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
@@ -44,7 +43,7 @@ func AuthenicateLink(h handler.Handler) handler.Handler {
 			return h(WithForm(ctx, frm), e, w)
 		}
 
-		if !account.CanLogIn(ctx, username, password) {
+		if !e.Repository().Account().CanLogIn(ctx, username, password) {
 			log.Infof(ctx, "%s attempted to login with incorrect password", username)
 			frm.Error = errors.New("Unable to authenicate")
 			return h(WithForm(ctx, frm), e, w)

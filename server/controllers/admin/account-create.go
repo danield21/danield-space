@@ -8,7 +8,6 @@ import (
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/repository/account"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
@@ -47,7 +46,7 @@ func AccountCreatePageLink(h handler.Handler) handler.Handler {
 			return ctx, status.ErrUnauthorized
 		}
 
-		current, err := account.Get(ctx, user)
+		current, err := e.Repository().Account().Get(ctx, user)
 		if err != nil {
 			log.Warningf(ctx, "AccountCreatePageLink - Unable to verify account %s\n%v", user, err)
 			return ctx, status.ErrUnauthorized
@@ -55,7 +54,7 @@ func AccountCreatePageLink(h handler.Handler) handler.Handler {
 
 		target := req.Form.Get("account")
 		if frm.IsEmpty() && target != "" {
-			tUser, err := account.Get(ctx, target)
+			tUser, err := e.Repository().Account().Get(ctx, target)
 			if err == nil {
 				frm = action.AccountToForm(tUser)
 			} else {

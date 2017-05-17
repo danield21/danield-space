@@ -9,6 +9,7 @@ type Repositories interface {
 	AboutRepository
 	SiteInfoRepository
 	SessionRepository
+	AccountRepository
 }
 
 type BucketRepository interface {
@@ -25,4 +26,8 @@ type SiteInfoRepository interface {
 
 type SessionRepository interface {
 	Session() models.SessionRepository
+}
+
+type AccountRepository interface {
+	Account() models.AccountRepository
 }

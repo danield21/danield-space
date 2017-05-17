@@ -7,7 +7,7 @@ import (
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/repository/account"
+	"github.com/danield21/danield-space/server/models"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
@@ -34,21 +34,21 @@ func AccountPageLink(h handler.Handler) handler.Handler {
 			return ctx, status.ErrUnauthorized
 		}
 
-		current, err := account.Get(ctx, user)
+		current, err := e.Repository().Account().Get(ctx, user)
 		if err != nil {
 			log.Warningf(ctx, "AccountAllPageLink - Unable to verify account %s\n%v", user, err)
 			return ctx, status.ErrUnauthorized
 		}
 
 		info := e.Repository().SiteInfo().Get(ctx)
-		accnts, err := account.GetAll(ctx)
+		accnts, err := e.Repository().Account().GetAll(ctx)
 		if err != nil {
 			log.Debugf(ctx, "AccountAllPageLink - Unable to get all acounts\n%v", err)
 		}
 
 		data := struct {
 			AdminModel
-			Accounts []*account.Account
+			Accounts []*models.Account
 			Super    bool
 		}{
 			AdminModel: AdminModel{
