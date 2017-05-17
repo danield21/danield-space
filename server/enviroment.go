@@ -32,8 +32,8 @@ func (p *ProductionEnvironment) View(w io.Writer, view string, data interface{})
 }
 
 //Session gets the session using a secure key
-func (p *ProductionEnvironment) Session(r *http.Request) (session *sessions.Session) {
-	session = GetSession(r)
+func (p *ProductionEnvironment) Session(ctx context.Context, r *http.Request) (session *sessions.Session) {
+	session = GetSession(ctx, p, r)
 	return
 }
 

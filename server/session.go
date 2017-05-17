@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/danield21/danield-space/server/repository/session"
+	"github.com/danield21/danield-space/server/handler"
+	"github.com/danield21/danield-space/server/models"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"golang.org/x/net/context"
-	"google.golang.org/appengine"
 	"google.golang.org/appengine/log"
 )
 
@@ -18,12 +18,11 @@ var store sessions.Store
 var ErrCreateSession = errors.New("Unable to create session")
 
 //GetSession returns a session using a secure key
-func GetSession(r *http.Request) *sessions.Session {
+func GetSession(ctx context.Context, e handler.Environment, r *http.Request) *sessions.Session {
 	var err error
-	ctx := appengine.NewContext(r)
 
 	if store == nil {
-		store, err = NewStore(ctx)
+		store, err = NewStore(ctx, e)
 		if err != nil {
 			return nil
 		}
@@ -36,16 +35,16 @@ func GetSession(r *http.Request) *sessions.Session {
 	return session
 }
 
-func NewStore(ctx context.Context) (sessions.Store, error) {
+func NewStore(ctx context.Context, e handler.Environment) (sessions.Store, error) {
 	var kytes [][]byte
-	keys, _ := session.GetAllSince(ctx, time.Now().AddDate(0, 0, -3))
+	keys, _ := e.Repository().Session().GetAllSince(ctx, time.Now().AddDate(0, 0, -3))
 
 	if len(keys) == 0 {
 		key, err := NewKeys()
 		if err != nil {
 			return nil, err
 		}
-		session.Put(ctx, key)
+		e.Repository().Session().Put(ctx, key)
 		keys = append(keys, key)
 	}
 
@@ -61,7 +60,7 @@ func NewStore(ctx context.Context) (sessions.Store, error) {
 	return s, nil
 }
 
-func NewKeys() (*session.Key, error) {
+func NewKeys() (*models.SessionKey, error) {
 	hash := securecookie.GenerateRandomKey(64)
 	block := securecookie.GenerateRandomKey(32)
 
@@ -69,8 +68,8 @@ func NewKeys() (*session.Key, error) {
 		return nil, ErrCreateSession
 	}
 
-	key := new(session.Key)
-	*key = session.Key{
+	key := new(models.SessionKey)
+	*key = models.SessionKey{
 		Hash:  hash,
 		Block: block,
 	}

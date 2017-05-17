@@ -11,7 +11,7 @@ import (
 
 type Bucket struct{}
 
-const entity = "Bucket"
+const bucketEntity = "Bucket"
 
 //ErrFieldNotFound appears when the field request does not exist in the database
 var ErrFieldNotFound = errors.New("field not found")
@@ -23,7 +23,7 @@ var ErrNilItem = errors.New("err was nil")
 func (b Bucket) Get(ctx context.Context, field string) (*models.Item, error) {
 	var items []*models.Item
 
-	q := datastore.NewQuery(entity).Filter("Field =", field).Limit(1)
+	q := datastore.NewQuery(bucketEntity).Filter("Field =", field).Limit(1)
 
 	keys, err := q.GetAll(ctx, &items)
 	if err != nil {
@@ -66,7 +66,7 @@ func (b Bucket) Set(ctx context.Context, item *models.Item) error {
 		log.Warningf(ctx, "bucket.Set - Unable to get previous item, creating new\n%v", err)
 
 		item.DataElement = models.WithNew(models.WithPerson(ctx))
-		item.Key = datastore.NewIncompleteKey(ctx, entity, nil)
+		item.Key = datastore.NewIncompleteKey(ctx, bucketEntity, nil)
 	} else {
 		item.DataElement = models.WithOld(models.WithPerson(ctx), oldItem.DataElement)
 	}
@@ -108,7 +108,7 @@ CheckingForNew:
 			}
 
 			i.DataElement = models.WithNew(models.WithPerson(ctx))
-			i.Key = datastore.NewIncompleteKey(ctx, entity, nil)
+			i.Key = datastore.NewIncompleteKey(ctx, bucketEntity, nil)
 			have = append(have, i)
 
 			continue CheckingForNew
@@ -146,14 +146,14 @@ func (b Bucket) Default(ctx context.Context, defaultItem *models.Item) *models.I
 		return nil
 	}
 
-	q := datastore.NewQuery(entity).Filter("Field =", defaultItem.Field).Limit(1)
+	q := datastore.NewQuery(bucketEntity).Filter("Field =", defaultItem.Field).Limit(1)
 	_, err := q.GetAll(ctx, &items)
 	if err != nil || len(items) > 0 {
 		return items[0]
 	}
 
 	log.Infof(ctx, "Field %s missing, using default %s", defaultItem.Field, defaultItem.Value)
-	key := datastore.NewIncompleteKey(ctx, entity, nil)
+	key := datastore.NewIncompleteKey(ctx, bucketEntity, nil)
 	defaultItem.DataElement = models.WithNew("site")
 
 	if key, err := datastore.Put(ctx, key, defaultItem); err != nil {
@@ -198,7 +198,7 @@ CheckingForNew:
 			newItem.DataElement = models.WithNew("site")
 			missingItems = append(missingItems, newItem)
 			have = append(have, newItem)
-			keys = append(keys, datastore.NewIncompleteKey(ctx, entity, nil))
+			keys = append(keys, datastore.NewIncompleteKey(ctx, bucketEntity, nil))
 
 			continue CheckingForNew
 		}

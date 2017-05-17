@@ -1,4 +1,4 @@
-package session
+package repository
 
 import (
 	"time"
@@ -8,11 +8,13 @@ import (
 	"google.golang.org/appengine/datastore"
 )
 
-var entity = "Sessions"
+var sessionEntity = "Sessions"
 
-func GetAll(ctx context.Context) ([]*Key, error) {
-	var keys []*Key
-	q := datastore.NewQuery(entity)
+type Session struct{}
+
+func (Session) GetAll(ctx context.Context) ([]*models.SessionKey, error) {
+	var keys []*models.SessionKey
+	q := datastore.NewQuery(sessionEntity)
 	dKeys, err := q.GetAll(ctx, &keys)
 
 	if err != nil {
@@ -25,9 +27,9 @@ func GetAll(ctx context.Context) ([]*Key, error) {
 	return keys, nil
 }
 
-func GetAllSince(ctx context.Context, t time.Time) ([]*Key, error) {
-	var keys []*Key
-	q := datastore.NewQuery(entity).Filter("CreatedOn >", t)
+func (Session) GetAllSince(ctx context.Context, t time.Time) ([]*models.SessionKey, error) {
+	var keys []*models.SessionKey
+	q := datastore.NewQuery(sessionEntity).Filter("CreatedOn >", t)
 	dKeys, err := q.GetAll(ctx, &keys)
 
 	if err != nil {
@@ -40,12 +42,12 @@ func GetAllSince(ctx context.Context, t time.Time) ([]*Key, error) {
 	return keys, nil
 }
 
-func Put(ctx context.Context, key *Key) error {
+func (Session) Put(ctx context.Context, key *models.SessionKey) error {
 	var err error
 
 	key.DataElement = models.WithNew("site")
 
-	dKey := datastore.NewIncompleteKey(ctx, entity, nil)
+	dKey := datastore.NewIncompleteKey(ctx, sessionEntity, nil)
 	dKey, err = datastore.Put(ctx, dKey, key)
 	if err == nil {
 		key.Key = dKey

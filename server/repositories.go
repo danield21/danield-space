@@ -10,6 +10,7 @@ type RepositoryConnections struct {
 	BucketDatastore   repository.Bucket
 	AboutDatastore    repository.About
 	SiteInfoDatastore repository.SiteInfo
+	SessionDatastore  repository.Session
 }
 
 func (rc RepositoryConnections) Bucket() models.BucketRepository {
@@ -24,6 +25,10 @@ func (rc RepositoryConnections) SiteInfo() models.SiteInfoRepository {
 	return rc.SiteInfoDatastore
 }
 
+func (rc RepositoryConnections) Session() models.SessionRepository {
+	return rc.SessionDatastore
+}
+
 func CreateRepository() handler.Repositories {
 	connections := RepositoryConnections{}
 
@@ -34,6 +39,7 @@ func CreateRepository() handler.Repositories {
 	connections.SiteInfoDatastore = repository.SiteInfo{
 		Bucket: connections.BucketDatastore,
 	}
+	connections.SessionDatastore = repository.Session{}
 
 	return connections
 }

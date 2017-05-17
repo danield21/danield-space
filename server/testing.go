@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/danield21/danield-space/server/handler"
 	"github.com/gorilla/sessions"
 	"golang.org/x/net/context"
 )
@@ -21,11 +22,15 @@ func (t TestingEnvironment) View(w io.Writer, view string, data interface{}) err
 }
 
 //Session gets a mock session
-func (t TestingEnvironment) Session(r *http.Request) *sessions.Session {
-	return GetSession(r)
+func (t TestingEnvironment) Session(ctx context.Context, r *http.Request) *sessions.Session {
+	return GetSession(ctx, t, r)
 }
 
 //Context gets a mock context
 func (t TestingEnvironment) Context(r *http.Request) context.Context {
 	return t.Ctx
+}
+
+func (t TestingEnvironment) Repository() handler.Repositories {
+	return nil
 }
