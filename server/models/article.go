@@ -5,6 +5,8 @@ import (
 	"log"
 	"strings"
 	"time"
+
+	"golang.org/x/net/context"
 )
 
 //Article contains information about articles written on this website.
@@ -38,4 +40,12 @@ func (a Article) Content() (content template.HTML) {
 		log.Printf("WARNING: article.Content - Unable to clean HTML\n%v", err)
 	}
 	return
+}
+
+type ArticleRepository interface {
+	Get(ctx context.Context, cat *Category, url string) (*Article, error)
+	GetAll(ctx context.Context, limit int) ([]*Article, error)
+	GetAllByCategory(ctx context.Context, cat *Category, limit int) ([]*Article, error)
+	GetMapKeyedByCategory(ctx context.Context, Limit int) (map[*Category][]*Article, error)
+	Set(ctx context.Context, article *Article) error
 }

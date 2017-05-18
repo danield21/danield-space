@@ -8,7 +8,6 @@ import (
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/models"
-	"github.com/danield21/danield-space/server/repository/articles"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
@@ -36,7 +35,7 @@ func PublicationsPageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
 		info := e.Repository().SiteInfo().Get(ctx)
 
-		articleMap, err := articles.GetMapKeyedByCategory(ctx, 10)
+		articleMap, err := e.Repository().Article().GetMapKeyedByCategory(ctx, 10)
 		if err != nil {
 			log.Errorf(ctx, "app.Publications - Unable to get articles organized by their type\n%v", err)
 		}

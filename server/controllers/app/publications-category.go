@@ -8,8 +8,6 @@ import (
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/models"
-	"github.com/danield21/danield-space/server/repository/articles"
-	"github.com/danield21/danield-space/server/repository/categories"
 	"github.com/gorilla/mux"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
@@ -36,13 +34,13 @@ func PublicationsCategoryPageLink(h handler.Handler) handler.Handler {
 
 		info := e.Repository().SiteInfo().Get(ctx)
 
-		cat, err := categories.Get(ctx, vars["category"])
+		cat, err := e.Repository().Category().Get(ctx, vars["category"])
 		if err != nil {
 			log.Errorf(ctx, "app.PublicationsCategoryPageLink - Unable to get category %s\n%v", vars["category"], err)
 			return ctx, status.ErrNotFound
 		}
 
-		a, err := articles.GetAllByCategory(ctx, cat, 1)
+		a, err := e.Repository().Article().GetAllByCategory(ctx, cat, 1)
 		if err != nil {
 			log.Errorf(ctx, "app.PublicationsCategoryPageLink - Unable to get articles by category %s\n%v", cat.Title, err)
 			return ctx, status.ErrNotFound

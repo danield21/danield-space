@@ -12,6 +12,8 @@ type RepositoryConnections struct {
 	SiteInfoDatastore repository.SiteInfo
 	SessionDatastore  repository.Session
 	AccountDatastore  repository.Account
+	ArticleDatastore  repository.Article
+	CategoryDatastore repository.Category
 }
 
 func (rc RepositoryConnections) Bucket() models.BucketRepository {
@@ -34,6 +36,14 @@ func (rc RepositoryConnections) Account() models.AccountRepository {
 	return rc.AccountDatastore
 }
 
+func (rc RepositoryConnections) Article() models.ArticleRepository {
+	return rc.ArticleDatastore
+}
+
+func (rc RepositoryConnections) Category() models.CategoryRepository {
+	return rc.CategoryDatastore
+}
+
 func CreateRepository() handler.Repositories {
 	connections := RepositoryConnections{}
 
@@ -46,6 +56,10 @@ func CreateRepository() handler.Repositories {
 	}
 	connections.SessionDatastore = repository.Session{}
 	connections.AccountDatastore = repository.Account{}
+	connections.CategoryDatastore = repository.Category{}
+	connections.ArticleDatastore = repository.Article{
+		Category: connections.CategoryDatastore,
+	}
 
 	return connections
 }

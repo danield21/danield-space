@@ -9,16 +9,16 @@ import (
 	"google.golang.org/appengine/log"
 )
 
-const entity = "Admin"
+const adminEntity = "Admin"
 
-var ErrNoMatch = errors.New("no user was found")
+var ErrNoAccount = errors.New("no user was found")
 var ErrNilAccount = errors.New("account was nil")
 
 type Account struct{}
 
 func (Account) GetAll(ctx context.Context) ([]*models.Account, error) {
 	var accounts []*models.Account
-	q := datastore.NewQuery(entity)
+	q := datastore.NewQuery(adminEntity)
 	keys, err := q.GetAll(ctx, &accounts)
 
 	if err != nil {
@@ -34,7 +34,7 @@ func (Account) GetAll(ctx context.Context) ([]*models.Account, error) {
 
 func (Account) Get(ctx context.Context, username string) (*models.Account, error) {
 	var accounts []*models.Account
-	q := datastore.NewQuery(entity).Filter("Username = ", username)
+	q := datastore.NewQuery(adminEntity).Filter("Username = ", username)
 	keys, err := q.GetAll(ctx, &accounts)
 
 	if err != nil {
@@ -42,7 +42,7 @@ func (Account) Get(ctx context.Context, username string) (*models.Account, error
 	}
 
 	if len(accounts) != 1 {
-		return nil, ErrNoMatch
+		return nil, ErrNoAccount
 	}
 
 	accounts[0].Key = keys[0]
@@ -57,7 +57,7 @@ func (a Account) Put(ctx context.Context, account *models.Account) error {
 	oldAcct, err := a.Get(ctx, account.Username)
 	if err != nil {
 		account.DataElement = models.WithNew("unknown")
-		account.Key = datastore.NewIncompleteKey(ctx, entity, nil)
+		account.Key = datastore.NewIncompleteKey(ctx, adminEntity, nil)
 	} else {
 		account.DataElement = models.WithOld("unknown", oldAcct.DataElement)
 	}
@@ -73,7 +73,7 @@ func (a Account) CanLogIn(ctx context.Context, username string, password []byte)
 		log.Warningf(ctx, "admin.IsAdmin - Unable to retrieve Admin accounts from database, using default\n")
 		accounts = append(accounts, &models.DefaultAccount)
 		models.DefaultAccount.DataElement = models.WithNew("site")
-		models.DefaultAccount.Key = datastore.NewIncompleteKey(ctx, entity, nil)
+		models.DefaultAccount.Key = datastore.NewIncompleteKey(ctx, adminEntity, nil)
 		_, err = datastore.Put(ctx, models.DefaultAccount.Key, accounts[0])
 		if err != nil {
 			log.Warningf(ctx, "admin.IsAdmin - Unable to put default account into database\n%v", err)
@@ -90,7 +90,7 @@ func (a Account) CanLogIn(ctx context.Context, username string, password []byte)
 
 func (Account) ChangePassword(ctx context.Context, username string, password []byte) error {
 	var accounts []models.Account
-	q := datastore.NewQuery(entity).Filter("Username =", username)
+	q := datastore.NewQuery(adminEntity).Filter("Username =", username)
 	key, err := q.GetAll(ctx, &accounts)
 
 	if err != nil {

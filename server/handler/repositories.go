@@ -10,6 +10,8 @@ type Repositories interface {
 	SiteInfoRepository
 	SessionRepository
 	AccountRepository
+	ArticleRepository
+	CategoryRepository
 }
 
 type BucketRepository interface {
@@ -30,4 +32,12 @@ type SessionRepository interface {
 
 type AccountRepository interface {
 	Account() models.AccountRepository
+}
+
+type ArticleRepository interface {
+	Article() models.ArticleRepository
+}
+
+type CategoryRepository interface {
+	Category() models.CategoryRepository
 }

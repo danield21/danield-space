@@ -10,9 +10,6 @@ import (
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/models"
-	"github.com/danield21/danield-space/server/repository"
-	"github.com/danield21/danield-space/server/repository/articles"
-	"github.com/danield21/danield-space/server/repository/categories"
 	"golang.org/x/net/context"
 )
 
@@ -24,7 +21,7 @@ const abstractKey = "abstract"
 const contentKey = "content"
 const catKey = "category"
 
-func UnpackArticle(ctx context.Context, values url.Values) (*models.Article, form.Form) {
+func UnpackArticle(ctx context.Context, catRepo models.CategoryRepository, values url.Values) (*models.Article, form.Form) {
 	var (
 		err         error
 		category    *models.Category
@@ -42,15 +39,15 @@ func UnpackArticle(ctx context.Context, values url.Values) (*models.Article, for
 	form.NotEmpty(authorFld, "author is required")
 
 	urlFld := frm.AddFieldFromValue(urlKey, values)
-	if form.NotEmpty(urlFld, "url is required") && !repository.ValidURLPart(urlFld.Get()) {
+	if form.NotEmpty(urlFld, "url is required") && !models.ValidURLPart(urlFld.Get()) {
 		form.Fail(urlFld, "url is not in a proper format")
 	}
 
 	catFld := frm.AddFieldFromValue(catKey, values)
 	if form.NotEmpty(catFld, "category is required") {
-		if !repository.ValidURLPart(catFld.Get()) {
+		if !models.ValidURLPart(catFld.Get()) {
 			form.Fail(catFld, "category is not in a proper format")
-		} else if category, err = categories.Get(ctx, catFld.Get()); err != nil {
+		} else if category, err = catRepo.Get(ctx, catFld.Get()); err != nil {
 			form.Fail(catFld, "unable to find specified category")
 		}
 	}
@@ -98,12 +95,12 @@ func PutArticleLink(h handler.Handler) handler.Handler {
 			return h(WithForm(ctx, form.Form{Error: errors.New("Unable to parse form")}), e, w)
 		}
 
-		art, frm := UnpackArticle(ctx, r.Form)
+		art, frm := UnpackArticle(ctx, e.Repository().Category(), r.Form)
 		if art == nil {
 			return h(WithForm(ctx, frm), e, w)
 		}
 
-		err = articles.Set(ctx, art)
+		err = e.Repository().Article().Set(ctx, art)
 		if err != nil {
 			frm.Error = errors.New("Unable to put into database")
 			return h(WithForm(ctx, frm), e, w)

@@ -9,7 +9,6 @@ import (
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/models"
-	"github.com/danield21/danield-space/server/repository/categories"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
@@ -50,7 +49,7 @@ func PublishPageLink(h handler.Handler) handler.Handler {
 
 		info := e.Repository().SiteInfo().Get(ctx)
 
-		cats, err := categories.GetAll(ctx)
+		cats, err := e.Repository().Category().GetAll(ctx)
 		if err != nil {
 			log.Warningf(ctx, "admin.Publish - Unable to get types of articles\n%v", err)
 		}

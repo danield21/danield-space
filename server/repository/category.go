@@ -1,4 +1,4 @@
-package categories
+package repository
 
 import (
 	"errors"
@@ -8,33 +8,35 @@ import (
 	"google.golang.org/appengine/datastore"
 )
 
-const entity = "Categories"
+const categoryEntity = "Categories"
 
-var ErrNoMatch = errors.New("no category found")
+var ErrNoCategory = errors.New("no category found")
 var ErrNilCategory = errors.New("category was nil")
 
-func Get(c context.Context, url string) (*models.Category, error) {
+type Category struct{}
+
+func (Category) Get(ctx context.Context, url string) (*models.Category, error) {
 	var categories []*models.Category
 
-	q := datastore.NewQuery(entity).Filter("URL =", url).Limit(1)
+	q := datastore.NewQuery(categoryEntity).Filter("URL =", url).Limit(1)
 
-	keys, err := q.GetAll(c, &categories)
+	keys, err := q.GetAll(ctx, &categories)
 	if err != nil {
 		return nil, err
 	}
 
 	if len(keys) == 0 {
-		return nil, ErrNoMatch
+		return nil, ErrNoCategory
 	}
 
 	categories[0].Key = keys[0]
 	return categories[0], nil
 }
 
-func GetAll(c context.Context) ([]*models.Category, error) {
+func (Category) GetAll(ctx context.Context) ([]*models.Category, error) {
 	var categories []*models.Category
-	q := datastore.NewQuery(entity)
-	keys, err := q.GetAll(c, &categories)
+	q := datastore.NewQuery(categoryEntity)
+	keys, err := q.GetAll(ctx, &categories)
 
 	if err != nil {
 		return nil, err
@@ -47,15 +49,15 @@ func GetAll(c context.Context) ([]*models.Category, error) {
 	return categories, nil
 }
 
-func Set(ctx context.Context, cat *models.Category) error {
+func (c Category) Set(ctx context.Context, cat *models.Category) error {
 	if cat == nil {
 		return ErrNilCategory
 	}
-	oldCat, err := Get(ctx, cat.URL)
+	oldCat, err := c.Get(ctx, cat.URL)
 
 	if err != nil {
 		cat.DataElement = models.WithNew(models.WithPerson(ctx))
-		cat.Key = datastore.NewIncompleteKey(ctx, entity, nil)
+		cat.Key = datastore.NewIncompleteKey(ctx, categoryEntity, nil)
 	} else {
 		cat.DataElement = models.WithOld(models.WithPerson(ctx), oldCat.DataElement)
 	}
@@ -65,21 +67,21 @@ func Set(ctx context.Context, cat *models.Category) error {
 	return err
 }
 
-func Remove(c context.Context, cat *models.Category) error {
+func (c Category) Remove(ctx context.Context, cat *models.Category) error {
 	var err error
 	if cat == nil {
 		return ErrNilCategory
 	} else if cat.Key == nil {
-		cat, err = Get(c, cat.URL)
+		cat, err = c.Get(ctx, cat.URL)
 		if err != nil {
 			return err
 		}
 	}
 
-	return datastore.Delete(c, cat.Key)
+	return datastore.Delete(ctx, cat.Key)
 }
 
-func IsUnique(c context.Context, category *models.Category) bool {
-	_, err := Get(c, category.URL)
+func (c Category) IsUnique(ctx context.Context, category *models.Category) bool {
+	_, err := c.Get(ctx, category.URL)
 	return err == nil
 }

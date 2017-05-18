@@ -8,7 +8,6 @@ import (
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/models"
-	"github.com/danield21/danield-space/server/repository/articles"
 	"github.com/gorilla/mux"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
@@ -35,7 +34,7 @@ func ArticlePageLink(h handler.Handler) handler.Handler {
 		info := e.Repository().SiteInfo().Get(ctx)
 		cat := models.NewEmptyCategory(vars["category"])
 
-		a, err := articles.Get(ctx, cat, vars["key"])
+		a, err := e.Repository().Article().Get(ctx, cat, vars["key"])
 		if err != nil {
 			log.Errorf(ctx, "app.ArticlePageLink - Unable to get articles by type\n%v", err)
 			return ctx, status.ErrNotFound

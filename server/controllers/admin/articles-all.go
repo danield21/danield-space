@@ -8,7 +8,6 @@ import (
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/models"
-	"github.com/danield21/danield-space/server/repository/articles"
 	"golang.org/x/net/context"
 )
 
@@ -33,7 +32,7 @@ func ArticlePageLink(h handler.Handler) handler.Handler {
 		}
 
 		info := e.Repository().SiteInfo().Get(ctx)
-		arts, _ := articles.GetAll(ctx, -1)
+		arts, _ := e.Repository().Article().GetAll(ctx, -1)
 
 		data := struct {
 			AdminModel

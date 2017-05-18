@@ -8,8 +8,6 @@ import (
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/models"
-	"github.com/danield21/danield-space/server/repository"
-	"github.com/danield21/danield-space/server/repository/categories"
 	"golang.org/x/net/context"
 )
 
@@ -25,7 +23,7 @@ func UnpackCategory(values url.Values) (*models.Category, form.Form) {
 	form.NotEmpty(ttlFld, "Title is required")
 
 	urlFld := frm.AddFieldFromValue(catURLKey, values)
-	if !form.NotEmpty(urlFld, "URL is required") && !repository.ValidURLPart(urlFld.Get()) {
+	if !form.NotEmpty(urlFld, "URL is required") && !models.ValidURLPart(urlFld.Get()) {
 		form.Fail(urlFld, "url is not in a proper format")
 	}
 
@@ -58,7 +56,7 @@ func PutCategoryLink(h handler.Handler) handler.Handler {
 			return h(WithForm(ctx, frm), e, w)
 		}
 
-		err = categories.Set(ctx, cat)
+		err = e.Repository().Category().Set(ctx, cat)
 		if err != nil {
 			frm.Error = errors.New("Unable to put into database")
 		}
