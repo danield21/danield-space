@@ -13,8 +13,8 @@ const entity = "Articles"
 
 //Get gets a single article with the same type and key.
 //Returns a error if there is no match.
-func Get(ctx context.Context, cat *categories.Category, url string) (*Article, error) {
-	var articles []*Article
+func Get(ctx context.Context, cat *models.Category, url string) (*models.Article, error) {
+	var articles []*models.Article
 	var keys []*datastore.Key
 	var err error
 
@@ -46,10 +46,10 @@ func Get(ctx context.Context, cat *categories.Category, url string) (*Article, e
 }
 
 //GetAll gets all articles written for this website.
-func GetAll(ctx context.Context, limit int) ([]*Article, error) {
+func GetAll(ctx context.Context, limit int) ([]*models.Article, error) {
 	var (
-		cat      categories.Category
-		articles []*Article
+		cat      models.Category
+		articles []*models.Article
 	)
 
 	q := datastore.NewQuery(entity).Order("PublishDate").Limit(limit)
@@ -72,10 +72,10 @@ func GetAll(ctx context.Context, limit int) ([]*Article, error) {
 }
 
 //GetAllByCategory gets all articles of the same category.
-func GetAllByCategory(ctx context.Context, cat *categories.Category, limit int) ([]*Article, error) {
+func GetAllByCategory(ctx context.Context, cat *models.Category, limit int) ([]*models.Article, error) {
 	var (
 		err      error
-		articles []*Article
+		articles []*models.Article
 	)
 
 	if cat == nil {
@@ -101,8 +101,8 @@ func GetAllByCategory(ctx context.Context, cat *categories.Category, limit int) 
 
 //GetMapKeyedByCategory gets a map of articles with the key being the article type.
 //Map returns an array of article with the same type limited by Limit.
-func GetMapKeyedByCategory(ctx context.Context, Limit int) (map[*categories.Category][]*Article, error) {
-	articleMap := make(map[*categories.Category][]*Article)
+func GetMapKeyedByCategory(ctx context.Context, Limit int) (map[*models.Category][]*models.Article, error) {
+	articleMap := make(map[*models.Category][]*models.Article)
 
 	cats, err := categories.GetAll(ctx)
 	if err != nil {
@@ -121,7 +121,7 @@ func GetMapKeyedByCategory(ctx context.Context, Limit int) (map[*categories.Cate
 	return articleMap, nil
 }
 
-func Set(ctx context.Context, article *Article) error {
+func Set(ctx context.Context, article *models.Article) error {
 	if article == nil {
 		return ErrNilArticle
 	}

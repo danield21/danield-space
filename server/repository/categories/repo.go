@@ -13,8 +13,8 @@ const entity = "Categories"
 var ErrNoMatch = errors.New("no category found")
 var ErrNilCategory = errors.New("category was nil")
 
-func Get(c context.Context, url string) (*Category, error) {
-	var categories []*Category
+func Get(c context.Context, url string) (*models.Category, error) {
+	var categories []*models.Category
 
 	q := datastore.NewQuery(entity).Filter("URL =", url).Limit(1)
 
@@ -31,8 +31,8 @@ func Get(c context.Context, url string) (*Category, error) {
 	return categories[0], nil
 }
 
-func GetAll(c context.Context) ([]*Category, error) {
-	var categories []*Category
+func GetAll(c context.Context) ([]*models.Category, error) {
+	var categories []*models.Category
 	q := datastore.NewQuery(entity)
 	keys, err := q.GetAll(c, &categories)
 
@@ -47,7 +47,7 @@ func GetAll(c context.Context) ([]*Category, error) {
 	return categories, nil
 }
 
-func Set(ctx context.Context, cat *Category) error {
+func Set(ctx context.Context, cat *models.Category) error {
 	if cat == nil {
 		return ErrNilCategory
 	}
@@ -65,7 +65,7 @@ func Set(ctx context.Context, cat *Category) error {
 	return err
 }
 
-func Remove(c context.Context, cat *Category) error {
+func Remove(c context.Context, cat *models.Category) error {
 	var err error
 	if cat == nil {
 		return ErrNilCategory
@@ -79,7 +79,7 @@ func Remove(c context.Context, cat *Category) error {
 	return datastore.Delete(c, cat.Key)
 }
 
-func IsUnique(c context.Context, category *Category) bool {
+func IsUnique(c context.Context, category *models.Category) bool {
 	_, err := Get(c, category.URL)
 	return err == nil
 }

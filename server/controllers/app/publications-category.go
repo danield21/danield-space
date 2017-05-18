@@ -7,6 +7,7 @@ import (
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
+	"github.com/danield21/danield-space/server/models"
 	"github.com/danield21/danield-space/server/repository/articles"
 	"github.com/danield21/danield-space/server/repository/categories"
 	"github.com/gorilla/mux"
@@ -49,8 +50,8 @@ func PublicationsCategoryPageLink(h handler.Handler) handler.Handler {
 
 		data := struct {
 			view.BaseModel
-			Articles []*articles.Article
-			Category *categories.Category
+			Articles []*models.Article
+			Category *models.Category
 		}{
 			BaseModel: view.BaseModel{
 				SiteInfo: info,

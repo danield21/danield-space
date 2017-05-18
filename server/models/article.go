@@ -1,26 +1,22 @@
-package articles
+package models
 
 import (
 	"html/template"
 	"log"
 	"strings"
 	"time"
-
-	"github.com/danield21/danield-space/server/models"
-	"github.com/danield21/danield-space/server/repository"
-	"github.com/danield21/danield-space/server/repository/categories"
 )
 
 //Article contains information about articles written on this website.
 type Article struct {
-	models.DataElement
+	DataElement
 	Title       string
 	Author      string
 	URL         string
 	PublishDate time.Time
-	Abstract    string               `datastore:",noindex"`
-	HTMLContent []byte               `datastore:",noindex"`
-	Category    *categories.Category `datastore:"-"`
+	Abstract    string    `datastore:",noindex"`
+	HTMLContent []byte    `datastore:",noindex"`
+	Category    *Category `datastore:"-"`
 }
 
 //Path returns the path for a article.
@@ -37,7 +33,7 @@ func (a Article) Heading() string {
 func (a Article) Content() (content template.HTML) {
 	var err error
 
-	content, err = repository.CleanHTML(a.HTMLContent)
+	content, err = CleanHTML(a.HTMLContent)
 	if err != nil {
 		log.Printf("WARNING: article.Content - Unable to clean HTML\n%v", err)
 	}

@@ -7,6 +7,7 @@ import (
 
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
+	"github.com/danield21/danield-space/server/models"
 	"github.com/danield21/danield-space/server/repository"
 	"github.com/danield21/danield-space/server/repository/categories"
 	"golang.org/x/net/context"
@@ -16,7 +17,7 @@ const catTitleKey = "title"
 const catURLKey = "url"
 const catDscKey = "description"
 
-func UnpackCategory(values url.Values) (*categories.Category, form.Form) {
+func UnpackCategory(values url.Values) (*models.Category, form.Form) {
 	frm := form.MakeForm()
 	frm.Submitted = true
 
@@ -35,8 +36,8 @@ func UnpackCategory(values url.Values) (*categories.Category, form.Form) {
 		return nil, frm
 	}
 
-	category := new(categories.Category)
-	*category = categories.Category{
+	category := new(models.Category)
+	*category = models.Category{
 		Title:       ttlFld.Get(),
 		URL:         urlFld.Get(),
 		Description: dscFld.Get(),

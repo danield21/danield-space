@@ -7,8 +7,8 @@ import (
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
+	"github.com/danield21/danield-space/server/models"
 	"github.com/danield21/danield-space/server/repository/articles"
-	"github.com/danield21/danield-space/server/repository/categories"
 	"github.com/gorilla/mux"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
@@ -33,7 +33,7 @@ func ArticlePageLink(h handler.Handler) handler.Handler {
 		vars := mux.Vars(r)
 
 		info := e.Repository().SiteInfo().Get(ctx)
-		cat := categories.NewEmptyCategory(vars["category"])
+		cat := models.NewEmptyCategory(vars["category"])
 
 		a, err := articles.Get(ctx, cat, vars["key"])
 		if err != nil {
@@ -43,7 +43,7 @@ func ArticlePageLink(h handler.Handler) handler.Handler {
 
 		data := struct {
 			view.BaseModel
-			Article *articles.Article
+			Article *models.Article
 		}{
 			BaseModel: view.BaseModel{
 				SiteInfo: info,

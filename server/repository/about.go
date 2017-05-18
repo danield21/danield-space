@@ -34,10 +34,10 @@ func (a About) Set(c context.Context, about []byte) error {
 }
 
 func aboutToItem(about []byte) (*models.Item, error) {
-	clean, err := CleanHTML(about)
+	clean, err := models.CleanHTML(about)
 	return models.NewItem(bucketKey, string(clean), "[]byte"), err
 }
 
 func itemToAbout(item *models.Item) (template.HTML, error) {
-	return CleanHTML([]byte(item.Value))
+	return models.CleanHTML([]byte(item.Value))
 }

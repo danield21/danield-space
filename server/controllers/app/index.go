@@ -7,6 +7,7 @@ import (
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
+	"github.com/danield21/danield-space/server/models"
 	"github.com/danield21/danield-space/server/repository/articles"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
@@ -36,7 +37,7 @@ func IndexPageLink(h handler.Handler) handler.Handler {
 
 		data := struct {
 			view.BaseModel
-			Articles []*articles.Article
+			Articles []*models.Article
 		}{
 			BaseModel: view.BaseModel{
 				SiteInfo: info,

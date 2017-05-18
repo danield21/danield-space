@@ -1,11 +1,7 @@
-package categories
-
-import (
-	"github.com/danield21/danield-space/server/models"
-)
+package models
 
 type Category struct {
-	models.DataElement
+	DataElement
 	Title       string
 	URL         string
 	Description string

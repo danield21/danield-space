@@ -9,6 +9,7 @@ import (
 
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
+	"github.com/danield21/danield-space/server/models"
 	"github.com/danield21/danield-space/server/repository"
 	"github.com/danield21/danield-space/server/repository/articles"
 	"github.com/danield21/danield-space/server/repository/categories"
@@ -23,10 +24,10 @@ const abstractKey = "abstract"
 const contentKey = "content"
 const catKey = "category"
 
-func UnpackArticle(ctx context.Context, values url.Values) (*articles.Article, form.Form) {
+func UnpackArticle(ctx context.Context, values url.Values) (*models.Article, form.Form) {
 	var (
 		err         error
-		category    *categories.Category
+		category    *models.Category
 		publishDate time.Time
 		content     template.HTML
 	)
@@ -66,7 +67,7 @@ func UnpackArticle(ctx context.Context, values url.Values) (*articles.Article, f
 
 	contentFld := frm.AddFieldFromValue(contentKey, values)
 	if form.NotEmpty(contentFld, "publish is required") {
-		if content, err = repository.CleanHTML([]byte(contentFld.Get())); err != nil {
+		if content, err = models.CleanHTML([]byte(contentFld.Get())); err != nil {
 			form.Fail(contentFld, "unable to parse content")
 		}
 	}
@@ -75,8 +76,8 @@ func UnpackArticle(ctx context.Context, values url.Values) (*articles.Article, f
 		return nil, frm
 	}
 
-	a := new(articles.Article)
-	*a = articles.Article{
+	a := new(models.Article)
+	*a = models.Article{
 		Title:       titleFld.Get(),
 		Author:      authorFld.Get(),
 		Category:    category,
