@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/danield21/danield-space/server/models"
+	"github.com/danield21/danield-space/server/store"
 )
 
 type Repositories interface {
@@ -15,29 +15,29 @@ type Repositories interface {
 }
 
 type BucketRepository interface {
-	Bucket() models.BucketRepository
+	Bucket() store.BucketRepository
 }
 
 type AboutRepository interface {
-	About() models.AboutRepository
+	About() store.AboutRepository
 }
 
 type SiteInfoRepository interface {
-	SiteInfo() models.SiteInfoRepository
+	SiteInfo() store.SiteInfoRepository
 }
 
 type SessionRepository interface {
-	Session() models.SessionRepository
+	Session() store.SessionRepository
 }
 
 type AccountRepository interface {
-	Account() models.AccountRepository
+	Account() store.AccountRepository
 }
 
 type ArticleRepository interface {
-	Article() models.ArticleRepository
+	Article() store.ArticleRepository
 }
 
 type CategoryRepository interface {
-	Category() models.CategoryRepository
+	Category() store.CategoryRepository
 }

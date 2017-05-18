@@ -3,7 +3,7 @@ package datastore
 import (
 	"errors"
 
-	"github.com/danield21/danield-space/server/models"
+	"github.com/danield21/danield-space/server/store"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"
@@ -20,8 +20,8 @@ var ErrFieldNotFound = errors.New("field not found")
 var ErrNilItem = errors.New("err was nil")
 
 //Get gets an item from the bucket with the same field
-func (b Bucket) Get(ctx context.Context, field string) (*models.Item, error) {
-	var items []*models.Item
+func (b Bucket) Get(ctx context.Context, field string) (*store.Item, error) {
+	var items []*store.Item
 
 	q := datastore.NewQuery(bucketEntity).Filter("Field =", field).Limit(1)
 
@@ -40,7 +40,7 @@ func (b Bucket) Get(ctx context.Context, field string) (*models.Item, error) {
 
 //GetAll gets all items with the fields listed.
 //If there are fields missing, then
-func (b Bucket) GetAll(ctx context.Context, fields ...string) (have []*models.Item, missing []string) {
+func (b Bucket) GetAll(ctx context.Context, fields ...string) (have []*store.Item, missing []string) {
 
 	for _, f := range fields {
 		item, err := b.Get(ctx, f)
@@ -55,7 +55,7 @@ func (b Bucket) GetAll(ctx context.Context, fields ...string) (have []*models.It
 }
 
 //Set sets the field with item
-func (b Bucket) Set(ctx context.Context, item *models.Item) error {
+func (b Bucket) Set(ctx context.Context, item *store.Item) error {
 	if item == nil {
 		return ErrNilItem
 	}
@@ -65,10 +65,10 @@ func (b Bucket) Set(ctx context.Context, item *models.Item) error {
 	if err != nil {
 		log.Warningf(ctx, "bucket.Set - Unable to get previous item, creating new\n%v", err)
 
-		item.DataElement = models.WithNew(models.WithPerson(ctx))
+		item.DataElement = store.WithNew(store.WithPerson(ctx))
 		item.Key = datastore.NewIncompleteKey(ctx, bucketEntity, nil)
 	} else {
-		item.DataElement = models.WithOld(models.WithPerson(ctx), oldItem.DataElement)
+		item.DataElement = store.WithOld(store.WithPerson(ctx), oldItem.DataElement)
 	}
 
 	item.Key, err = datastore.Put(ctx, item.Key, item)
@@ -80,7 +80,7 @@ func (b Bucket) Set(ctx context.Context, item *models.Item) error {
 //so field will be overwritten as it loops through.
 //Latest value survives
 //No transaction, so if any fail, it will not rollback any successful
-func (b Bucket) SetAll(ctx context.Context, items ...*models.Item) error {
+func (b Bucket) SetAll(ctx context.Context, items ...*store.Item) error {
 	var (
 		fields []string
 		keys   []*datastore.Key
@@ -107,7 +107,7 @@ CheckingForNew:
 				continue
 			}
 
-			i.DataElement = models.WithNew(models.WithPerson(ctx))
+			i.DataElement = store.WithNew(store.WithPerson(ctx))
 			i.Key = datastore.NewIncompleteKey(ctx, bucketEntity, nil)
 			have = append(have, i)
 
@@ -119,7 +119,7 @@ CheckingForNew:
 				continue
 			}
 
-			i.DataElement = models.WithOld(models.WithPerson(ctx), h.DataElement)
+			i.DataElement = store.WithOld(store.WithPerson(ctx), h.DataElement)
 		}
 	}
 
@@ -139,8 +139,8 @@ CheckingForNew:
 	return nil
 }
 
-func (b Bucket) Default(ctx context.Context, defaultItem *models.Item) *models.Item {
-	var items []*models.Item
+func (b Bucket) Default(ctx context.Context, defaultItem *store.Item) *store.Item {
+	var items []*store.Item
 
 	if defaultItem == nil {
 		return nil
@@ -154,7 +154,7 @@ func (b Bucket) Default(ctx context.Context, defaultItem *models.Item) *models.I
 
 	log.Infof(ctx, "Field %s missing, using default %s", defaultItem.Field, defaultItem.Value)
 	key := datastore.NewIncompleteKey(ctx, bucketEntity, nil)
-	defaultItem.DataElement = models.WithNew("site")
+	defaultItem.DataElement = store.WithNew("site")
 
 	if key, err := datastore.Put(ctx, key, defaultItem); err != nil {
 		defaultItem.Key = key
@@ -163,14 +163,14 @@ func (b Bucket) Default(ctx context.Context, defaultItem *models.Item) *models.I
 	return defaultItem
 }
 
-func (b Bucket) DefaultAll(ctx context.Context, defaultItems ...*models.Item) []*models.Item {
+func (b Bucket) DefaultAll(ctx context.Context, defaultItems ...*store.Item) []*store.Item {
 	if defaultItems == nil {
 		return nil
 	}
 
 	var (
 		fields       []string
-		missingItems []*models.Item
+		missingItems []*store.Item
 		keys         []*datastore.Key
 		err          error
 	)
@@ -192,10 +192,10 @@ CheckingForNew:
 			}
 			log.Infof(ctx, "Field %s missing, using default \"%s\"", m, i.Value)
 
-			newItem := new(models.Item)
+			newItem := new(store.Item)
 			*newItem = *i
 
-			newItem.DataElement = models.WithNew("site")
+			newItem.DataElement = store.WithNew("site")
 			missingItems = append(missingItems, newItem)
 			have = append(have, newItem)
 			keys = append(keys, datastore.NewIncompleteKey(ctx, bucketEntity, nil))

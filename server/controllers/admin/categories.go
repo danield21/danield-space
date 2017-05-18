@@ -7,7 +7,7 @@ import (
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/models"
+	"github.com/danield21/danield-space/server/store"
 	"golang.org/x/net/context"
 )
 
@@ -36,7 +36,7 @@ func CategoryPageLink(h handler.Handler) handler.Handler {
 
 		data := struct {
 			AdminModel
-			Categories []*models.Category
+			Categories []*store.Category
 		}{
 			AdminModel: AdminModel{
 				BaseModel: view.BaseModel{

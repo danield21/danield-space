@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/danield21/danield-space/server/models"
+	"github.com/danield21/danield-space/server/store"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
 )
@@ -12,7 +12,7 @@ import (
 const articleEntity = "Articles"
 
 type Article struct {
-	Category models.CategoryRepository
+	Category store.CategoryRepository
 }
 
 //ErrNoArticle appears when the article requested does not exist in the database
@@ -23,8 +23,8 @@ var ErrNilArticle = errors.New("err was nil")
 
 //Get gets a single article with the same type and key.
 //Returns a error if there is no match.
-func (a Article) Get(ctx context.Context, cat *models.Category, url string) (*models.Article, error) {
-	var articles []*models.Article
+func (a Article) Get(ctx context.Context, cat *store.Category, url string) (*store.Article, error) {
+	var articles []*store.Article
 	var keys []*datastore.Key
 	var err error
 
@@ -56,10 +56,10 @@ func (a Article) Get(ctx context.Context, cat *models.Category, url string) (*mo
 }
 
 //GetAll gets all articles written for this website.
-func (Article) GetAll(ctx context.Context, limit int) ([]*models.Article, error) {
+func (Article) GetAll(ctx context.Context, limit int) ([]*store.Article, error) {
 	var (
-		cat      models.Category
-		articles []*models.Article
+		cat      store.Category
+		articles []*store.Article
 	)
 
 	q := datastore.NewQuery(articleEntity).Order("PublishDate").Limit(limit)
@@ -82,10 +82,10 @@ func (Article) GetAll(ctx context.Context, limit int) ([]*models.Article, error)
 }
 
 //GetAllByCategory gets all articles of the same category.
-func (a Article) GetAllByCategory(ctx context.Context, cat *models.Category, limit int) ([]*models.Article, error) {
+func (a Article) GetAllByCategory(ctx context.Context, cat *store.Category, limit int) ([]*store.Article, error) {
 	var (
 		err      error
-		articles []*models.Article
+		articles []*store.Article
 	)
 
 	if cat == nil {
@@ -111,8 +111,8 @@ func (a Article) GetAllByCategory(ctx context.Context, cat *models.Category, lim
 
 //GetMapKeyedByCategory gets a map of articles with the key being the article type.
 //Map returns an array of article with the same type limited by Limit.
-func (a Article) GetMapKeyedByCategory(ctx context.Context, Limit int) (map[*models.Category][]*models.Article, error) {
-	articleMap := make(map[*models.Category][]*models.Article)
+func (a Article) GetMapKeyedByCategory(ctx context.Context, Limit int) (map[*store.Category][]*store.Article, error) {
+	articleMap := make(map[*store.Category][]*store.Article)
 
 	cats, err := a.Category.GetAll(ctx)
 	if err != nil {
@@ -131,7 +131,7 @@ func (a Article) GetMapKeyedByCategory(ctx context.Context, Limit int) (map[*mod
 	return articleMap, nil
 }
 
-func (a Article) Set(ctx context.Context, article *models.Article) error {
+func (a Article) Set(ctx context.Context, article *store.Article) error {
 	if article == nil {
 		return ErrNilArticle
 	}
@@ -140,10 +140,10 @@ func (a Article) Set(ctx context.Context, article *models.Article) error {
 
 	if err != nil {
 		cat, _ := a.Category.Get(ctx, article.Category.URL)
-		article.DataElement = models.WithNew(models.WithPerson(ctx))
+		article.DataElement = store.WithNew(store.WithPerson(ctx))
 		article.Key = datastore.NewIncompleteKey(ctx, articleEntity, cat.Key)
 	} else {
-		article.DataElement = models.WithOld(models.WithPerson(ctx), oldArticle.DataElement)
+		article.DataElement = store.WithOld(store.WithPerson(ctx), oldArticle.DataElement)
 	}
 
 	article.Key, err = datastore.Put(ctx, article.Key, article)

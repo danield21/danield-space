@@ -7,7 +7,7 @@ import (
 
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/models"
+	"github.com/danield21/danield-space/server/store"
 	"golang.org/x/net/context"
 )
 
@@ -15,7 +15,7 @@ const catTitleKey = "title"
 const catURLKey = "url"
 const catDscKey = "description"
 
-func UnpackCategory(values url.Values) (*models.Category, form.Form) {
+func UnpackCategory(values url.Values) (*store.Category, form.Form) {
 	frm := form.MakeForm()
 	frm.Submitted = true
 
@@ -23,7 +23,7 @@ func UnpackCategory(values url.Values) (*models.Category, form.Form) {
 	form.NotEmpty(ttlFld, "Title is required")
 
 	urlFld := frm.AddFieldFromValue(catURLKey, values)
-	if !form.NotEmpty(urlFld, "URL is required") && !models.ValidURLPart(urlFld.Get()) {
+	if !form.NotEmpty(urlFld, "URL is required") && !store.ValidURLPart(urlFld.Get()) {
 		form.Fail(urlFld, "url is not in a proper format")
 	}
 
@@ -34,8 +34,8 @@ func UnpackCategory(values url.Values) (*models.Category, form.Form) {
 		return nil, frm
 	}
 
-	category := new(models.Category)
-	*category = models.Category{
+	category := new(store.Category)
+	*category = store.Category{
 		Title:       ttlFld.Get(),
 		URL:         urlFld.Get(),
 		Description: dscFld.Get(),

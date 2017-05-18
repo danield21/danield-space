@@ -1,4 +1,4 @@
-package models
+package store
 
 import (
 	"html/template"

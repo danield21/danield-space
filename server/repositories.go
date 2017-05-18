@@ -1,9 +1,9 @@
 package server
 
 import (
-	"github.com/danield21/danield-space/server/datastore"
+	"github.com/danield21/danield-space/server/store/datastore"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/models"
+	"github.com/danield21/danield-space/server/store"
 )
 
 type RepositoryConnections struct {
@@ -16,31 +16,31 @@ type RepositoryConnections struct {
 	CategoryDatastore datastore.Category
 }
 
-func (rc RepositoryConnections) Bucket() models.BucketRepository {
+func (rc RepositoryConnections) Bucket() store.BucketRepository {
 	return rc.BucketDatastore
 }
 
-func (rc RepositoryConnections) About() models.AboutRepository {
+func (rc RepositoryConnections) About() store.AboutRepository {
 	return rc.AboutDatastore
 }
 
-func (rc RepositoryConnections) SiteInfo() models.SiteInfoRepository {
+func (rc RepositoryConnections) SiteInfo() store.SiteInfoRepository {
 	return rc.SiteInfoDatastore
 }
 
-func (rc RepositoryConnections) Session() models.SessionRepository {
+func (rc RepositoryConnections) Session() store.SessionRepository {
 	return rc.SessionDatastore
 }
 
-func (rc RepositoryConnections) Account() models.AccountRepository {
+func (rc RepositoryConnections) Account() store.AccountRepository {
 	return rc.AccountDatastore
 }
 
-func (rc RepositoryConnections) Article() models.ArticleRepository {
+func (rc RepositoryConnections) Article() store.ArticleRepository {
 	return rc.ArticleDatastore
 }
 
-func (rc RepositoryConnections) Category() models.CategoryRepository {
+func (rc RepositoryConnections) Category() store.CategoryRepository {
 	return rc.CategoryDatastore
 }
 

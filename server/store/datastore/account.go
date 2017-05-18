@@ -3,7 +3,7 @@ package datastore
 import (
 	"errors"
 
-	"github.com/danield21/danield-space/server/models"
+	"github.com/danield21/danield-space/server/store"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"
@@ -16,8 +16,8 @@ var ErrNilAccount = errors.New("account was nil")
 
 type Account struct{}
 
-func (Account) GetAll(ctx context.Context) ([]*models.Account, error) {
-	var accounts []*models.Account
+func (Account) GetAll(ctx context.Context) ([]*store.Account, error) {
+	var accounts []*store.Account
 	q := datastore.NewQuery(adminEntity)
 	keys, err := q.GetAll(ctx, &accounts)
 
@@ -32,8 +32,8 @@ func (Account) GetAll(ctx context.Context) ([]*models.Account, error) {
 	return accounts, nil
 }
 
-func (Account) Get(ctx context.Context, username string) (*models.Account, error) {
-	var accounts []*models.Account
+func (Account) Get(ctx context.Context, username string) (*store.Account, error) {
+	var accounts []*store.Account
 	q := datastore.NewQuery(adminEntity).Filter("Username = ", username)
 	keys, err := q.GetAll(ctx, &accounts)
 
@@ -49,17 +49,17 @@ func (Account) Get(ctx context.Context, username string) (*models.Account, error
 	return accounts[0], nil
 }
 
-func (a Account) Put(ctx context.Context, account *models.Account) error {
+func (a Account) Put(ctx context.Context, account *store.Account) error {
 	if account == nil {
 		return ErrNilAccount
 	}
 
 	oldAcct, err := a.Get(ctx, account.Username)
 	if err != nil {
-		account.DataElement = models.WithNew("unknown")
+		account.DataElement = store.WithNew("unknown")
 		account.Key = datastore.NewIncompleteKey(ctx, adminEntity, nil)
 	} else {
-		account.DataElement = models.WithOld("unknown", oldAcct.DataElement)
+		account.DataElement = store.WithOld("unknown", oldAcct.DataElement)
 	}
 
 	account.Key, err = datastore.Put(ctx, account.Key, account)
@@ -71,10 +71,10 @@ func (a Account) CanLogIn(ctx context.Context, username string, password []byte)
 
 	if err != nil || len(accounts) == 0 {
 		log.Warningf(ctx, "admin.IsAdmin - Unable to retrieve Admin accounts from database, using default\n")
-		accounts = append(accounts, &models.DefaultAccount)
-		models.DefaultAccount.DataElement = models.WithNew("site")
-		models.DefaultAccount.Key = datastore.NewIncompleteKey(ctx, adminEntity, nil)
-		_, err = datastore.Put(ctx, models.DefaultAccount.Key, accounts[0])
+		accounts = append(accounts, &store.DefaultAccount)
+		store.DefaultAccount.DataElement = store.WithNew("site")
+		store.DefaultAccount.Key = datastore.NewIncompleteKey(ctx, adminEntity, nil)
+		_, err = datastore.Put(ctx, store.DefaultAccount.Key, accounts[0])
 		if err != nil {
 			log.Warningf(ctx, "admin.IsAdmin - Unable to put default account into database\n%v", err)
 		}
@@ -89,7 +89,7 @@ func (a Account) CanLogIn(ctx context.Context, username string, password []byte)
 }
 
 func (Account) ChangePassword(ctx context.Context, username string, password []byte) error {
-	var accounts []models.Account
+	var accounts []store.Account
 	q := datastore.NewQuery(adminEntity).Filter("Username =", username)
 	key, err := q.GetAll(ctx, &accounts)
 

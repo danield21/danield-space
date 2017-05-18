@@ -3,7 +3,7 @@ package datastore
 import (
 	"errors"
 
-	"github.com/danield21/danield-space/server/models"
+	"github.com/danield21/danield-space/server/store"
 	"golang.org/x/net/context"
 )
 
@@ -17,19 +17,19 @@ const descriptionField = bucketPrefix + "description"
 var ErrSiteInfo = errors.New("Unable to get site information")
 
 type SiteInfo struct {
-	Bucket models.BucketRepository
+	Bucket store.BucketRepository
 }
 
 //Get gets all information about the site
-func (s SiteInfo) Get(c context.Context) models.SiteInfo {
-	items := siteInfoToItems(models.DefaultSiteInfo)
+func (s SiteInfo) Get(c context.Context) store.SiteInfo {
+	items := siteInfoToItems(store.DefaultSiteInfo)
 
 	fields := s.Bucket.DefaultAll(c, items...)
 
 	return itemsToSiteInfo(fields)
 }
 
-func (s SiteInfo) Set(c context.Context, info models.SiteInfo) error {
+func (s SiteInfo) Set(c context.Context, info store.SiteInfo) error {
 	items := siteInfoToItems(info)
 
 	err := s.Bucket.SetAll(c, items...)
@@ -37,17 +37,17 @@ func (s SiteInfo) Set(c context.Context, info models.SiteInfo) error {
 	return err
 }
 
-func siteInfoToItems(info models.SiteInfo) []*models.Item {
-	return []*models.Item{
-		models.NewItem(titleField, info.Title, "string"),
-		models.NewItem(linkField, info.Link, "string"),
-		models.NewItem(ownerField, info.Owner, "string"),
-		models.NewItem(descriptionField, info.Description, "string"),
+func siteInfoToItems(info store.SiteInfo) []*store.Item {
+	return []*store.Item{
+		store.NewItem(titleField, info.Title, "string"),
+		store.NewItem(linkField, info.Link, "string"),
+		store.NewItem(ownerField, info.Owner, "string"),
+		store.NewItem(descriptionField, info.Description, "string"),
 	}
 }
 
-func itemsToSiteInfo(items []*models.Item) models.SiteInfo {
-	var info models.SiteInfo
+func itemsToSiteInfo(items []*store.Item) store.SiteInfo {
+	var info store.SiteInfo
 	for _, item := range items {
 		switch item.Field {
 		case titleField:

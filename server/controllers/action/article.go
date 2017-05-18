@@ -9,7 +9,7 @@ import (
 
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/models"
+	"github.com/danield21/danield-space/server/store"
 	"golang.org/x/net/context"
 )
 
@@ -21,10 +21,10 @@ const abstractKey = "abstract"
 const contentKey = "content"
 const catKey = "category"
 
-func UnpackArticle(ctx context.Context, catRepo models.CategoryRepository, values url.Values) (*models.Article, form.Form) {
+func UnpackArticle(ctx context.Context, catRepo store.CategoryRepository, values url.Values) (*store.Article, form.Form) {
 	var (
 		err         error
-		category    *models.Category
+		category    *store.Category
 		publishDate time.Time
 		content     template.HTML
 	)
@@ -39,13 +39,13 @@ func UnpackArticle(ctx context.Context, catRepo models.CategoryRepository, value
 	form.NotEmpty(authorFld, "author is required")
 
 	urlFld := frm.AddFieldFromValue(urlKey, values)
-	if form.NotEmpty(urlFld, "url is required") && !models.ValidURLPart(urlFld.Get()) {
+	if form.NotEmpty(urlFld, "url is required") && !store.ValidURLPart(urlFld.Get()) {
 		form.Fail(urlFld, "url is not in a proper format")
 	}
 
 	catFld := frm.AddFieldFromValue(catKey, values)
 	if form.NotEmpty(catFld, "category is required") {
-		if !models.ValidURLPart(catFld.Get()) {
+		if !store.ValidURLPart(catFld.Get()) {
 			form.Fail(catFld, "category is not in a proper format")
 		} else if category, err = catRepo.Get(ctx, catFld.Get()); err != nil {
 			form.Fail(catFld, "unable to find specified category")
@@ -64,7 +64,7 @@ func UnpackArticle(ctx context.Context, catRepo models.CategoryRepository, value
 
 	contentFld := frm.AddFieldFromValue(contentKey, values)
 	if form.NotEmpty(contentFld, "publish is required") {
-		if content, err = models.CleanHTML([]byte(contentFld.Get())); err != nil {
+		if content, err = store.CleanHTML([]byte(contentFld.Get())); err != nil {
 			form.Fail(contentFld, "unable to parse content")
 		}
 	}
@@ -73,8 +73,8 @@ func UnpackArticle(ctx context.Context, catRepo models.CategoryRepository, value
 		return nil, frm
 	}
 
-	a := new(models.Article)
-	*a = models.Article{
+	a := new(store.Article)
+	*a = store.Article{
 		Title:       titleFld.Get(),
 		Author:      authorFld.Get(),
 		Category:    category,

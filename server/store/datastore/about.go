@@ -3,18 +3,18 @@ package datastore
 import (
 	"html/template"
 
-	"github.com/danield21/danield-space/server/models"
+	"github.com/danield21/danield-space/server/store"
 	"golang.org/x/net/context"
 )
 
 const bucketKey = "about-page"
 
 type About struct {
-	Bucket models.BucketRepository
+	Bucket store.BucketRepository
 }
 
 func (a About) Get(c context.Context) (template.HTML, error) {
-	item, err := aboutToItem(models.DefaultAbout)
+	item, err := aboutToItem(store.DefaultAbout)
 	if err != nil {
 		return "", err
 	}
@@ -33,11 +33,11 @@ func (a About) Set(c context.Context, about []byte) error {
 	return err
 }
 
-func aboutToItem(about []byte) (*models.Item, error) {
-	clean, err := models.CleanHTML(about)
-	return models.NewItem(bucketKey, string(clean), "[]byte"), err
+func aboutToItem(about []byte) (*store.Item, error) {
+	clean, err := store.CleanHTML(about)
+	return store.NewItem(bucketKey, string(clean), "[]byte"), err
 }
 
-func itemToAbout(item *models.Item) (template.HTML, error) {
-	return models.CleanHTML([]byte(item.Value))
+func itemToAbout(item *store.Item) (template.HTML, error) {
+	return store.CleanHTML([]byte(item.Value))
 }

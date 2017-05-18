@@ -9,7 +9,7 @@ import (
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/models"
+	"github.com/danield21/danield-space/server/store"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
@@ -19,12 +19,12 @@ const acctPwdKey = "password"
 const acctCfmPwdKey = "passwordConfirm"
 const acctSprKey = "super"
 
-func UnpackAccount(values url.Values) (*models.Account, form.Form) {
+func UnpackAccount(values url.Values) (*store.Account, form.Form) {
 	frm := form.MakeForm()
 	frm.Submitted = true
 
 	usrFld := frm.AddFieldFromValue(acctUsrKey, values)
-	if !form.NotEmpty(usrFld, "username is required") && !models.ValidUsername(usrFld.Get()) {
+	if !form.NotEmpty(usrFld, "username is required") && !store.ValidUsername(usrFld.Get()) {
 		form.Fail(usrFld, "username is not in a proper format")
 	}
 
@@ -45,8 +45,8 @@ func UnpackAccount(values url.Values) (*models.Account, form.Form) {
 		return nil, frm
 	}
 
-	acct := new(models.Account)
-	*acct = models.Account{
+	acct := new(store.Account)
+	*acct = store.Account{
 		Username: usrFld.Get(),
 		Super:    sprFld.Get() != "",
 	}
@@ -55,7 +55,7 @@ func UnpackAccount(values url.Values) (*models.Account, form.Form) {
 	return acct, frm
 }
 
-func AccountToForm(acct *models.Account) form.Form {
+func AccountToForm(acct *store.Account) form.Form {
 	frm := form.MakeForm()
 	usrFld := new(form.Field)
 	usrFld.Values = []string{acct.Username}

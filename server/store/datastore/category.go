@@ -3,7 +3,7 @@ package datastore
 import (
 	"errors"
 
-	"github.com/danield21/danield-space/server/models"
+	"github.com/danield21/danield-space/server/store"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
 )
@@ -15,8 +15,8 @@ var ErrNilCategory = errors.New("category was nil")
 
 type Category struct{}
 
-func (Category) Get(ctx context.Context, url string) (*models.Category, error) {
-	var categories []*models.Category
+func (Category) Get(ctx context.Context, url string) (*store.Category, error) {
+	var categories []*store.Category
 
 	q := datastore.NewQuery(categoryEntity).Filter("URL =", url).Limit(1)
 
@@ -33,8 +33,8 @@ func (Category) Get(ctx context.Context, url string) (*models.Category, error) {
 	return categories[0], nil
 }
 
-func (Category) GetAll(ctx context.Context) ([]*models.Category, error) {
-	var categories []*models.Category
+func (Category) GetAll(ctx context.Context) ([]*store.Category, error) {
+	var categories []*store.Category
 	q := datastore.NewQuery(categoryEntity)
 	keys, err := q.GetAll(ctx, &categories)
 
@@ -49,17 +49,17 @@ func (Category) GetAll(ctx context.Context) ([]*models.Category, error) {
 	return categories, nil
 }
 
-func (c Category) Set(ctx context.Context, cat *models.Category) error {
+func (c Category) Set(ctx context.Context, cat *store.Category) error {
 	if cat == nil {
 		return ErrNilCategory
 	}
 	oldCat, err := c.Get(ctx, cat.URL)
 
 	if err != nil {
-		cat.DataElement = models.WithNew(models.WithPerson(ctx))
+		cat.DataElement = store.WithNew(store.WithPerson(ctx))
 		cat.Key = datastore.NewIncompleteKey(ctx, categoryEntity, nil)
 	} else {
-		cat.DataElement = models.WithOld(models.WithPerson(ctx), oldCat.DataElement)
+		cat.DataElement = store.WithOld(store.WithPerson(ctx), oldCat.DataElement)
 	}
 
 	cat.Key, err = datastore.Put(ctx, cat.Key, cat)
@@ -67,7 +67,7 @@ func (c Category) Set(ctx context.Context, cat *models.Category) error {
 	return err
 }
 
-func (c Category) Remove(ctx context.Context, cat *models.Category) error {
+func (c Category) Remove(ctx context.Context, cat *store.Category) error {
 	var err error
 	if cat == nil {
 		return ErrNilCategory
@@ -81,7 +81,7 @@ func (c Category) Remove(ctx context.Context, cat *models.Category) error {
 	return datastore.Delete(ctx, cat.Key)
 }
 
-func (c Category) IsUnique(ctx context.Context, category *models.Category) bool {
+func (c Category) IsUnique(ctx context.Context, category *store.Category) bool {
 	_, err := c.Get(ctx, category.URL)
 	return err == nil
 }

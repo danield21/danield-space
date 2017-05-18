@@ -7,14 +7,14 @@ import (
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/models"
+	"github.com/danield21/danield-space/server/store"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
 type publicationList struct {
-	Category *models.Category
-	Articles []*models.Article
+	Category *store.Category
+	Articles []*store.Article
 }
 
 var PublicationsHeadersHandler = view.HeaderHandler(http.StatusOK,

@@ -7,7 +7,7 @@ import (
 	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/models"
+	"github.com/danield21/danield-space/server/store"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
@@ -48,7 +48,7 @@ func AccountPageLink(h handler.Handler) handler.Handler {
 
 		data := struct {
 			AdminModel
-			Accounts []*models.Account
+			Accounts []*store.Account
 			Super    bool
 		}{
 			AdminModel: AdminModel{

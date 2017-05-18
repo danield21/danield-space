@@ -7,7 +7,7 @@ import (
 
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/models"
+	"github.com/danield21/danield-space/server/store"
 	"golang.org/x/net/context"
 )
 
@@ -16,7 +16,7 @@ const siteOwnerKey = "owner"
 const siteDescriptionKey = "description"
 const siteLinkKey = "link"
 
-func UnpackSiteInfo(ctx context.Context, values url.Values) (*models.SiteInfo, form.Form) {
+func UnpackSiteInfo(ctx context.Context, values url.Values) (*store.SiteInfo, form.Form) {
 	frm := form.MakeForm()
 	frm.Submitted = true
 
@@ -36,8 +36,8 @@ func UnpackSiteInfo(ctx context.Context, values url.Values) (*models.SiteInfo, f
 		return nil, frm
 	}
 
-	s := new(models.SiteInfo)
-	*s = models.SiteInfo{
+	s := new(store.SiteInfo)
+	*s = store.SiteInfo{
 		Title:       titleFld.Get(),
 		Owner:       ownerFld.Get(),
 		Description: dscFld.Get(),
@@ -47,7 +47,7 @@ func UnpackSiteInfo(ctx context.Context, values url.Values) (*models.SiteInfo, f
 	return s, frm
 }
 
-func RepackSiteInfo(info models.SiteInfo) form.Form {
+func RepackSiteInfo(info store.SiteInfo) form.Form {
 	frm := form.MakeForm()
 
 	titleFld := new(form.Field)

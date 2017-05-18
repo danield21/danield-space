@@ -6,14 +6,14 @@ import (
 	"time"
 
 	"github.com/danield21/danield-space/server/handler"
-	"github.com/danield21/danield-space/server/models"
+	"github.com/danield21/danield-space/server/store"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
-var store sessions.Store
+var sessionStore sessions.Store
 
 var ErrCreateSession = errors.New("Unable to create session")
 
@@ -21,14 +21,14 @@ var ErrCreateSession = errors.New("Unable to create session")
 func GetSession(ctx context.Context, e handler.Environment, r *http.Request) *sessions.Session {
 	var err error
 
-	if store == nil {
-		store, err = NewStore(ctx, e)
+	if sessionStore == nil {
+		sessionStore, err = NewStore(ctx, e)
 		if err != nil {
 			return nil
 		}
 	}
 
-	session, err := store.Get(r, "danield-space")
+	session, err := sessionStore.Get(r, "danield-space")
 	if err != nil {
 		log.Warningf(ctx, "handler.GetSession - Unable to get session\n%v", err)
 	}
@@ -60,7 +60,7 @@ func NewStore(ctx context.Context, e handler.Environment) (sessions.Store, error
 	return s, nil
 }
 
-func NewKeys() (*models.SessionKey, error) {
+func NewKeys() (*store.SessionKey, error) {
 	hash := securecookie.GenerateRandomKey(64)
 	block := securecookie.GenerateRandomKey(32)
 
@@ -68,8 +68,8 @@ func NewKeys() (*models.SessionKey, error) {
 		return nil, ErrCreateSession
 	}
 
-	key := new(models.SessionKey)
-	*key = models.SessionKey{
+	key := new(store.SessionKey)
+	*key = store.SessionKey{
 		Hash:  hash,
 		Block: block,
 	}
