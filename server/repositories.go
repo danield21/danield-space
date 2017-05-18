@@ -1,19 +1,19 @@
 package server
 
 import (
+	"github.com/danield21/danield-space/server/datastore"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/models"
-	"github.com/danield21/danield-space/server/repository"
 )
 
 type RepositoryConnections struct {
-	BucketDatastore   repository.Bucket
-	AboutDatastore    repository.About
-	SiteInfoDatastore repository.SiteInfo
-	SessionDatastore  repository.Session
-	AccountDatastore  repository.Account
-	ArticleDatastore  repository.Article
-	CategoryDatastore repository.Category
+	BucketDatastore   datastore.Bucket
+	AboutDatastore    datastore.About
+	SiteInfoDatastore datastore.SiteInfo
+	SessionDatastore  datastore.Session
+	AccountDatastore  datastore.Account
+	ArticleDatastore  datastore.Article
+	CategoryDatastore datastore.Category
 }
 
 func (rc RepositoryConnections) Bucket() models.BucketRepository {
@@ -47,17 +47,17 @@ func (rc RepositoryConnections) Category() models.CategoryRepository {
 func CreateRepository() handler.Repositories {
 	connections := RepositoryConnections{}
 
-	connections.BucketDatastore = repository.Bucket{}
-	connections.AboutDatastore = repository.About{
+	connections.BucketDatastore = datastore.Bucket{}
+	connections.AboutDatastore = datastore.About{
 		Bucket: connections.BucketDatastore,
 	}
-	connections.SiteInfoDatastore = repository.SiteInfo{
+	connections.SiteInfoDatastore = datastore.SiteInfo{
 		Bucket: connections.BucketDatastore,
 	}
-	connections.SessionDatastore = repository.Session{}
-	connections.AccountDatastore = repository.Account{}
-	connections.CategoryDatastore = repository.Category{}
-	connections.ArticleDatastore = repository.Article{
+	connections.SessionDatastore = datastore.Session{}
+	connections.AccountDatastore = datastore.Account{}
+	connections.CategoryDatastore = datastore.Category{}
+	connections.ArticleDatastore = datastore.Article{
 		Category: connections.CategoryDatastore,
 	}
 
