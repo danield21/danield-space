@@ -1,7 +1,10 @@
 .generated-html {
-    section {
+    div {
         @extend .cloud;
         padding: 3rem;
+    }
+    div+div {
+        margin-top: .5rem
     }
     h1,
     h2,

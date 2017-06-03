@@ -1,6 +1,8 @@
 form {
+    *+& {
+        margin-top: 1rem;
+    }
     .cloud {
-        margin: 1rem;
         padding: 2%;
         &.error {
             background-color: rgba($fire-color, .8);

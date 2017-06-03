@@ -22,6 +22,9 @@ body {
     border-radius: 8px;
     background-color: rgba($cloud-color, .8);
     padding: 4%;
+    &+.cloud {
+        margin-top: 1rem;
+    }
 }
 
 a {

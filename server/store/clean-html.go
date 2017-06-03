@@ -25,7 +25,7 @@ func CleanHTML(dirtyHTML []byte) (template.HTML, error) {
 	policy := bluemonday.NewPolicy()
 	policy.AllowElements(
 		"i", "b", "strong", "em",
-		"a", "p", "section",
+		"a", "p", "div",
 		"h1", "h2", "h3", "h4", "h5", "h6",
 		"pre", "code",
 		"li", "ol", "ul",
