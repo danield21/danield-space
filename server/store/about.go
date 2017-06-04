@@ -8,7 +8,7 @@ import (
 )
 
 var DefaultAbout = []byte(
-	"<section>My name is Daniel Juan Dominguez, and I am a developer.</section>",
+	"<div>My name is Daniel Juan Dominguez, and I am a developer.</div>",
 )
 
 type About []byte
