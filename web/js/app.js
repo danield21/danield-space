@@ -15,17 +15,14 @@ function meetsRequirements() {
         Modernizr.promises
 }
 
-function styleDesert(mainCloud, desert) {
-    mainCloud.style.marginBottom = 0
-    desert.style.visibility = 'hidden'
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            desert.style.visibility = 'visible'
+function styleDesert(mainCloud) {
+    return () => {
+        return new Promise((resolve) => {
             let screen = util.screenSize()
             mainCloud.style.marginBottom = (screen.height - 300) + 'px'
             resolve()
-        }, 0)
-    })
+        })
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -49,13 +46,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let mainCloud = Bliss('body > .cloud')
-    let desert = Bliss('body > footer > .sand')
-    let styleFunc = styleDesert.bind(null, mainCloud, desert)
-
     let mountainRange = document.getElementById('mountain-range')
+
+    let styleFunc = styleDesert(mainCloud)
     let stickFunc = Stick.toBottom(mountainRange)
     let raiseEasel = () => {
-        var height = util.screenSize().height
+        var height = util.screenSize(true).height
         const offset = Bliss('.sand').getBoundingClientRect().top
         if (offset < height) {
             easel.style.transform = `translateY(-${height - offset}px)`
@@ -106,9 +102,9 @@ function initSun(easel) {
 const balloons = {
     MAX_AMOUNT: 10,
     EVERY: 20000,
-    MIN_HEIGHT: 100,
-    AVG_HEIGHT: 150,
-    MAX_HEIGHT: 200
+    MIN_HEIGHT: .05,
+    AVG_HEIGHT: .1,
+    MAX_HEIGHT: .2
 }
 
 function initBalloons(easel) {
@@ -128,7 +124,12 @@ function initBalloons(easel) {
                 saturation: .8 + Math.random() * .2,
                 value: .8 + Math.random() * .2
             })[0]
-            const height = util.choosePoint(sdRand(), balloons.MIN_HEIGHT, balloons.AVG_HEIGHT, balloons.MAX_HEIGHT)
+            const height = util.choosePoint(
+                sdRand(),
+                screen.width * balloons.MIN_HEIGHT,
+                screen.width * balloons.AVG_HEIGHT,
+                screen.width * balloons.MAX_HEIGHT
+            )
             Balloons.parseSVG(svg)
                 .then(Balloons.size(height))
                 .then(Balloons.position(top, left))

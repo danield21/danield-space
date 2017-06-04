@@ -1,13 +1,15 @@
+const util = require('./util')
+
 exports.toBottom = (element, _up = 0) => {
     const wrapper = document.createElement('div')
     element.parentNode.insertBefore(wrapper, element.nextSibling)
 
     return () => {
         const rect = wrapper.getBoundingClientRect()
-        const size = screenSize()
+        const elementRect = element.getBoundingClientRect()
+        const size = util.screenSize(true)
 
-        if (rect.top + rect.height > size.height) {
-            const elementRect = element.getBoundingClientRect()
+        if (rect.top + elementRect.height > size.height) {
 
             element.style.position = 'fixed'
             element.style.bottom = 0
@@ -18,16 +20,5 @@ exports.toBottom = (element, _up = 0) => {
             wrapper.style.height = 0
         }
         return new Promise(resolve => { resolve() })
-    }
-}
-
-function screenSize() {
-    return {
-        width: window.innerWidth ||
-            document.documentElement.clientWidth ||
-            document.body.clientWidth,
-        height: window.innerHeight ||
-            document.documentElement.clientHeight ||
-            document.body.clientHeight
     }
 }

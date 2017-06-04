@@ -6,14 +6,28 @@ module.exports = {
     findAncestor
 }
 
-function screenSize() {
+function screenSize(browser) {
+    if (!browser && window.screen && window.screen.width) {
+        return {
+            width: window.screen.width,
+            height: window.screen.height
+        }
+    }
+    if (window.innerWidth) {
+        return {
+            width: window.innerWidth,
+            height: window.innerHeight
+        }
+    }
+    if (document.documentElement.clientWidth) {
+        return {
+            width: document.documentElement.clientWidth,
+            height: document.documentElement.clientHeight
+        }
+    }
     return {
-        width: window.innerWidth ||
-            document.documentElement.clientWidth ||
-            document.body.clientWidth,
-        height: window.innerHeight ||
-            document.documentElement.clientHeight ||
-            document.body.clientHeight
+        width: document.body.clientWidth,
+        height: document.body.clientHeight
     }
 }
 
