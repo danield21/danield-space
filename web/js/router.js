@@ -7,6 +7,7 @@ module.exports = {
     meetsRequirements,
     handleRouting,
     handleForm,
+    handleBack
 }
 
 function meetsRequirements() {
@@ -16,8 +17,10 @@ function meetsRequirements() {
 }
 
 function init() {
-    const page = window.location.origin + window.location.pathname
-    window.history.replaceState(Bliss('main').innerHTML, window.document.title, page)
+    const page = window.location.href
+    storeState(Bliss('main'), {
+        url: page
+    })
 }
 
 function isExternalLink(a) {
@@ -28,20 +31,56 @@ function dontLoadAjax(e) {
     return e.classList.contains('router-no-spa')
 }
 
-function next(url, perform) {
-    return perform.then(html => {
+function storeState(main, state, newPage, scroll) {
+    state.id = getUniqueId(window.localStorage)
+
+    if (window.history.state && scroll) {
+        window.history.state.scroll = scroll
+        window.history.replaceState(window.history.state, window.document.title, window.location.href)
+    }
+
+    if (newPage) {
+        window.history.pushState(state, window.document.title, state.url)
+    } else {
+        window.history.replaceState(state, window.document.title, state.url)
+    }
+
+    window.localStorage.setItem(state.id, main.innerHTML)
+}
+
+function next(url, scroll) {
+    return html => {
         const main = Bliss('main', html)
-        if (window.location.href !== url) {
-            window.history.pushState(main.innerHTML, window.document.title, url)
-        } else {
-            window.history.replaceState(main.innerHTML, window.document.title, url)
-        }
+
+        storeState(main, {
+            url,
+        }, window.location.href !== url, scroll)
+
         const frag = document.createDocumentFragment()
         Array.from(main.children).forEach(c => frag.appendChild(c))
         return Promise.resolve(frag)
-    }, e => {
-        return Promise.reject(e)
-    })
+    }
+}
+
+const prefix = 'page-'
+
+function getUniqueId(storage) {
+    let id = guid()
+
+    while (storage.getItem(prefix + id)) {
+        id = guid()
+    }
+    return prefix + id
+}
+
+function guid() {
+    return s4() + '-' + s4() + '-' + s4() + '-' + s4()
+}
+
+function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+        .toString(16)
+        .substring(1)
 }
 
 function submitForm(form) {
@@ -55,24 +94,36 @@ function submitForm(form) {
         return encode
     }, '')
 
-    return Bliss.fetch(url, { responseType: 'document', method, data }).then(response => {
-        return response.responseXML ? Promise.resolve(response.responseXML) : Promise.reject(new Error('Did not get a document back from ' + url + '?' + data))
-    }, e => {
-        return e.xhr.responseXML ? Promise.resolve(e.xhr.responseXML) : Promise.reject(new Error('Did not get a document back from ' + url + '?' + data))
-    })
+    return getPage(url, { responseType: 'document', method, data })
 }
 
 function navigate(a) {
     if (a && a.tagName.toUpperCase() != 'A' && a.href) {
         return Promise.reject(new Error('Provided value is not an A element with an href'))
     }
-    const url = a.href
 
-    return Bliss.fetch(a.href, { responseType: 'document' }).then(response => {
+    return getPage(a.href, { responseType: 'document' })
+}
+
+function getPage(url, data) {
+    return Bliss.fetch(url, data).then(response => {
         return response.responseXML ? Promise.resolve(response.responseXML) : Promise.reject(new Error('Did not get a document back from ' + url))
     }, e => {
         return e.xhr.responseXML ? Promise.resolve(e.xhr.responseXML) : Promise.reject(new Error('Did not get a document back from ' + url))
     })
+}
+
+function handleBack(main, transitionOut, transitionIn) {
+    return e => {
+        if (e.defaultPrevented) {
+            return
+        }
+
+        transitionOut().then(() => {
+            main.innerHTML = window.localStorage.getItem(e.state.id)
+            return Promise.resolve(e.state)
+        }).then(transitionIn)
+    }
 }
 
 function handleRouting(transitionOut, transitionIn) {
@@ -91,7 +142,7 @@ function handleRouting(transitionOut, transitionIn) {
 
         Promise.all([
             transitionOut(),
-            next(a.href, navigate(a))
+            navigate(a).then(next(a.href, { y: window.scrollY, x: window.scrollX }))
         ]).then(transitionIn)
     }
 }
@@ -112,7 +163,7 @@ function handleForm(transitionOut, transitionIn) {
 
         Promise.all([
             transitionOut(),
-            next(form.action, submitForm(form))
+            submitForm(form).then(next(form.action, { y: window.scrollY, x: window.scrollX }))
         ]).then(transitionIn)
     }
 }

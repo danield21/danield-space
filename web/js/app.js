@@ -148,17 +148,22 @@ function initRouting(main) {
     const outFunc = transitionOut(main)
     const inFunc = transitionIn(main)
 
-    window.addEventListener('click', e => {
-        router.handleRouting(outFunc, inFunc)(e)
+    const handleForm = router.handleForm(outFunc, inFunc)
+    const handleRouting = router.handleRouting(outFunc, inFunc)
+    const handleBack = router.handleBack(main, () => Promise.resolve(), (state) => {
+        window.dispatchEvent(new Event('resize'))
+        if (state.scroll) {
+            setTimeout(() => {
+                window.scrollTo(state.scroll.x, state.scroll.y)
+            }, 0)
+        }
+        return Promise.resolve()
     })
 
-    window.addEventListener('submit', e => {
-        router.handleForm(outFunc, inFunc)(e)
-    })
-    window.addEventListener('popstate', e => {
-        main.innerHTML = e.state
-        window.dispatchEvent(new Event('resize'))
-    })
+    window.addEventListener('click', handleRouting)
+
+    window.addEventListener('submit', handleForm)
+    window.addEventListener('popstate', handleBack)
 }
 
 const transitionChildrenClass = 'transition-children'
@@ -204,6 +209,8 @@ function transitionIn(main) {
             opacity: 1
         })
         main.appendChild(frag)
-        return a.finished
+        return a.finished.then(() => {
+            window.dispatchEvent(new Event('resize'))
+        })
     }
 }
