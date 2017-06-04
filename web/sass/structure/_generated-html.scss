@@ -1,7 +1,6 @@
 .generated-html {
     div {
         @extend .cloud;
-        padding: 3rem;
     }
     div+div {
         margin-top: .5rem

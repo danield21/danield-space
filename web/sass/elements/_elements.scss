@@ -3,6 +3,11 @@ body {
     font-family: 'Raleway', sans-serif;
     color: $font-color;
     margin: 0;
+    @media(max-width: 500px) {
+        & {
+            font-size: 0.8rem;
+        }
+    }
 }
 
 body {
@@ -21,7 +26,7 @@ body {
 .cloud {
     border-radius: 8px;
     background-color: rgba($cloud-color, .8);
-    padding: 4%;
+    padding: 1rem;
     &+.cloud {
         margin-top: 1rem;
     }
