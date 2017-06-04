@@ -26,9 +26,14 @@ body {
 .cloud {
     border-radius: 8px;
     background-color: rgba($cloud-color, .8);
-    padding: 1rem;
+    padding: 3rem;
     &+.cloud {
         margin-top: 1rem;
+    }
+    @media(max-width: 500px) {
+        & {
+            padding: 1rem;
+        }
     }
 }
 
