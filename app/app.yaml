@@ -1,5 +1,3 @@
-application: danield-space
-version: sky-001
 runtime: go
 api_version: go1
 
