@@ -39,6 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const main = Bliss('main')
     const easel = Bliss('#sky-easel')
+    const mainCloud = Bliss('body > .cloud')
+    const mountainRange = document.getElementById('mountain-range')
 
     initEasel(easel)
 
@@ -51,9 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (router.meetsRequirements()) {
         initRouting(main)
     }
-
-    let mainCloud = Bliss('body > .cloud')
-    let mountainRange = document.getElementById('mountain-range')
 
     let styleFunc = styleDesert(mainCloud)
     let stickFunc = Stick.toBottom(mountainRange)
@@ -117,26 +116,26 @@ const balloons = {
 function initBalloons(easel) {
     Bliss.fetch('/dist/svg/balloon.svg').then(svg => {
         const intID = setInterval(addBalloon, balloons.EVERY)
-        addBalloon()
+        requestAnimationFrame(addBalloon)
 
         function addBalloon() {
             if (Bliss.$('.svg-balloon', easel).length >= balloons.MAX_AMOUNT || (document.hidden || document.msHidden || document.webkitHidden)) {
                 return
             }
+
             const screen = util.screenSize()
-            const hHalf = screen.height / 2
-            const top = util.choosePoint(sdRand(), 0, hHalf, screen.height - (screen.width * balloons.MAX_HEIGHT))
+
+            const max = screen.width * balloons.MAX_HEIGHT
+            const avg = screen.width * balloons.AVG_HEIGHT
+            const min = screen.width * balloons.MIN_HEIGHT
+
+            const top = util.choosePoint(sdRand(), 0, screen.height / 2, screen.height - max)
             const left = screen.width
             const hexColor = Please.make_color({
                 saturation: .8 + Math.random() * .2,
                 value: .8 + Math.random() * .2
             })[0]
-            const height = util.choosePoint(
-                sdRand(),
-                screen.width * balloons.MIN_HEIGHT,
-                screen.width * balloons.AVG_HEIGHT,
-                screen.width * balloons.MAX_HEIGHT
-            ) * (1 - (top / screen.height))
+            const height = util.choosePoint(sdRand(), min, avg, max) * adjustHeigth(top, screen.height - max)
             Balloons.parseSVG(svg)
                 .then(Balloons.size(height))
                 .then(Balloons.position(top, left))
@@ -146,6 +145,10 @@ function initBalloons(easel) {
                 .then(Balloons.fly)
                 .then(Balloons.remove(easel))
                 .catch(() => clearInterval(intID))
+        }
+
+        function adjustHeigth(top, bottom) {
+            return Math.sqrt(1 - Math.pow(top / bottom, 2))
         }
     })
 }
