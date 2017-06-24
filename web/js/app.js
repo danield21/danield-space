@@ -128,14 +128,15 @@ function initBalloons(easel) {
             const max = screen.width * balloons.MAX_HEIGHT
             const avg = screen.width * balloons.AVG_HEIGHT
             const min = screen.width * balloons.MIN_HEIGHT
+            const bottom = screen.height - max
 
-            const top = util.choosePoint(sdRand(), 0, screen.height / 2, screen.height - max)
+            const top = util.choosePoint(sdRand(), 0, bottom / 2, bottom)
             const left = screen.width
             const hexColor = Please.make_color({
                 saturation: .8 + Math.random() * .2,
                 value: .8 + Math.random() * .2
             })[0]
-            const height = util.choosePoint(sdRand(), min, avg, max) * adjustHeigth(top, screen.height - max)
+            const height = util.choosePoint(sdRand(), min, avg, max) * adjustHeigth(top, bottom)
             Balloons.parseSVG(svg)
                 .then(Balloons.size(height))
                 .then(Balloons.position(top, left))
