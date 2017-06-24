@@ -1,6 +1,6 @@
 .generated-html {
     div {
-        @extend .cloud;
+        @include cloud;
     }
     div+div {
         margin-top: .5rem

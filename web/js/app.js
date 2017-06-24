@@ -15,11 +15,18 @@ function meetsRequirements() {
         Modernizr.promises
 }
 
+const MIN_ALTITUDE = 300
+
 function styleDesert(mainCloud) {
     return () => {
         return new Promise((resolve) => {
             let screen = util.screenSize()
-            mainCloud.style.marginBottom = (screen.height - 300) + 'px'
+            let cloudHeight = mainCloud.getBoundingClientRect().height
+            let altitude = screen.height - cloudHeight
+            if (altitude < MIN_ALTITUDE) {
+                altitude = MIN_ALTITUDE
+            }
+            mainCloud.style.marginBottom = altitude + 'px'
             resolve()
         })
     }
@@ -102,9 +109,9 @@ function initSun(easel) {
 const balloons = {
     MAX_AMOUNT: 10,
     EVERY: 20000,
-    MIN_HEIGHT: .05,
+    MIN_HEIGHT: .075,
     AVG_HEIGHT: .1,
-    MAX_HEIGHT: .2
+    MAX_HEIGHT: .15
 }
 
 function initBalloons(easel) {
@@ -118,7 +125,7 @@ function initBalloons(easel) {
             }
             const screen = util.screenSize()
             const hHalf = screen.height / 2
-            const top = util.choosePoint(sdRand(), 0, hHalf, screen.height - balloons.MAX_HEIGHT)
+            const top = util.choosePoint(sdRand(), 0, hHalf, screen.height - (screen.width * balloons.MAX_HEIGHT))
             const left = screen.width
             const hexColor = Please.make_color({
                 saturation: .8 + Math.random() * .2,
@@ -129,7 +136,7 @@ function initBalloons(easel) {
                 screen.width * balloons.MIN_HEIGHT,
                 screen.width * balloons.AVG_HEIGHT,
                 screen.width * balloons.MAX_HEIGHT
-            )
+            ) * (1 - (top / screen.height))
             Balloons.parseSVG(svg)
                 .then(Balloons.size(height))
                 .then(Balloons.position(top, left))

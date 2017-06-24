@@ -23,11 +23,11 @@ body {
     width: 100%;
 }
 
-.cloud {
+@mixin cloud {
     border-radius: 8px;
     background-color: rgba($cloud-color, .8);
     padding: 3rem;
-    &+.cloud {
+    &+& {
         margin-top: 1rem;
     }
     @media(max-width: 500px) {
@@ -35,6 +35,10 @@ body {
             padding: 1rem;
         }
     }
+}
+
+.cloud {
+    @include cloud
 }
 
 a {
