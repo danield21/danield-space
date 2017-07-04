@@ -1,35 +1,26 @@
 const Anime = require('animejs')
-const Balloons = require('./balloons')
-const Stick = require('./stick')
-const util = require('./util')
-const router = require('./router')
-const Sun = require('./sun')
 const Modernizr = require('modernizr')
 const Please = require('pleasejs')
-const sdRand = require('gauss-random')
+const SdRand = require('gauss-random')
+
+const util = require('./util')
+
+const Balloons = require('./balloons')
+const Router = require('./router')
+const Sun = require('./sun')
+const desert = require('./desert')
 
 function meetsRequirements() {
     return Modernizr.eventlistener &&
         Modernizr.queryselector &&
-        Modernizr.es5 &&
+        Modernizr.es5array &&
+        Modernizr.es5date &&
+        Modernizr.es5function &&
+        Modernizr.es5object &&
+        Modernizr.strictmode &&
+        Modernizr.es5string &&
+        Modernizr.json &&
         Modernizr.promises
-}
-
-const MIN_ALTITUDE = 300
-
-function styleDesert(mainCloud) {
-    return () => {
-        return new Promise((resolve) => {
-            let screen = util.screenSize()
-            let cloudHeight = mainCloud.getBoundingClientRect().height
-            let altitude = screen.height - cloudHeight
-            if (altitude < MIN_ALTITUDE) {
-                altitude = MIN_ALTITUDE
-            }
-            mainCloud.style.marginBottom = altitude + 'px'
-            resolve()
-        })
-    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -40,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const main = Bliss('main')
     const easel = Bliss('#sky-easel')
     const mainCloud = Bliss('body > .cloud')
+    const sand = Bliss('footer > .sand')
     const mountainRange = document.getElementById('mountain-range')
 
     initEasel(easel)
@@ -50,15 +42,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initSun(easel)
 
-    if (router.meetsRequirements()) {
+    if (Router.meetsRequirements()) {
         initRouting(main)
     }
 
-    let styleFunc = styleDesert(mainCloud)
-    let stickFunc = Stick.toBottom(mountainRange)
+    const desertFunc = initDesert(mainCloud, mountainRange, sand)
     let raiseEasel = () => {
         var height = util.screenSize(true).height
-        const offset = Bliss('.sand').getBoundingClientRect().top
+        const offset = sand.getBoundingClientRect().top
         if (offset < height) {
             easel.style.transform = `translateY(-${height - offset}px)`
         } else {
@@ -75,21 +66,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
 
-    styleFunc()
-        .then(stickFunc)
+    desertFunc(true)
         .then(raiseEasel)
     window.addEventListener('load', () => {
-        styleFunc()
-            .then(stickFunc)
+        desertFunc(true)
             .then(raiseEasel)
     })
     window.addEventListener('resize', () => {
-        styleFunc()
-            .then(stickFunc)
+        desertFunc(true)
             .then(raiseEasel)
     })
     document.addEventListener('scroll', () => {
-        stickFunc().then(raiseEasel)
+        desertFunc(false)
+            .then(raiseEasel)
     })
 })
 
@@ -130,13 +119,13 @@ function initBalloons(easel) {
             const min = screen.width * balloons.MIN_HEIGHT
             const bottom = screen.height - max
 
-            const top = util.choosePoint(sdRand(), 0, bottom / 2, bottom)
+            const top = util.choosePoint(SdRand(), 0, bottom / 2, bottom)
             const left = screen.width
             const hexColor = Please.make_color({
                 saturation: .8 + Math.random() * .2,
                 value: .8 + Math.random() * .2
             })[0]
-            const height = util.choosePoint(sdRand(), min, avg, max) * adjustHeigth(top, bottom)
+            const height = util.choosePoint(SdRand(), min, avg, max) * adjustHeigth(top, bottom)
             Balloons.parseSVG(svg)
                 .then(Balloons.size(height))
                 .then(Balloons.position(top, left))
@@ -154,21 +143,39 @@ function initBalloons(easel) {
     })
 }
 
+const MIN_ALTITUDE = 300
+
+function initDesert(cloud, mountainRange, sand) {
+    requestAnimationFrame(desert.display(mountainRange, sand))
+    const style = desert.style(cloud, MIN_ALTITUDE)
+    const stick = desert.stickMountain(mountainRange)
+
+    return (layoutChanged) => {
+        if (layoutChanged) {
+            return style().then(stick)
+        } else {
+            return stick()
+        }
+    }
+}
+
 function initRouting(main) {
-    router.init()
+    Router.init()
 
     const outFunc = transitionOut(main)
     const inFunc = transitionIn(main)
 
-    const handleForm = router.handleForm(outFunc, inFunc)
-    const handleRouting = router.handleRouting(outFunc, inFunc)
-    const handleBack = router.handleBack(main, () => Promise.resolve(), (state) => {
+    const handleForm = Router.handleForm(outFunc, inFunc)
+    const handleRouting = Router.handleRouting(outFunc, inFunc)
+    const handleBack = Router.handleBack(main, () => Promise.resolve(), (state) => {
         window.dispatchEvent(new Event('resize'))
+
         if (state.scroll) {
             setTimeout(() => {
                 window.scrollTo(state.scroll.x, state.scroll.y)
             }, 0)
         }
+
         return Promise.resolve()
     })
 
@@ -184,6 +191,7 @@ function transitionTarget(elem) {
     if (!elem.classList.contains(transitionChildrenClass) || elem.children == null || elem.children.length == 0) {
         return [elem]
     }
+
     return Array.from(elem.children).reduce((list, e) => list.concat(transitionTarget(e)), [])
 }
 
@@ -191,7 +199,9 @@ function transitionOut(main) {
     return () => {
         let children = Array.from(main.children)
         let targets = children.reduce((list, e) => list.concat(transitionTarget(e)), [])
+
         util.scrollToTop(250)
+
         const a = Anime({
             targets: targets,
             duration: 500,
@@ -199,6 +209,7 @@ function transitionOut(main) {
             translateY: (_, i) => `-${(i+1) * 100}px`,
             opacity: 0
         })
+
         return a.finished.then(() => {
             children.forEach(child => main.removeChild(child))
             window.dispatchEvent(new Event('resize'))
@@ -208,11 +219,14 @@ function transitionOut(main) {
 
 function transitionIn(main) {
     return ([_, frag]) => {
-        let targets = Array.from(frag.children).reduce((list, e) => list.concat(transitionTarget(e)), [])
+        main.appendChild(frag)
+
+        let targets = Array.from(main.children).reduce((list, e) => list.concat(transitionTarget(e)), [])
         targets.forEach((c, i) => {
             c.style.transform = `translateY(-${(i+1) * 100}px)`
             c.style.opacity = '0'
         })
+
         const a = Anime({
             targets: targets,
             duration: 500,
@@ -220,7 +234,7 @@ function transitionIn(main) {
             translateY: '0',
             opacity: 1
         })
-        main.appendChild(frag)
+
         return a.finished.then(() => {
             window.dispatchEvent(new Event('resize'))
         })
