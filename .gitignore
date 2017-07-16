@@ -2,3 +2,5 @@ app/dist/*
 app/view/*
 node_modules/*
 .vscode/*
+app/well-known/acme-challenge/*
+!app/well-known/acme-challenge/README.md

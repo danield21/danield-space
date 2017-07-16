@@ -5,5 +5,8 @@ handlers:
 - url: /dist
   static_dir: dist
 
+- url: /.well-known
+  static_dir: well-known
+
 - url: /.*
   script: _go_app
