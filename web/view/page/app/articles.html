@@ -1,7 +1,7 @@
-{{ range .Publications }}
+{{ range .Articles }}
 <section>
     {{ template "templates/article-list" . }}
-    <a href="/publications/{{ .Category.URL }}">See more {{ asTitle .Category.Title }} articles</a>
+    <a href="/articles/{{ .Category.URL }}">See more {{ asTitle .Category.Title }} articles</a>
 </section>
 {{ else }}
 <div class="cloud">

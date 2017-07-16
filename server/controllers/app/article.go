@@ -8,57 +8,47 @@ import (
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
+	"github.com/gorilla/mux"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
-type publicationList struct {
-	Category *store.Category
-	Articles []*store.Article
-}
-
-var ArticlesHeadersHandler = view.HeaderHandler(http.StatusOK,
+var ArticleHeadersHandler = view.HeaderHandler(http.StatusOK,
 	view.Header{"Content-Type", view.HTMLContentType},
 )
 
-var ArticlesPageHandler = handler.Chain(
+var ArticlePageHandler = handler.Chain(
 	view.HTMLHandler,
 	handler.ToLink(handler.Chain(
-		ArticlesHeadersHandler,
-		ArticlesPageLink,
+		ArticleHeadersHandler,
+		ArticlePageLink,
 		status.LinkAll,
 	)),
 )
 
-//Articles handles the index page
-func ArticlesPageLink(h handler.Handler) handler.Handler {
+func ArticlePageLink(h handler.Handler) handler.Handler {
 	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
+		r := handler.Request(ctx)
+		vars := mux.Vars(r)
+
 		info := e.Repository().SiteInfo().Get(ctx)
+		cat := store.NewEmptyCategory(vars["category"])
 
-		articleMap, err := e.Repository().Article().GetMapKeyedByCategory(ctx, 10)
+		a, err := e.Repository().Article().Get(ctx, cat, vars["key"])
 		if err != nil {
-			log.Errorf(ctx, "app.Articles - Unable to get articles organized by their type\n%v", err)
-		}
-
-		var articles []publicationList
-
-		for cat, a := range articleMap {
-			articles = append(articles, publicationList{
-				Category: cat,
-				Articles: a,
-			})
+			log.Errorf(ctx, "app.ArticlePageLink - Unable to get articles by type\n%v", err)
+			return ctx, status.ErrNotFound
 		}
 
 		data := struct {
 			view.BaseModel
-			Articles []publicationList
+			Article *store.Article
 		}{
 			BaseModel: view.BaseModel{
 				SiteInfo: info,
 			},
-			Articles: articles,
+			Article: a,
 		}
-
-		return h(link.PageContext(ctx, "page/app/articles", data), e, w)
+		return h(link.PageContext(ctx, "page/app/article", data), e, w)
 	}
 }
