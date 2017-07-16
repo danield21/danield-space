@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initRouting(main)
     }
 
-    const desertFunc = initDesert(mainCloud, mountainRange, sand)
+    const desertFunc = initDesert(mainCloud, mountainRange, sand, Bliss('.sun'))
     let raiseEasel = () => {
         var height = util.screenSize(true).height
         const offset = sand.getBoundingClientRect().top
@@ -145,8 +145,8 @@ function initBalloons(easel) {
 
 const MIN_ALTITUDE = 300
 
-function initDesert(cloud, mountainRange, sand) {
-    requestAnimationFrame(desert.display(mountainRange, sand))
+function initDesert(cloud, mountainRange, sand, sun) {
+    requestAnimationFrame(desert.display(mountainRange, sand, sun))
     const style = desert.style(cloud, MIN_ALTITUDE)
     const stick = desert.stickMountain(mountainRange)
 

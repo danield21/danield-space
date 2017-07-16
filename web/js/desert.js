@@ -18,19 +18,11 @@ function style(mainCloud, minAltitude) {
     }
 }
 
-function display(mountain, desert) {
+function display(mountain, desert, sun) {
     return () => {
-        mountain.style.transform = 'translateY(100%)'
-        mountain.style.visibility = 'visible'
-        desert.style.transform = 'translateY(100%)'
-        desert.style.visibility = 'visible'
-
-        anime({
-            targets: [mountain, desert],
-            duration: 1000,
-            easing: 'linear',
-            translateY: 0,
-        })
+        mountain.classList.add('shown')
+        desert.classList.add('shown')
+        sun.classList.add('shown')
     }
 }
 
