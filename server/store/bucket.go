@@ -16,7 +16,7 @@ type BucketRepository interface {
 type Item struct {
 	DataElement
 	Field string
-	Value string
+	Value string `datastore:",noindex"`
 	Type  string
 }
 

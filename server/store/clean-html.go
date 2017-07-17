@@ -25,16 +25,16 @@ func CleanHTML(dirtyHTML []byte) (template.HTML, error) {
 	policy := bluemonday.NewPolicy()
 	policy.AllowElements(
 		"i", "b", "strong", "em",
-		"a", "p", "div",
+		"a", "p", "div", "img",
 		"h1", "h2", "h3", "h4", "h5", "h6",
 		"pre", "code",
 		"li", "ol", "ul",
 	)
+	policy.AllowImages()
 	policy.AllowAttrs("href").OnElements("a")
 	policy.AllowAttrs("class").Matching(languageRegexp).OnElements("code")
 	policy.RequireParseableURLs(true)
 	policy.AllowRelativeURLs(true)
-	policy.RequireNoFollowOnFullyQualifiedLinks(true)
 	cleanHTML := policy.SanitizeBytes(renderedHTML.Bytes())
 	return template.HTML(cleanHTML), nil
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
 	"golang.org/x/net/context"
+	"google.golang.org/appengine/log"
 )
 
 const aboutKey = "about"
@@ -37,6 +38,7 @@ func PutAboutLink(h handler.Handler) handler.Handler {
 
 		err = e.Repository().About().Set(ctx, abt)
 		if err != nil {
+			log.Errorf(ctx, "Unable to put into database %v", err)
 			f.Error = errors.New("Unable to put into database")
 		}
 

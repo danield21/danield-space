@@ -1,6 +1,38 @@
 .generated-html {
     div {
         @include cloud;
+        &>img:first-child {
+            float: right;
+            width: 28%;
+            border-radius: 8px;
+            opacity: .9;
+        }
+        &>img:first-child~p {
+            float: left;
+            width: 68%;
+        }
+        &:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        @media(max-width: 800px) {
+            &>img:first-child {
+                float: none;
+                width: auto;
+                margin: 0 auto;
+                max-height: 200px;
+                display: block;
+            }
+            &>img:first-child~p {
+                float: none;
+                width: auto;
+            }
+            &:after {
+                content: "";
+                display: none;
+            }
+        }
     }
     div+div {
         margin-top: .5rem
@@ -12,5 +44,10 @@
     h5,
     h6 {
         margin-top: 1rem;
+    }
+    p {
+        @media(max-width: 800px) {
+            text-indent: 2rem;
+        }
     }
 }

@@ -3,11 +3,6 @@ body {
     font-family: 'Raleway', sans-serif;
     color: $font-color;
     margin: 0;
-    @media(max-width: 500px) {
-        & {
-            font-size: 0.8rem;
-        }
-    }
 }
 
 body {
@@ -32,7 +27,7 @@ body {
     }
     @media(max-width: 500px) {
         & {
-            padding: 1rem;
+            padding: 1.5rem;
         }
     }
 }
