@@ -23,8 +23,8 @@ func (hnd AboutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	info := hnd.SiteInfo.Get(ctx)
 
 	pg.Title = info.Title
-	pg.Header["description"] = info.ShortDescription()
-	pg.Header["author"] = info.Owner
+	pg.Meta["description"] = info.ShortDescription()
+	pg.Meta["author"] = info.Owner
 
 	abt, err := hnd.About.Get(ctx)
 
