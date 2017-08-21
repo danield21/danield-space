@@ -4,46 +4,40 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/danield21/danield-space/server/controllers/link"
-	"github.com/danield21/danield-space/server/controllers/status"
-	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
-	"golang.org/x/net/context"
+	"github.com/danield21/danield-space/server/store"
 	"google.golang.org/appengine/log"
 )
 
-var AboutHeadersHandler = view.HeaderHandler(http.StatusOK,
-	view.Header{"Content-Type", view.HTMLContentType},
-)
+type AboutHandler struct {
+	Context  handler.ContextGenerator
+	Renderer handler.Renderer
+	SiteInfo store.SiteInfoRepository
+	About    store.AboutRepository
+}
 
-var AboutPageHandler = handler.Chain(
-	view.HTMLHandler,
-	handler.ToLink(handler.Chain(
-		AboutHeadersHandler,
-		AboutPageLink,
-		status.LinkAll,
-	)),
-)
+func (hnd AboutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	ctx := hnd.Context.New(r)
+	pg := handler.NewPage()
 
-func AboutPageLink(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
-		info := e.Repository().SiteInfo().Get(ctx)
+	info := hnd.SiteInfo.Get(ctx)
 
-		abt, err := e.Repository().About().Get(ctx)
-		if err != nil {
-			log.Errorf(ctx, "app.AboutPageLink - Unable to get About page\n%v", err)
-		}
+	pg.Title = info.Title
+	pg.Header["description"] = info.ShortDescription()
+	pg.Header["author"] = info.Owner
 
-		data := struct {
-			view.BaseModel
-			About template.HTML
-		}{
-			BaseModel: view.BaseModel{
-				SiteInfo: info,
-			},
-			About: abt,
-		}
+	abt, err := hnd.About.Get(ctx)
 
-		return h(link.PageContext(ctx, "page/app/about", data), e, w)
+	if err != nil {
+		log.Errorf(ctx, "app.AboutHandler - Unable to get about contents\n%v", err)
+		return
 	}
+
+	pg.Content = template.HTML(hnd.Renderer.Render(ctx, "page/app/about", struct {
+		About template.HTML
+	}{
+		abt,
+	}))
+
+	hnd.Renderer.Send(w, r, pg)
 }

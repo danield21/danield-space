@@ -38,3 +38,13 @@ func Session(ctx context.Context) *sessions.Session {
 		return ses
 	}
 }
+
+type ContextGenerator interface {
+	New(rqs *http.Request) context.Context
+}
+
+type ContextGeneratorFunc func(rqs *http.Request) context.Context
+
+func (ctxGen ContextGeneratorFunc) New(rqs *http.Request) context.Context {
+	return ctxGen(rqs)
+}

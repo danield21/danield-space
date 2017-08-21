@@ -21,6 +21,11 @@ func (t TestingEnvironment) View(w io.Writer, view string, data interface{}) err
 	return RenderTemplate(t.Templates, w, view, data)
 }
 
+//View creates a mock view
+func (t TestingEnvironment) Partial(w io.Writer, view string, data interface{}) error {
+	return t.Templates.ExecuteTemplate(w, view, data)
+}
+
 //Session gets a mock session
 func (t TestingEnvironment) Session(ctx context.Context, r *http.Request) *sessions.Session {
 	return GetSession(ctx, t, r)

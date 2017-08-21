@@ -31,6 +31,17 @@ func (p *ProductionEnvironment) View(w io.Writer, view string, data interface{})
 	return RenderTemplate(p.Templates, w, view, data)
 }
 
+//View generates a view based on the templates stored
+func (p *ProductionEnvironment) Partial(w io.Writer, view string, data interface{}) error {
+	p.WaitForView.Lock()
+	if p.Templates == nil {
+		p.Templates = <-p.GenerateTemplates
+	}
+	p.WaitForView.Unlock()
+
+	return p.Templates.ExecuteTemplate(w, view, data)
+}
+
 //Session gets the session using a secure key
 func (p *ProductionEnvironment) Session(ctx context.Context, r *http.Request) (session *sessions.Session) {
 	session = GetSession(ctx, p, r)
