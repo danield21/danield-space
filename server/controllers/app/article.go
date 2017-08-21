@@ -1,54 +1,48 @@
 package app
 
 import (
+	"html/template"
 	"net/http"
 
-	"github.com/danield21/danield-space/server/controllers/link"
-	"github.com/danield21/danield-space/server/controllers/status"
-	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/gorilla/mux"
-	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
-var ArticleHeadersHandler = view.HeaderHandler(http.StatusOK,
-	view.Header{"Content-Type", view.HTMLContentType},
-)
+type ArticleHandler struct {
+	Context  handler.ContextGenerator
+	Renderer handler.Renderer
+	SiteInfo store.SiteInfoRepository
+	Article  store.ArticleRepository
+}
 
-var ArticlePageHandler = handler.Chain(
-	view.HTMLHandler,
-	handler.ToLink(handler.Chain(
-		ArticleHeadersHandler,
-		ArticlePageLink,
-		status.LinkAll,
-	)),
-)
+func (hnd ArticleHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
 
-func ArticlePageLink(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
-		r := handler.Request(ctx)
-		vars := mux.Vars(r)
+	ctx := hnd.Context.New(r)
+	pg := handler.NewPage()
 
-		info := e.Repository().SiteInfo().Get(ctx)
-		cat := store.NewEmptyCategory(vars["category"])
+	info := hnd.SiteInfo.Get(ctx)
 
-		a, err := e.Repository().Article().Get(ctx, cat, vars["key"])
-		if err != nil {
-			log.Errorf(ctx, "app.ArticlePageLink - Unable to get articles by type\n%v", err)
-			return ctx, status.ErrNotFound
-		}
+	pg.Title = info.Title
+	pg.Header["description"] = info.ShortDescription()
+	pg.Header["author"] = info.Owner
 
-		data := struct {
-			view.BaseModel
-			Article *store.Article
-		}{
-			BaseModel: view.BaseModel{
-				SiteInfo: info,
-			},
-			Article: a,
-		}
-		return h(link.PageContext(ctx, "page/app/article", data), e, w)
+	cat := store.NewEmptyCategory(vars["category"])
+
+	art, err := hnd.Article.Get(ctx, cat, vars["key"])
+
+	if err != nil {
+		log.Errorf(ctx, "app.ArticlePageLink - Unable to get articles by type\n%v", err)
+		return
 	}
+
+	pg.Content = template.HTML(hnd.Renderer.Render(ctx, "page/app/article", struct {
+		Article *store.Article
+	}{
+		art,
+	}))
+
+	hnd.Renderer.Send(w, r, pg)
 }

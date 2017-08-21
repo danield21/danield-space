@@ -27,6 +27,10 @@ func App(e handler.Environment, r *mux.Router) {
 	r.HandleFunc("/articles", handler.Apply(e, app.ArticlesPageHandler)).Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/articles/{category}", handler.Apply(e, app.ArticlesCategoryHeadersHandler)).Methods(http.MethodHead)
 	r.HandleFunc("/articles/{category}", handler.Apply(e, app.ArticlesCategoryPageHandler)).Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/articles/{category}/{key}", handler.Apply(e, app.ArticleHeadersHandler)).Methods(http.MethodHead)
-	r.HandleFunc("/articles/{category}/{key}", handler.Apply(e, app.ArticlePageHandler)).Methods(http.MethodGet, http.MethodPost)
+	r.Handle("/articles/{category}/{key}", app.ArticleHandler{
+		Context:  mgr,
+		Renderer: mgr,
+		SiteInfo: e.Repository().SiteInfo(),
+		Article:  e.Repository().Article(),
+	})
 }
