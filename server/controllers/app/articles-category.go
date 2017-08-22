@@ -1,62 +1,54 @@
 package app
 
 import (
+	"html/template"
 	"net/http"
 
-	"github.com/danield21/danield-space/server/controllers/link"
-	"github.com/danield21/danield-space/server/controllers/status"
-	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/gorilla/mux"
-	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
-var ArticlesCategoryHeadersHandler = view.HeaderHandler(http.StatusOK,
-	view.Header{"Content-Type", view.HTMLContentType},
-)
+type ArticleCategoryHandler struct {
+	Context  handler.ContextGenerator
+	Renderer handler.Renderer
+	SiteInfo store.SiteInfoRepository
+	Article  store.ArticleRepository
+	Category store.CategoryRepository
+}
 
-var ArticlesCategoryPageHandler = handler.Chain(
-	view.HTMLHandler,
-	handler.ToLink(handler.Chain(
-		ArticlesCategoryHeadersHandler,
-		ArticlesCategoryPageLink,
-		status.LinkAll,
-	)),
-)
+func (hnd ArticleCategoryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
 
-//ArticlesCategoryPageLink handles the index page
-func ArticlesCategoryPageLink(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
-		r := handler.Request(ctx)
-		vars := mux.Vars(r)
+	ctx := hnd.Context.New(r)
+	pg := handler.NewPage()
 
-		info := e.Repository().SiteInfo().Get(ctx)
+	info := hnd.SiteInfo.Get(ctx)
 
-		cat, err := e.Repository().Category().Get(ctx, vars["category"])
-		if err != nil {
-			log.Errorf(ctx, "app.ArticlesCategoryPageLink - Unable to get category %s\n%v", vars["category"], err)
-			return ctx, status.ErrNotFound
-		}
+	pg.Title = info.Title
+	pg.Header["description"] = info.ShortDescription()
+	pg.Header["author"] = info.Owner
 
-		a, err := e.Repository().Article().GetAllByCategory(ctx, cat, 1)
-		if err != nil {
-			log.Errorf(ctx, "app.ArticlesCategoryPageLink - Unable to get articles by category %s\n%v", cat.Title, err)
-			return ctx, status.ErrNotFound
-		}
-
-		data := struct {
-			view.BaseModel
-			Articles []*store.Article
-			Category *store.Category
-		}{
-			BaseModel: view.BaseModel{
-				SiteInfo: info,
-			},
-			Articles: a,
-			Category: cat,
-		}
-		return h(link.PageContext(ctx, "page/app/articles-type", data), e, w)
+	cat, err := hnd.Category.Get(ctx, vars["category"])
+	if err != nil {
+		log.Errorf(ctx, "app.ArticlesCategoryPageLink - Unable to get category %s\n%v", vars["category"], err)
+		return
 	}
+
+	arts, err := hnd.Article.GetAllByCategory(ctx, cat, 1)
+	if err != nil {
+		log.Errorf(ctx, "app.ArticlesCategoryPageLink - Unable to get articles by category %s\n%v", cat.Title, err)
+		return
+	}
+
+	pg.Content = template.HTML(hnd.Renderer.Render(ctx, "page/app/articles-type", struct {
+		Articles []*store.Article
+		Category *store.Category
+	}{
+		Articles: arts,
+		Category: cat,
+	}))
+
+	hnd.Renderer.Send(w, r, pg)
 }
