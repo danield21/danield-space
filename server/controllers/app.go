@@ -1,8 +1,9 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/danield21/danield-space/server/controllers/app"
-	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/gorilla/mux"
@@ -16,14 +17,11 @@ type AppRouter struct {
 	About    store.AboutRepository
 	Article  store.ArticleRepository
 	Category store.CategoryRepository
+	NotFound http.Handler
 }
 
 func (rtr AppRouter) Route(r *mux.Router) {
-	r.NotFoundHandler = status.NotFoundHandler{
-		Context:  rtr.Context,
-		Renderer: rtr.Renderer,
-		SiteInfo: rtr.SiteInfo,
-	}
+	r.NotFoundHandler = rtr.NotFound
 
 	r.Handle("/", app.IndexHandler{
 		Context:  rtr.Context,
@@ -46,6 +44,7 @@ func (rtr AppRouter) Route(r *mux.Router) {
 	r.Handle("/articles/{category}", app.ArticleCategoryHandler{
 		Context:  rtr.Context,
 		Renderer: rtr.Renderer,
+		NotFound: rtr.NotFound,
 		SiteInfo: rtr.SiteInfo,
 		Article:  rtr.Article,
 		Category: rtr.Category,
@@ -53,6 +52,7 @@ func (rtr AppRouter) Route(r *mux.Router) {
 	r.Handle("/articles/{category}/{key}", app.ArticleHandler{
 		Context:  rtr.Context,
 		Renderer: rtr.Renderer,
+		NotFound: rtr.NotFound,
 		SiteInfo: rtr.SiteInfo,
 		Article:  rtr.Article,
 	})

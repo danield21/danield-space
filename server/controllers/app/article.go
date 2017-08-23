@@ -13,6 +13,7 @@ import (
 type ArticleHandler struct {
 	Context  handler.ContextGenerator
 	Renderer handler.Renderer
+	NotFound http.Handler
 	SiteInfo store.SiteInfoRepository
 	Article  store.ArticleRepository
 }
@@ -34,7 +35,8 @@ func (hnd ArticleHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	art, err := hnd.Article.Get(ctx, cat, vars["key"])
 
 	if err != nil {
-		log.Errorf(ctx, "app.ArticlePageLink - Unable to get articles by type\n%v", err)
+		log.Errorf(ctx, "app.ArticleHandler - Unable to get articles by type\n%v", err)
+		hnd.NotFound.ServeHTTP(w, r)
 		return
 	}
 
@@ -45,7 +47,7 @@ func (hnd ArticleHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		log.Errorf(ctx, "app.AboutHandler - Unable to render content\n%v", err)
+		log.Errorf(ctx, "app.ArticleHandler - Unable to render content\n%v", err)
 		return
 	}
 

@@ -34,7 +34,7 @@ func (hnd ArticlesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	articleMap, err := hnd.Article.GetMapKeyedByCategory(ctx, 10)
 
 	if err != nil {
-		log.Errorf(ctx, "app.Articles - Unable to get articles organized by their type\n%v", err)
+		log.Errorf(ctx, "app.ArticlesHandler - Unable to get articles organized by their type\n%v", err)
 	}
 
 	var articles []publicationList
@@ -53,7 +53,7 @@ func (hnd ArticlesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		log.Errorf(ctx, "app.AboutHandler - Unable to render content\n%v", err)
+		log.Errorf(ctx, "app.ArticlesHandler - Unable to render content\n%v", err)
 		return
 	}
 

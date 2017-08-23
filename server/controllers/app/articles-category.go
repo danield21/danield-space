@@ -13,6 +13,7 @@ import (
 type ArticleCategoryHandler struct {
 	Context  handler.ContextGenerator
 	Renderer handler.Renderer
+	NotFound http.Handler
 	SiteInfo store.SiteInfoRepository
 	Article  store.ArticleRepository
 	Category store.CategoryRepository
@@ -32,13 +33,14 @@ func (hnd ArticleCategoryHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 
 	cat, err := hnd.Category.Get(ctx, vars["category"])
 	if err != nil {
-		log.Errorf(ctx, "app.ArticlesCategoryPageLink - Unable to get category %s\n%v", vars["category"], err)
+		log.Errorf(ctx, "app.ArticleCategoryHandler - Unable to get category %s\n%v", vars["category"], err)
+		hnd.NotFound.ServeHTTP(w, r)
 		return
 	}
 
 	arts, err := hnd.Article.GetAllByCategory(ctx, cat, 1)
 	if err != nil {
-		log.Errorf(ctx, "app.ArticlesCategoryPageLink - Unable to get articles by category %s\n%v", cat.Title, err)
+		log.Errorf(ctx, "app.ArticleCategoryHandler - Unable to get articles by category %s\n%v", cat.Title, err)
 		return
 	}
 
@@ -51,7 +53,7 @@ func (hnd ArticleCategoryHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	})
 
 	if err != nil {
-		log.Errorf(ctx, "app.AboutHandler - Unable to render content\n%v", err)
+		log.Errorf(ctx, "app.ArticleCategoryHandler - Unable to render content\n%v", err)
 		return
 	}
 

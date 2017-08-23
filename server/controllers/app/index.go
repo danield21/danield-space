@@ -28,7 +28,7 @@ func (hnd IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	a, err := hnd.Article.GetAll(ctx, 10)
 	if err != nil {
-		log.Errorf(ctx, "app.IndexPageLink - Unable to get last 10 articles\n%v", err)
+		log.Errorf(ctx, "app.IndexHandler - Unable to get last 10 articles\n%v", err)
 	}
 
 	cnt, err := hnd.Renderer.Render(ctx, "page/app/index", struct {
@@ -40,7 +40,7 @@ func (hnd IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		log.Errorf(ctx, "app.AboutHandler - Unable to render content\n%v", err)
+		log.Errorf(ctx, "app.IndexHandler - Unable to render content\n%v", err)
 		return
 	}
 
