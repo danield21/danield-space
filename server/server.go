@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/danield21/danield-space/server/controllers"
+	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/views"
 	"github.com/gorilla/mux"
 )
@@ -20,6 +21,12 @@ func New() http.Handler {
 		Environment: &e,
 	}
 
+	notFnd := status.NotFoundHandler{
+		Context:  mgr,
+		Renderer: mgr,
+		SiteInfo: e.Repository().SiteInfo(),
+	}
+
 	controllers.AppRouter{
 		Context:  mgr,
 		Renderer: mgr,
@@ -27,6 +34,7 @@ func New() http.Handler {
 		About:    e.Repository().About(),
 		Article:  e.Repository().Article(),
 		Category: e.Repository().Category(),
+		NotFound: notFnd,
 	}.Route(r)
 	controllers.Admin(&e, r.PathPrefix("/admin").Subrouter())
 
