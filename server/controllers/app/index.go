@@ -1,49 +1,50 @@
 package app
 
 import (
+	"html/template"
 	"net/http"
 
-	"github.com/danield21/danield-space/server/controllers/link"
-	"github.com/danield21/danield-space/server/controllers/status"
-	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
-	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
-var IndexHeadersHandler = view.HeaderHandler(http.StatusOK,
-	view.Header{"Content-Type", view.HTMLContentType},
-)
+type IndexHandler struct {
+	Context  handler.ContextGenerator
+	Renderer handler.Renderer
+	SiteInfo store.SiteInfoRepository
+	Article  store.ArticleRepository
+}
 
-var IndexPageHandler = handler.Chain(
-	view.HTMLHandler,
-	handler.ToLink(handler.Chain(
-		IndexHeadersHandler,
-		IndexPageLink,
-		status.LinkAll,
-	)),
-)
+func (hnd IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	ctx := hnd.Context.New(r)
+	pg := handler.NewPage()
 
-func IndexPageLink(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
-		info := e.Repository().SiteInfo().Get(ctx)
+	info := hnd.SiteInfo.Get(ctx)
 
-		a, err := e.Repository().Article().GetAll(ctx, 10)
-		if err != nil {
-			log.Errorf(ctx, "app.IndexPageLink - Unable to get last 10 articles\n%v", err)
-		}
+	pg.Title = info.Title
+	pg.Meta["description"] = info.ShortDescription()
+	pg.Meta["author"] = info.Owner
 
-		data := struct {
-			view.BaseModel
-			Articles []*store.Article
-		}{
-			BaseModel: view.BaseModel{
-				SiteInfo: info,
-			},
-			Articles: a,
-		}
-
-		return h(link.PageContext(ctx, "page/app/index", data), e, w)
+	a, err := hnd.Article.GetAll(ctx, 10)
+	if err != nil {
+		log.Errorf(ctx, "app.IndexPageLink - Unable to get last 10 articles\n%v", err)
 	}
+
+	cnt, err := hnd.Renderer.Render(ctx, "page/app/index", struct {
+		Articles    []*store.Article
+		Description string
+	}{
+		Articles:    a,
+		Description: info.Description,
+	})
+
+	if err != nil {
+		log.Errorf(ctx, "app.AboutHandler - Unable to render content\n%v", err)
+		return
+	}
+
+	pg.Content = template.HTML(cnt)
+
+	hnd.Renderer.Send(w, r, pg)
 }

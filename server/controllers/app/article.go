@@ -26,8 +26,8 @@ func (hnd ArticleHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	info := hnd.SiteInfo.Get(ctx)
 
 	pg.Title = info.Title
-	pg.Header["description"] = info.ShortDescription()
-	pg.Header["author"] = info.Owner
+	pg.Meta["description"] = info.ShortDescription()
+	pg.Meta["author"] = info.Owner
 
 	cat := store.NewEmptyCategory(vars["category"])
 
@@ -38,11 +38,18 @@ func (hnd ArticleHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pg.Content = template.HTML(hnd.Renderer.Render(ctx, "page/app/article", struct {
+	cnt, err := hnd.Renderer.Render(ctx, "page/app/article", struct {
 		Article *store.Article
 	}{
 		art,
-	}))
+	})
+
+	if err != nil {
+		log.Errorf(ctx, "app.AboutHandler - Unable to render content\n%v", err)
+		return
+	}
+
+	pg.Content = template.HTML(cnt)
 
 	hnd.Renderer.Send(w, r, pg)
 }

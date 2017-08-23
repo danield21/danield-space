@@ -16,7 +16,18 @@ func New() http.Handler {
 		Connections:       CreateRepository(),
 	}
 
-	controllers.App(&e, r)
+	mgr := controllers.Migrator{
+		Environment: &e,
+	}
+
+	controllers.AppRouter{
+		Context:  mgr,
+		Renderer: mgr,
+		SiteInfo: e.Repository().SiteInfo(),
+		About:    e.Repository().About(),
+		Article:  e.Repository().Article(),
+		Category: e.Repository().Category(),
+	}.Route(r)
 	controllers.Admin(&e, r.PathPrefix("/admin").Subrouter())
 
 	return r

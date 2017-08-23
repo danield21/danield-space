@@ -33,11 +33,18 @@ func (hnd AboutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pg.Content = template.HTML(hnd.Renderer.Render(ctx, "page/app/about", struct {
+	cnt, err := hnd.Renderer.Render(ctx, "page/app/about", struct {
 		About template.HTML
 	}{
 		abt,
-	}))
+	})
+
+	if err != nil {
+		log.Errorf(ctx, "app.AboutHandler - Unable to render content\n%v", err)
+		return
+	}
+
+	pg.Content = template.HTML(cnt)
 
 	hnd.Renderer.Send(w, r, pg)
 }

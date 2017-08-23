@@ -7,6 +7,6 @@ import (
 )
 
 type Renderer interface {
-	Render(ctx context.Context, view string, data interface{}) []byte
-	Send(w http.ResponseWriter, r *http.Request, pg *Page)
+	Render(ctx context.Context, view string, data interface{}) ([]byte, error)
+	Send(w http.ResponseWriter, r *http.Request, pg *Page) error
 }

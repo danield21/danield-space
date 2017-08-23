@@ -2,11 +2,13 @@ package status
 
 import (
 	"errors"
+	"html/template"
 	"net/http"
 
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
+	"github.com/danield21/danield-space/server/store"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
@@ -53,4 +55,33 @@ func CheckNotFoundLink(h handler.Handler) handler.Handler {
 		log.Debugf(ctx, "Error popped up: %v", err)
 		return NotFoundPageHandler(ctx, e, w)
 	}
+}
+
+type NotFoundHandler struct {
+	Context  handler.ContextGenerator
+	Renderer handler.Renderer
+	SiteInfo store.SiteInfoRepository
+	About    store.AboutRepository
+}
+
+func (hnd NotFoundHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	ctx := hnd.Context.New(r)
+	pg := handler.NewPage()
+
+	info := hnd.SiteInfo.Get(ctx)
+
+	pg.Title = info.Title
+	pg.Meta["description"] = info.ShortDescription()
+	pg.Meta["author"] = info.Owner
+
+	cnt, err := hnd.Renderer.Render(ctx, "page/status/not-found", nil)
+
+	if err != nil {
+		log.Errorf(ctx, "status.NotFound - Unable to render content\n%v", err)
+		return
+	}
+
+	pg.Content = template.HTML(cnt)
+
+	hnd.Renderer.Send(w, r, pg)
 }
