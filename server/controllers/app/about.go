@@ -17,7 +17,7 @@ type AboutHandler struct {
 }
 
 func (hnd AboutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	ctx := hnd.Context.New(r)
+	ctx := hnd.Context.Generate(r)
 	pg := handler.NewPage()
 
 	info := hnd.SiteInfo.Get(ctx)

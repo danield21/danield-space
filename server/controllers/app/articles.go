@@ -22,7 +22,7 @@ type ArticlesHandler struct {
 }
 
 func (hnd ArticlesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	ctx := hnd.Context.New(r)
+	ctx := hnd.Context.Generate(r)
 	pg := handler.NewPage()
 
 	info := hnd.SiteInfo.Get(ctx)

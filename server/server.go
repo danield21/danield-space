@@ -22,13 +22,13 @@ func New() http.Handler {
 	}
 
 	notFnd := status.NotFoundHandler{
-		Context:  mgr,
+		Context:  mgr.Context(),
 		Renderer: mgr,
 		SiteInfo: e.Repository().SiteInfo(),
 	}
 
 	controllers.AppRouter{
-		Context:  mgr,
+		Context:  mgr.Context(),
 		Renderer: mgr,
 		SiteInfo: e.Repository().SiteInfo(),
 		About:    e.Repository().About(),

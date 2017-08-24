@@ -16,6 +16,19 @@ func MakeForm() Form {
 	}
 }
 
+func NewForm() Form {
+	return Form{
+		Fields: make(map[string]*Field),
+	}
+}
+
+func NewSubmittedForm() Form {
+	return Form{
+		Fields:    make(map[string]*Field),
+		Submitted: true,
+	}
+}
+
 func (f Form) AddFieldFromValue(name string, values url.Values) *Field {
 	fld := new(Field)
 	fld.Values = values[name]

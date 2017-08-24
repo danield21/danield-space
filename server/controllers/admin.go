@@ -12,18 +12,24 @@ import (
 
 //Admin configures the handlers for admin handlers
 func Admin(e handler.Environment, r *mux.Router) {
+
+	mgr := Migrator{
+		Environment: e,
+	}
+
 	r.NotFoundHandler = handler.Prepare(e, view.HTMLHandler, handler.ToLink(status.NotFoundPageHandler))
 
 	r.HandleFunc("/", handler.Apply(e, admin.IndexHeadersHandler)).
 		Methods(http.MethodHead)
 	r.HandleFunc("/", handler.Apply(e, admin.IndexPageHandler)).
 		Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/signin", handler.Apply(e, admin.SignInHeadersHandler)).
-		Methods(http.MethodHead)
-	r.HandleFunc("/signin", handler.Apply(e, admin.SignInPageHandler)).
-		Methods(http.MethodGet)
-	r.HandleFunc("/signin", handler.Apply(e, admin.SignInActionHandler)).
-		Methods(http.MethodPost)
+	r.Handle("/signin", admin.SignInHandler{
+		Context:  mgr.Context(),
+		Session:  mgr.Session(),
+		Renderer: mgr,
+		SiteInfo: e.Repository().SiteInfo(),
+		Account:  e.Repository().Account(),
+	})
 	r.HandleFunc("/sign-out", handler.Apply(e, admin.SignOutHeadersHandler)).
 		Methods(http.MethodHead)
 	r.HandleFunc("/sign-out", handler.Apply(e, admin.SignOutPageHandler)).

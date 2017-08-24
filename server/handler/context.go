@@ -40,11 +40,21 @@ func Session(ctx context.Context) *sessions.Session {
 }
 
 type ContextGenerator interface {
-	New(rqs *http.Request) context.Context
+	Generate(rqs *http.Request) context.Context
 }
 
 type ContextGeneratorFunc func(rqs *http.Request) context.Context
 
-func (ctxGen ContextGeneratorFunc) New(rqs *http.Request) context.Context {
+func (ctxGen ContextGeneratorFunc) Generate(rqs *http.Request) context.Context {
 	return ctxGen(rqs)
+}
+
+type SessionGenerator interface {
+	Generate(ctx context.Context, rqs *http.Request) *sessions.Session
+}
+
+type SessionGeneratorFunc func(ctx context.Context, rqs *http.Request) *sessions.Session
+
+func (sesGen SessionGeneratorFunc) Generate(ctx context.Context, rqs *http.Request) *sessions.Session {
+	return sesGen(ctx, rqs)
 }
