@@ -27,6 +27,12 @@ func New() http.Handler {
 		SiteInfo: e.Repository().SiteInfo(),
 	}
 
+	unauth := status.UnauthorizedHandler{
+		Context:  mgr.Context(),
+		Renderer: mgr,
+		SiteInfo: e.Repository().SiteInfo(),
+	}
+
 	controllers.AppRouter{
 		Context:  mgr.Context(),
 		Renderer: mgr,
@@ -36,7 +42,19 @@ func New() http.Handler {
 		Category: e.Repository().Category(),
 		NotFound: notFnd,
 	}.Route(r)
-	controllers.Admin(&e, r.PathPrefix("/admin").Subrouter())
+
+	controllers.AdminRouter{
+		Context:      mgr.Context(),
+		Session:      mgr.Session(),
+		Renderer:     mgr,
+		SiteInfo:     e.Repository().SiteInfo(),
+		Account:      e.Repository().Account(),
+		About:        e.Repository().About(),
+		Article:      e.Repository().Article(),
+		Category:     e.Repository().Category(),
+		NotFound:     notFnd,
+		Unauthorized: unauth,
+	}.Route(r.PathPrefix("/admin").Subrouter())
 
 	return r
 }
