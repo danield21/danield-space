@@ -1,4 +1,4 @@
-package action
+package process
 
 import (
 	"errors"
@@ -8,6 +8,7 @@ import (
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
+	"github.com/gorilla/sessions"
 	"golang.org/x/net/context"
 )
 
@@ -69,25 +70,27 @@ func RepackSiteInfo(info store.SiteInfo) form.Form {
 	return frm
 }
 
-func PutSiteInfoLink(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
-		r := handler.Request(ctx)
-		err := r.ParseForm()
-		if err != nil {
-			return h(WithForm(ctx, form.Form{Error: errors.New("Unable to parse form")}), e, w)
-		}
+type PutSiteInfoProcessor struct {
+	SiteInfo store.SiteInfoRepository
+}
 
-		info, frm := UnpackSiteInfo(ctx, r.Form)
-		if info == nil {
-			return h(WithForm(ctx, frm), e, w)
-		}
-
-		err = e.Repository().SiteInfo().Set(ctx, *info)
-		if err != nil {
-			frm.Error = errors.New("Unable to put into database")
-			return h(WithForm(ctx, frm), e, w)
-		}
-
-		return h(WithForm(ctx, frm), e, w)
+func (prc PutSiteInfoProcessor) Process(ctx context.Context, req *http.Request, ses *sessions.Session) form.Form {
+	r := handler.Request(ctx)
+	err := r.ParseForm()
+	if err != nil {
+		return form.NewErrorForm(errors.New("Unable to parse form"))
 	}
+
+	info, frm := UnpackSiteInfo(ctx, r.Form)
+	if info == nil {
+		return frm
+	}
+
+	err = prc.SiteInfo.Set(ctx, *info)
+	if err != nil {
+		frm.Error = errors.New("Unable to put into database")
+		return frm
+	}
+
+	return frm
 }

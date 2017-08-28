@@ -1,4 +1,4 @@
-package action
+package process
 
 import (
 	"errors"
@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/danield21/danield-space/server/form"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
+	"github.com/gorilla/sessions"
 	"golang.org/x/net/context"
 )
 
@@ -29,8 +29,7 @@ func UnpackArticle(ctx context.Context, catRepo store.CategoryRepository, values
 		content     template.HTML
 	)
 
-	frm := form.MakeForm()
-	frm.Submitted = true
+	frm := form.NewSubmittedForm()
 
 	titleFld := frm.AddFieldFromValue(titleKey, values)
 	form.NotEmpty(titleFld, "title is required")
@@ -87,25 +86,26 @@ func UnpackArticle(ctx context.Context, catRepo store.CategoryRepository, values
 	return a, frm
 }
 
-func PutArticleLink(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
-		r := handler.Request(ctx)
-		err := r.ParseForm()
-		if err != nil {
-			return h(WithForm(ctx, form.Form{Error: errors.New("Unable to parse form")}), e, w)
-		}
+type PutArticleProcessor struct {
+	Article  store.ArticleRepository
+	Category store.CategoryRepository
+}
 
-		art, frm := UnpackArticle(ctx, e.Repository().Category(), r.Form)
-		if art == nil {
-			return h(WithForm(ctx, frm), e, w)
-		}
-
-		err = e.Repository().Article().Set(ctx, art)
-		if err != nil {
-			frm.Error = errors.New("Unable to put into database")
-			return h(WithForm(ctx, frm), e, w)
-		}
-
-		return h(WithForm(ctx, frm), e, w)
+func (prc PutArticleProcessor) Process(ctx context.Context, req *http.Request, ses *sessions.Session) form.Form {
+	err := req.ParseForm()
+	if err != nil {
+		return form.NewErrorForm(errors.New("Unable to parse form"))
 	}
+
+	art, frm := UnpackArticle(ctx, prc.Category, req.Form)
+	if art == nil {
+		return frm
+	}
+
+	err = prc.Article.Set(ctx, art)
+	if err != nil {
+		frm.Error = errors.New("Unable to put into database")
+	}
+
+	return frm
 }

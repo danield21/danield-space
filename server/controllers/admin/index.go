@@ -1,54 +1,62 @@
 package admin
 
 import (
+	"html/template"
 	"net/http"
 
+	"google.golang.org/appengine/log"
+
 	"github.com/danield21/danield-space/server/controllers/link"
-	"github.com/danield21/danield-space/server/controllers/status"
-	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
-	"golang.org/x/net/context"
+	"github.com/danield21/danield-space/server/store"
 )
 
-var IndexHeadersHandler = AdminHeadersHandler
+type IndexHandler struct {
+	Context      handler.ContextGenerator
+	Session      handler.SessionGenerator
+	Renderer     handler.Renderer
+	SiteInfo     store.SiteInfoRepository
+	Article      store.ArticleRepository
+	Category     store.CategoryRepository
+	Unauthorized http.Handler
+}
 
-var IndexPageHandler = handler.Chain(
-	view.HTMLHandler,
-	handler.ToLink(handler.Chain(
-		IndexHeadersHandler,
-		IndexPageLink,
-		status.LinkAll,
-	)),
-)
+func (hnd IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	ctx := hnd.Context.Generate(r)
+	ses := hnd.Session.Generate(ctx, r)
+	pg := handler.NewPage()
 
-func IndexPageLink(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
-		ses := handler.Session(ctx)
-
-		user, signedIn := link.User(ses)
-		if !signedIn {
-			return ctx, status.ErrUnauthorized
-		}
-
-		info := e.Repository().SiteInfo().Get(ctx)
-		cats, _ := e.Repository().Category().GetAll(ctx)
-		arts, _ := e.Repository().Article().GetAll(ctx, 1)
-
-		data := struct {
-			AdminModel
-			HasCategories bool
-			HasArticles   bool
-		}{
-			AdminModel: AdminModel{
-				BaseModel: view.BaseModel{
-					SiteInfo: info,
-				},
-				User: user,
-			},
-			HasCategories: len(cats) > 0,
-			HasArticles:   len(arts) > 0,
-		}
-
-		return h(link.PageContext(ctx, "page/admin/index", data), e, w)
+	user, signedIn := link.User(ses)
+	if !signedIn {
+		hnd.Unauthorized.ServeHTTP(w, r)
+		return
 	}
+
+	info := hnd.SiteInfo.Get(ctx)
+	cats, _ := hnd.Category.GetAll(ctx)
+	arts, _ := hnd.Article.GetAll(ctx, 1)
+
+	pg.Title = info.Title
+	pg.Meta["description"] = info.ShortDescription()
+	pg.Meta["author"] = info.Owner
+
+	cnt, err := hnd.Renderer.Render(ctx, "page/admin/index", struct {
+		User          string
+		HasCategories bool
+		HasArticles   bool
+	}{
+		User:          user,
+		HasCategories: len(cats) > 0,
+		HasArticles:   len(arts) > 0,
+	})
+
+	if err != nil {
+		log.Errorf(ctx, "admin.IndexHandler - Unable to render content\n%v", err)
+		return
+	}
+
+	pg.Content = template.HTML(cnt)
+
+	ses.Save(r, w)
+	hnd.Renderer.Send(w, r, pg)
 }

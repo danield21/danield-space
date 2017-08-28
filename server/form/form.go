@@ -29,6 +29,13 @@ func NewSubmittedForm() Form {
 	}
 }
 
+func NewErrorForm(err error) Form {
+	return Form{
+		Fields: make(map[string]*Field),
+		Error:  err,
+	}
+}
+
 func (f Form) AddFieldFromValue(name string, values url.Values) *Field {
 	fld := new(Field)
 	fld.Values = values[name]

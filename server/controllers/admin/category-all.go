@@ -4,24 +4,23 @@ import (
 	"html/template"
 	"net/http"
 
+	"google.golang.org/appengine/log"
+
 	"github.com/danield21/danield-space/server/controllers/link"
-	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
-	"google.golang.org/appengine/log"
 )
 
-type AboutHandler struct {
+type CategoryAllHandler struct {
 	Context      handler.ContextGenerator
 	Session      handler.SessionGenerator
 	Renderer     handler.Renderer
 	SiteInfo     store.SiteInfoRepository
-	About        store.AboutRepository
+	Category     store.CategoryRepository
 	Unauthorized http.Handler
-	PutAbout     handler.Processor
 }
 
-func (hnd AboutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (hnd CategoryAllHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := hnd.Context.Generate(r)
 	ses := hnd.Session.Generate(ctx, r)
 	pg := handler.NewPage()
@@ -38,33 +37,21 @@ func (hnd AboutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	pg.Meta["description"] = info.ShortDescription()
 	pg.Meta["author"] = info.Owner
 
-	frm := form.NewForm()
-
-	if r.Method == http.MethodPost {
-		frm = hnd.PutAbout.Process(ctx, r, ses)
+	cats, err := hnd.Category.GetAll(ctx)
+	if err != nil {
+		log.Errorf(ctx, "admin.CategoryAllHandler - Unable to get all categories\n%v", err)
 	}
 
-	if frm.IsEmpty() {
-		html, err := hnd.About.Get(ctx)
-		if err == nil {
-			abtFld := new(form.Field)
-			abtFld.Values = []string{string(html)}
-			frm.Fields["about"] = abtFld
-		} else {
-			log.Warningf(ctx, "Unable to get about summary\n%v", err)
-		}
-	}
-
-	cnt, err := hnd.Renderer.Render(ctx, "page/admin/about", struct {
-		User string
-		Form form.Form
+	cnt, err := hnd.Renderer.Render(ctx, "page/admin/category-all", struct {
+		User       string
+		Categories []*store.Category
 	}{
-		User: usr,
-		Form: frm,
+		User:       usr,
+		Categories: cats,
 	})
 
 	if err != nil {
-		log.Errorf(ctx, "admin.IndexHandler - Unable to render content\n%v", err)
+		log.Errorf(ctx, "admin.CategoryAllHandler - Unable to render content\n%v", err)
 		return
 	}
 

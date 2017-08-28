@@ -1,4 +1,4 @@
-package status
+package admin
 
 import (
 	"html/template"
@@ -10,15 +10,17 @@ import (
 	"github.com/danield21/danield-space/server/store"
 )
 
-type UnauthorizedHandler struct {
+type SignOutHandler struct {
 	Context  handler.ContextGenerator
+	Session  handler.SessionGenerator
 	Renderer handler.Renderer
 	SiteInfo store.SiteInfoRepository
-	About    store.AboutRepository
+	SignOut  handler.Processor
 }
 
-func (hnd UnauthorizedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (hnd SignOutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := hnd.Context.Generate(r)
+	ses := hnd.Session.Generate(ctx, r)
 	pg := handler.NewPage()
 
 	info := hnd.SiteInfo.Get(ctx)
@@ -27,15 +29,22 @@ func (hnd UnauthorizedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	pg.Meta["description"] = info.ShortDescription()
 	pg.Meta["author"] = info.Owner
 
-	cnt, err := hnd.Renderer.Render(ctx, "page/status/unauthorized", nil)
+	if r.Method == http.MethodPost {
+		hnd.SignOut.Process(ctx, r, ses)
+	}
+
+	pg.Status = http.StatusSeeOther
+	pg.Header["Location"] = "/"
+
+	cnt, err := hnd.Renderer.Render(ctx, "page/admin/sign-out", nil)
 
 	if err != nil {
-		log.Errorf(ctx, "status.UnauthorizedHandler - Unable to render content\n%v", err)
+		log.Errorf(ctx, "admin.SignInHandler - Unable to render content\n%v", err)
 		return
 	}
 
-	pg.Status = http.StatusUnauthorized
 	pg.Content = template.HTML(cnt)
 
+	ses.Save(r, w)
 	hnd.Renderer.Send(w, r, pg)
 }

@@ -1,4 +1,4 @@
-package action
+package process
 
 import (
 	"errors"
@@ -6,8 +6,8 @@ import (
 	"net/url"
 
 	"github.com/danield21/danield-space/server/form"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
+	"github.com/gorilla/sessions"
 	"golang.org/x/net/context"
 )
 
@@ -16,8 +16,7 @@ const catURLKey = "url"
 const catDscKey = "description"
 
 func UnpackCategory(values url.Values) (*store.Category, form.Form) {
-	frm := form.MakeForm()
-	frm.Submitted = true
+	frm := form.NewSubmittedForm()
 
 	ttlFld := frm.AddFieldFromValue(catTitleKey, values)
 	form.NotEmpty(ttlFld, "Title is required")
@@ -43,24 +42,25 @@ func UnpackCategory(values url.Values) (*store.Category, form.Form) {
 	return category, frm
 }
 
-func PutCategoryLink(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
-		r := handler.Request(ctx)
-		err := r.ParseForm()
-		if err != nil {
-			return h(WithForm(ctx, form.Form{Error: errors.New("Unable to parse form")}), e, w)
-		}
+type PutCategoryProcessor struct {
+	Category store.CategoryRepository
+}
 
-		cat, frm := UnpackCategory(r.Form)
-		if cat == nil {
-			return h(WithForm(ctx, frm), e, w)
-		}
-
-		err = e.Repository().Category().Set(ctx, cat)
-		if err != nil {
-			frm.Error = errors.New("Unable to put into database")
-		}
-
-		return h(WithForm(ctx, frm), e, w)
+func (prc PutCategoryProcessor) Process(ctx context.Context, req *http.Request, ses *sessions.Session) form.Form {
+	err := req.ParseForm()
+	if err != nil {
+		return form.NewErrorForm(errors.New("Unable to parse form"))
 	}
+
+	cat, frm := UnpackCategory(req.Form)
+	if cat == nil {
+		return frm
+	}
+
+	err = prc.Category.Set(ctx, cat)
+	if err != nil {
+		frm.Error = errors.New("Unable to put into database")
+	}
+
+	return frm
 }

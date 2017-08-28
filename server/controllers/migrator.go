@@ -32,5 +32,13 @@ func (mgr Migrator) Render(ctx context.Context, view string, data interface{}) (
 }
 
 func (mgr Migrator) Send(w http.ResponseWriter, r *http.Request, pg *handler.Page) error {
+	if pg.Status != 0 {
+		w.WriteHeader(pg.Status)
+	}
+
+	for header, value := range pg.Header {
+		w.Header().Add(header, value)
+	}
+
 	return mgr.Environment.Partial(w, "core/page", pg)
 }

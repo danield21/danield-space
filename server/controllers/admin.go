@@ -1,11 +1,9 @@
 package controllers
 
 import (
-	"net/http"
-
 	"github.com/danield21/danield-space/server/controllers/admin"
+	"github.com/danield21/danield-space/server/controllers/process"
 	"github.com/danield21/danield-space/server/controllers/status"
-	"github.com/danield21/danield-space/server/controllers/view"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/gorilla/mux"
 )
@@ -17,63 +15,121 @@ func Admin(e handler.Environment, r *mux.Router) {
 		Environment: e,
 	}
 
-	r.NotFoundHandler = handler.Prepare(e, view.HTMLHandler, handler.ToLink(status.NotFoundPageHandler))
+	Unauthorized := status.UnauthorizedHandler{
+		Context:  mgr.Context(),
+		Renderer: mgr,
+		SiteInfo: e.Repository().SiteInfo(),
+	}
+	NotFound := status.NotFoundHandler{
+		Context:  mgr.Context(),
+		Renderer: mgr,
+		SiteInfo: e.Repository().SiteInfo(),
+	}
 
-	r.HandleFunc("/", handler.Apply(e, admin.IndexHeadersHandler)).
-		Methods(http.MethodHead)
-	r.HandleFunc("/", handler.Apply(e, admin.IndexPageHandler)).
-		Methods(http.MethodGet, http.MethodPost)
-	r.Handle("/signin", admin.SignInHandler{
+	r.NotFoundHandler = NotFound
+
+	r.Handle("/", admin.IndexHandler{
+		Context:      mgr.Context(),
+		Session:      mgr.Session(),
+		Renderer:     mgr,
+		SiteInfo:     e.Repository().SiteInfo(),
+		Article:      e.Repository().Article(),
+		Category:     e.Repository().Category(),
+		Unauthorized: Unauthorized,
+	})
+	r.Handle("/sign-in", admin.SignInHandler{
 		Context:  mgr.Context(),
 		Session:  mgr.Session(),
 		Renderer: mgr,
 		SiteInfo: e.Repository().SiteInfo(),
 		Account:  e.Repository().Account(),
+		SignIn: process.SignInProcessor{
+			Account: e.Repository().Account(),
+		},
 	})
-	r.HandleFunc("/sign-out", handler.Apply(e, admin.SignOutHeadersHandler)).
-		Methods(http.MethodHead)
-	r.HandleFunc("/sign-out", handler.Apply(e, admin.SignOutPageHandler)).
-		Methods(http.MethodGet)
-	r.HandleFunc("/sign-out", handler.Apply(e, admin.SignOutActionHandler)).
-		Methods(http.MethodPost)
-	r.HandleFunc("/article", handler.Apply(e, admin.ArticlesHeadersHandler)).
-		Methods(http.MethodHead)
-	r.HandleFunc("/article", handler.Apply(e, admin.ArticlesPageHandler)).
-		Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/article/publish", handler.Apply(e, admin.PublishHeadersHandler)).
-		Methods(http.MethodHead)
-	r.HandleFunc("/article/publish", handler.Apply(e, admin.PublishPageHandler)).
-		Methods(http.MethodGet)
-	r.HandleFunc("/article/publish", handler.Apply(e, admin.PublishActionHandler)).
-		Methods(http.MethodPost)
-	r.HandleFunc("/account", handler.Apply(e, admin.AccountHeadersHandler)).
-		Methods(http.MethodHead)
-	r.HandleFunc("/account", handler.Apply(e, admin.AccountPageHandler)).
-		Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/account/create", handler.Apply(e, admin.AccountCreateHeadersHandler)).
-		Methods(http.MethodHead)
-	r.HandleFunc("/account/create", handler.Apply(e, admin.AccountCreatePageHandler)).
-		Methods(http.MethodGet)
-	r.HandleFunc("/account/create", handler.Apply(e, admin.AccountCreateActionHandler)).
-		Methods(http.MethodPost)
-	r.HandleFunc("/site-info", handler.Apply(e, admin.SiteInfoHeadersHandler)).
-		Methods(http.MethodHead)
-	r.HandleFunc("/site-info", handler.Apply(e, admin.SiteInfoPageHandler)).
-		Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/category", handler.Apply(e, admin.CategoryHeadersHandler)).
-		Methods(http.MethodHead)
-	r.HandleFunc("/category", handler.Apply(e, admin.CategoryPageHandler)).
-		Methods(http.MethodGet, http.MethodPost)
-	r.HandleFunc("/category/create", handler.Apply(e, admin.CategoryCreateHeadersHandler)).
-		Methods(http.MethodHead)
-	r.HandleFunc("/category/create", handler.Apply(e, admin.CategoryCreatePageHandler)).
-		Methods(http.MethodGet)
-	r.HandleFunc("/category/create", handler.Apply(e, admin.CategoryCreateActionHandler)).
-		Methods(http.MethodPost)
-	r.HandleFunc("/about", handler.Apply(e, admin.AboutHeadersHandler)).
-		Methods(http.MethodHead)
-	r.HandleFunc("/about", handler.Apply(e, admin.AboutPageHandler)).
-		Methods(http.MethodGet)
-	r.HandleFunc("/about", handler.Apply(e, admin.AboutActionHandler)).
-		Methods(http.MethodPost)
+	r.Handle("/sign-out", admin.SignOutHandler{
+		Context:  mgr.Context(),
+		Session:  mgr.Session(),
+		Renderer: mgr,
+		SiteInfo: e.Repository().SiteInfo(),
+		SignOut:  process.SignOutProcessor,
+	})
+	r.Handle("/about", admin.AboutHandler{
+		Context:      mgr.Context(),
+		Session:      mgr.Session(),
+		Renderer:     mgr,
+		SiteInfo:     e.Repository().SiteInfo(),
+		About:        e.Repository().About(),
+		Unauthorized: Unauthorized,
+		PutAbout: process.PutAboutProcessor{
+			About: e.Repository().About(),
+		},
+	})
+	r.Handle("/account", admin.AccountAllHandler{
+		Context:      mgr.Context(),
+		Session:      mgr.Session(),
+		Renderer:     mgr,
+		SiteInfo:     e.Repository().SiteInfo(),
+		Account:      e.Repository().Account(),
+		Unauthorized: Unauthorized,
+	})
+	r.Handle("/account/create", admin.AccountCreateHandler{
+		Context:      mgr.Context(),
+		Session:      mgr.Session(),
+		Renderer:     mgr,
+		SiteInfo:     e.Repository().SiteInfo(),
+		Account:      e.Repository().Account(),
+		Unauthorized: Unauthorized,
+		PutAccount: process.PutAccountProcessor{
+			Account: e.Repository().Account(),
+		},
+	})
+	r.Handle("/article", admin.ArticleAllHandler{
+		Context:      mgr.Context(),
+		Session:      mgr.Session(),
+		Renderer:     mgr,
+		SiteInfo:     e.Repository().SiteInfo(),
+		Article:      e.Repository().Article(),
+		Unauthorized: Unauthorized,
+	})
+	r.Handle("/article/publish", admin.ArticlePublishHandler{
+		Context:      mgr.Context(),
+		Session:      mgr.Session(),
+		Renderer:     mgr,
+		SiteInfo:     e.Repository().SiteInfo(),
+		Category:     e.Repository().Category(),
+		Unauthorized: Unauthorized,
+		PutArticle: process.PutArticleProcessor{
+			Article:  e.Repository().Article(),
+			Category: e.Repository().Category(),
+		},
+	})
+	r.Handle("/category", admin.CategoryAllHandler{
+		Context:      mgr.Context(),
+		Session:      mgr.Session(),
+		Renderer:     mgr,
+		SiteInfo:     e.Repository().SiteInfo(),
+		Category:     e.Repository().Category(),
+		Unauthorized: Unauthorized,
+	})
+	r.Handle("/category/create", admin.CategoryCreateHandler{
+		Context:      mgr.Context(),
+		Session:      mgr.Session(),
+		Renderer:     mgr,
+		SiteInfo:     e.Repository().SiteInfo(),
+		Unauthorized: Unauthorized,
+		PutCategory: process.PutCategoryProcessor{
+			Category: e.Repository().Category(),
+		},
+	})
+	r.Handle("/site-info", admin.SiteInfoHandler{
+		Context:      mgr.Context(),
+		Session:      mgr.Session(),
+		Renderer:     mgr,
+		SiteInfo:     e.Repository().SiteInfo(),
+		Unauthorized: Unauthorized,
+		PutSiteInfo: process.PutSiteInfoProcessor{
+			SiteInfo: e.Repository().SiteInfo(),
+		},
+	})
 }

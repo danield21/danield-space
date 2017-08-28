@@ -1,4 +1,4 @@
-package action
+package process
 
 import (
 	"errors"
@@ -6,10 +6,9 @@ import (
 	"net/url"
 
 	"github.com/danield21/danield-space/server/controllers/link"
-	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/form"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
+	"github.com/gorilla/sessions"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
@@ -20,8 +19,7 @@ const acctCfmPwdKey = "passwordConfirm"
 const acctSprKey = "super"
 
 func UnpackAccount(values url.Values) (*store.Account, form.Form) {
-	frm := form.MakeForm()
-	frm.Submitted = true
+	frm := form.NewSubmittedForm()
 
 	usrFld := frm.AddFieldFromValue(acctUsrKey, values)
 	if !form.NotEmpty(usrFld, "username is required") && !store.ValidUsername(usrFld.Get()) {
@@ -73,49 +71,48 @@ func AccountToForm(acct *store.Account) form.Form {
 	return frm
 }
 
-func PutAccountLink(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
-		r := handler.Request(ctx)
-		ses := handler.Session(ctx)
+type PutAccountProcessor struct {
+	Account store.AccountRepository
+}
 
-		user, signedIn := link.User(ses)
-		if !signedIn {
-			return ctx, status.ErrUnauthorized
-		}
-
-		current, err := e.Repository().Account().Get(ctx, user)
-		if err != nil {
-			log.Warningf(ctx, "PutAccountLink - Unable to verify account %s\n%v", user, err)
-			return ctx, status.ErrUnauthorized
-		}
-
-		err = r.ParseForm()
-		if err != nil {
-			return h(WithForm(ctx, form.Form{Error: errors.New("Unable to parse form")}), e, w)
-		}
-
-		acct, frm := UnpackAccount(r.Form)
-		if frm.HasErrors() {
-			return h(WithForm(ctx, frm), e, w)
-		}
-
-		if !current.Super || current.Username != user {
-			log.Warningf(ctx, "PutAccountLink - %s does not have access\n%v", user, err)
-			frm.Error = errors.New("You do not have the the ability to do this")
-
-			return h(WithForm(ctx, frm), e, w)
-		}
-
-		if !current.Super {
-			acct.Super = false
-		}
-
-		err = e.Repository().Account().Put(ctx, acct)
-		if err != nil {
-			log.Warningf(ctx, "PutAccountLink - Unable to put into database\n%v", err)
-			frm.Error = errors.New("Unable to put into database")
-		}
-
-		return h(WithForm(ctx, frm), e, w)
+func (prc PutAccountProcessor) Process(ctx context.Context, req *http.Request, ses *sessions.Session) form.Form {
+	user, signedIn := link.User(ses)
+	if !signedIn {
+		return form.NewErrorForm(errors.New("User is not logged in"))
 	}
+
+	current, err := prc.Account.Get(ctx, user)
+	if err != nil {
+		log.Warningf(ctx, "PutAccountLink - Unable to verify account %s\n%v", user, err)
+		return form.NewErrorForm(errors.New("User is not logged in"))
+	}
+
+	err = req.ParseForm()
+	if err != nil {
+		return form.NewErrorForm(errors.New("Unable to parse form"))
+	}
+
+	acct, frm := UnpackAccount(req.Form)
+	if frm.HasErrors() {
+		return frm
+	}
+
+	if !current.Super || current.Username != user {
+		log.Warningf(ctx, "PutAccountLink - %s does not have access\n%v", user, err)
+		frm.Error = errors.New("You do not have the the ability to do this")
+
+		return frm
+	}
+
+	if !current.Super {
+		acct.Super = false
+	}
+
+	err = prc.Account.Put(ctx, acct)
+	if err != nil {
+		log.Warningf(ctx, "PutAccountLink - Unable to put into database\n%v", err)
+		frm.Error = errors.New("Unable to put into database")
+	}
+
+	return frm
 }
