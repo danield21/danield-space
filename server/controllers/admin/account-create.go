@@ -4,8 +4,8 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/danield21/danield-space/server/controllers/session"
 	"github.com/danield21/danield-space/server/controllers/process"
-	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
@@ -28,7 +28,7 @@ func (hnd AccountCreateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
 	pg := handler.NewPage()
 	r.ParseForm()
 
-	usr, signedIn := link.User(ses)
+	usr, signedIn := session.User(ses)
 	if !signedIn {
 		hnd.Unauthorized.ServeHTTP(w, r)
 		return

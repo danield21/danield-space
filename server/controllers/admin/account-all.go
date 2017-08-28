@@ -4,7 +4,7 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/danield21/danield-space/server/controllers/link"
+	"github.com/danield21/danield-space/server/controllers/session"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"google.golang.org/appengine/log"
@@ -24,7 +24,7 @@ func (hnd AccountAllHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ses := hnd.Session.Generate(ctx, r)
 	pg := handler.NewPage()
 
-	usr, signedIn := link.User(ses)
+	usr, signedIn := session.User(ses)
 	if !signedIn {
 		hnd.Unauthorized.ServeHTTP(w, r)
 		return

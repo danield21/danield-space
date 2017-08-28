@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/danield21/danield-space/server/controllers/link"
+	"github.com/danield21/danield-space/server/controllers/session"
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/gorilla/sessions"
@@ -76,7 +76,7 @@ type PutAccountProcessor struct {
 }
 
 func (prc PutAccountProcessor) Process(ctx context.Context, req *http.Request, ses *sessions.Session) form.Form {
-	user, signedIn := link.User(ses)
+	user, signedIn := session.User(ses)
 	if !signedIn {
 		return form.NewErrorForm(errors.New("User is not logged in"))
 	}

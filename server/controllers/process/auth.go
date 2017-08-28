@@ -8,7 +8,7 @@ import (
 	"github.com/danield21/danield-space/server/store"
 	"github.com/gorilla/sessions"
 
-	"github.com/danield21/danield-space/server/controllers/link"
+	"github.com/danield21/danield-space/server/controllers/session"
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
 	"golang.org/x/net/context"
@@ -56,7 +56,7 @@ func (prc SignInProcessor) Process(ctx context.Context, r *http.Request, s *sess
 		return frm
 	}
 
-	link.SetUser(s, username)
+	session.SetUser(s, username)
 
 	return frm
 }

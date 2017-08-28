@@ -6,7 +6,7 @@ import (
 
 	"google.golang.org/appengine/log"
 
-	"github.com/danield21/danield-space/server/controllers/link"
+	"github.com/danield21/danield-space/server/controllers/session"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 )
@@ -26,7 +26,7 @@ func (hnd IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ses := hnd.Session.Generate(ctx, r)
 	pg := handler.NewPage()
 
-	user, signedIn := link.User(ses)
+	user, signedIn := session.User(ses)
 	if !signedIn {
 		hnd.Unauthorized.ServeHTTP(w, r)
 		return
