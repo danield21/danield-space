@@ -4,7 +4,7 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/danield21/danield-space/server/controllers/action"
+	"github.com/danield21/danield-space/server/controllers/process"
 	"github.com/danield21/danield-space/server/controllers/link"
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
@@ -57,7 +57,7 @@ func (hnd AccountCreateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
 	if frm.IsEmpty() && target != "" {
 		tUser, err := hnd.Account.Get(ctx, target)
 		if err == nil {
-			frm = action.AccountToForm(tUser)
+			frm = process.AccountToForm(tUser)
 		} else {
 			log.Warningf(ctx, "Unable to get account %s\n%v", target, err)
 		}

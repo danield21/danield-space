@@ -13,9 +13,10 @@ import (
 func New() http.Handler {
 	r := mux.NewRouter()
 	e := ProductionEnvironment{
-		GenerateTemplates: views.Get("view"),
-		Connections:       CreateRepository(),
+		Connections: CreateRepository(),
 	}
+
+	rnd := NewRenderer(views.Get("view"))
 
 	mgr := controllers.Migrator{
 		Environment: &e,
@@ -23,19 +24,19 @@ func New() http.Handler {
 
 	notFnd := status.NotFoundHandler{
 		Context:  mgr.Context(),
-		Renderer: mgr,
+		Renderer: rnd,
 		SiteInfo: e.Repository().SiteInfo(),
 	}
 
 	unauth := status.UnauthorizedHandler{
 		Context:  mgr.Context(),
-		Renderer: mgr,
+		Renderer: rnd,
 		SiteInfo: e.Repository().SiteInfo(),
 	}
 
 	controllers.AppRouter{
 		Context:  mgr.Context(),
-		Renderer: mgr,
+		Renderer: rnd,
 		SiteInfo: e.Repository().SiteInfo(),
 		About:    e.Repository().About(),
 		Article:  e.Repository().Article(),
@@ -46,7 +47,7 @@ func New() http.Handler {
 	controllers.AdminRouter{
 		Context:      mgr.Context(),
 		Session:      mgr.Session(),
-		Renderer:     mgr,
+		Renderer:     rnd,
 		SiteInfo:     e.Repository().SiteInfo(),
 		Account:      e.Repository().Account(),
 		About:        e.Repository().About(),

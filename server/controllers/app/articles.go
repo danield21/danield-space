@@ -46,7 +46,7 @@ func (hnd ArticlesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	cnt, err := hnd.Renderer.Render(ctx, "page/app/article", struct {
+	cnt, err := hnd.Renderer.Render(ctx, "page/app/articles", struct {
 		Articles []publicationList
 	}{
 		Articles: articles,

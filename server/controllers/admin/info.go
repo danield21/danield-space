@@ -4,8 +4,8 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/danield21/danield-space/server/controllers/action"
 	"github.com/danield21/danield-space/server/controllers/link"
+	"github.com/danield21/danield-space/server/controllers/process"
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
@@ -46,7 +46,7 @@ func (hnd SiteInfoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if frm.IsEmpty() {
-		frm = action.RepackSiteInfo(info)
+		frm = process.RepackSiteInfo(info)
 	}
 
 	cnt, err := hnd.Renderer.Render(ctx, "page/admin/site-info-manage", struct {
