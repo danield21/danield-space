@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/danield21/danield-space/server/controllers"
-	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/views"
 	"github.com/gorilla/mux"
 )
@@ -22,18 +21,6 @@ func New() http.Handler {
 		Environment: &e,
 	}
 
-	notFnd := status.NotFoundHandler{
-		Context:  mgr.Context(),
-		Renderer: rnd,
-		SiteInfo: e.Repository().SiteInfo(),
-	}
-
-	unauth := status.UnauthorizedHandler{
-		Context:  mgr.Context(),
-		Renderer: rnd,
-		SiteInfo: e.Repository().SiteInfo(),
-	}
-
 	controllers.AppRouter{
 		Context:  mgr.Context(),
 		Renderer: rnd,
@@ -41,20 +28,17 @@ func New() http.Handler {
 		About:    e.Repository().About(),
 		Article:  e.Repository().Article(),
 		Category: e.Repository().Category(),
-		NotFound: notFnd,
 	}.Route(r)
 
 	controllers.AdminRouter{
-		Context:      mgr.Context(),
-		Session:      mgr.Session(),
-		Renderer:     rnd,
-		SiteInfo:     e.Repository().SiteInfo(),
-		Account:      e.Repository().Account(),
-		About:        e.Repository().About(),
-		Article:      e.Repository().Article(),
-		Category:     e.Repository().Category(),
-		NotFound:     notFnd,
-		Unauthorized: unauth,
+		Context:  mgr.Context(),
+		Session:  mgr.Session(),
+		Renderer: rnd,
+		SiteInfo: e.Repository().SiteInfo(),
+		Account:  e.Repository().Account(),
+		About:    e.Repository().About(),
+		Article:  e.Repository().Article(),
+		Category: e.Repository().Category(),
 	}.Route(r.PathPrefix("/admin").Subrouter())
 
 	return r

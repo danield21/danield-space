@@ -1,10 +1,9 @@
 package controllers
 
 import (
-	"net/http"
-
 	"github.com/danield21/danield-space/server/controllers/admin"
 	"github.com/danield21/danield-space/server/controllers/process"
+	"github.com/danield21/danield-space/server/controllers/status"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/gorilla/mux"
@@ -12,20 +11,30 @@ import (
 
 //AdminRouter creates a new server instance to run
 type AdminRouter struct {
-	Context      handler.ContextGenerator
-	Session      handler.SessionGenerator
-	Renderer     handler.Renderer
-	SiteInfo     store.SiteInfoRepository
-	Account      store.AccountRepository
-	About        store.AboutRepository
-	Article      store.ArticleRepository
-	Category     store.CategoryRepository
-	NotFound     http.Handler
-	Unauthorized http.Handler
+	Context  handler.ContextGenerator
+	Session  handler.SessionGenerator
+	Renderer handler.Renderer
+	SiteInfo store.SiteInfoRepository
+	Account  store.AccountRepository
+	About    store.AboutRepository
+	Article  store.ArticleRepository
+	Category store.CategoryRepository
 }
 
 func (rtr AdminRouter) Route(r *mux.Router) {
-	r.NotFoundHandler = rtr.NotFound
+	notFnd := status.NotFoundHandler{
+		Context:  rtr.Context,
+		Renderer: rtr.Renderer,
+		SiteInfo: rtr.SiteInfo,
+	}
+
+	unauth := status.UnauthorizedHandler{
+		Context:  rtr.Context,
+		Renderer: rtr.Renderer,
+		SiteInfo: rtr.SiteInfo,
+	}
+
+	r.NotFoundHandler = notFnd
 
 	r.Handle("/", admin.IndexHandler{
 		Context:      rtr.Context,
@@ -34,7 +43,7 @@ func (rtr AdminRouter) Route(r *mux.Router) {
 		SiteInfo:     rtr.SiteInfo,
 		Article:      rtr.Article,
 		Category:     rtr.Category,
-		Unauthorized: rtr.Unauthorized,
+		Unauthorized: unauth,
 	})
 	r.Handle("/sign-in", admin.SignInHandler{
 		Context:  rtr.Context,
@@ -59,7 +68,7 @@ func (rtr AdminRouter) Route(r *mux.Router) {
 		Renderer:     rtr.Renderer,
 		SiteInfo:     rtr.SiteInfo,
 		About:        rtr.About,
-		Unauthorized: rtr.Unauthorized,
+		Unauthorized: unauth,
 		PutAbout: process.PutAboutProcessor{
 			About: rtr.About,
 		},
@@ -70,7 +79,7 @@ func (rtr AdminRouter) Route(r *mux.Router) {
 		Renderer:     rtr.Renderer,
 		SiteInfo:     rtr.SiteInfo,
 		Account:      rtr.Account,
-		Unauthorized: rtr.Unauthorized,
+		Unauthorized: unauth,
 	})
 	r.Handle("/account/create", admin.AccountCreateHandler{
 		Context:      rtr.Context,
@@ -78,7 +87,7 @@ func (rtr AdminRouter) Route(r *mux.Router) {
 		Renderer:     rtr.Renderer,
 		SiteInfo:     rtr.SiteInfo,
 		Account:      rtr.Account,
-		Unauthorized: rtr.Unauthorized,
+		Unauthorized: unauth,
 		PutAccount: process.PutAccountProcessor{
 			Account: rtr.Account,
 		},
@@ -89,7 +98,7 @@ func (rtr AdminRouter) Route(r *mux.Router) {
 		Renderer:     rtr.Renderer,
 		SiteInfo:     rtr.SiteInfo,
 		Article:      rtr.Article,
-		Unauthorized: rtr.Unauthorized,
+		Unauthorized: unauth,
 	})
 	r.Handle("/article/publish", admin.ArticlePublishHandler{
 		Context:      rtr.Context,
@@ -97,7 +106,7 @@ func (rtr AdminRouter) Route(r *mux.Router) {
 		Renderer:     rtr.Renderer,
 		SiteInfo:     rtr.SiteInfo,
 		Category:     rtr.Category,
-		Unauthorized: rtr.Unauthorized,
+		Unauthorized: unauth,
 		PutArticle: process.PutArticleProcessor{
 			Article:  rtr.Article,
 			Category: rtr.Category,
@@ -109,14 +118,14 @@ func (rtr AdminRouter) Route(r *mux.Router) {
 		Renderer:     rtr.Renderer,
 		SiteInfo:     rtr.SiteInfo,
 		Category:     rtr.Category,
-		Unauthorized: rtr.Unauthorized,
+		Unauthorized: unauth,
 	})
 	r.Handle("/category/create", admin.CategoryCreateHandler{
 		Context:      rtr.Context,
 		Session:      rtr.Session,
 		Renderer:     rtr.Renderer,
 		SiteInfo:     rtr.SiteInfo,
-		Unauthorized: rtr.Unauthorized,
+		Unauthorized: unauth,
 		PutCategory: process.PutCategoryProcessor{
 			Category: rtr.Category,
 		},
@@ -126,7 +135,7 @@ func (rtr AdminRouter) Route(r *mux.Router) {
 		Session:      rtr.Session,
 		Renderer:     rtr.Renderer,
 		SiteInfo:     rtr.SiteInfo,
-		Unauthorized: rtr.Unauthorized,
+		Unauthorized: unauth,
 		PutSiteInfo: process.PutSiteInfoProcessor{
 			SiteInfo: rtr.SiteInfo,
 		},
