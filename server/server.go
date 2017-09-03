@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/danield21/danield-space/server/controllers"
+	"github.com/danield21/danield-space/server/router"
 	"github.com/danield21/danield-space/server/views"
 	"github.com/gorilla/mux"
 )
@@ -20,7 +20,7 @@ func New() http.Handler {
 
 	rnd := views.Get("view")
 
-	controllers.AppRouter{
+	router.AppRouter{
 		Context:  context,
 		Session:  session,
 		Renderer: rnd,
@@ -30,7 +30,7 @@ func New() http.Handler {
 		Category: connections.Category,
 	}.Route(r)
 
-	controllers.AdminRouter{
+	router.AdminRouter{
 		Context:  context,
 		Session:  session,
 		Renderer: rnd,
