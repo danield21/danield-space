@@ -4,48 +4,43 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/danield21/danield-space/server/controllers/controller"
 	"github.com/danield21/danield-space/server/controllers/session"
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
+	"github.com/pkg/errors"
+	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
-type AboutHandler struct {
-	Context      handler.ContextGenerator
-	Session      handler.SessionGenerator
-	Renderer     handler.Renderer
-	SiteInfo     store.SiteInfoRepository
-	About        store.AboutRepository
-	Unauthorized http.Handler
-	PutAbout     handler.Processor
+type AboutController struct {
+	Renderer            handler.Renderer
+	SiteInfo            store.SiteInfoRepository
+	About               store.AboutRepository
+	InternalServerError controller.Controller
+	Unauthorized        controller.Controller
+	PutAbout            handler.Processor
 }
 
-func (hnd AboutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	ctx := hnd.Context.Generate(r)
-	ses := hnd.Session.Generate(ctx, r)
-	pg := handler.NewPage()
+func (ctr AboutController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
 
-	usr, signedIn := session.User(ses)
+	usr, signedIn := session.User(pg.Session)
 	if !signedIn {
-		hnd.Unauthorized.ServeHTTP(w, r)
-		return
+		log.Errorf(ctx, "%v", errors.New("user is not authenicated"))
+		return ctr.Unauthorized
 	}
 
-	info := hnd.SiteInfo.Get(ctx)
-
-	pg.Title = info.Title
-	pg.Meta["description"] = info.ShortDescription()
-	pg.Meta["author"] = info.Owner
+	info := ctr.SiteInfo.Get(ctx)
 
 	frm := form.NewForm()
 
-	if r.Method == http.MethodPost {
-		frm = hnd.PutAbout.Process(ctx, r, ses)
+	if rqs.Method == http.MethodPost {
+		frm = ctr.PutAbout.Process(ctx, rqs, pg.Session)
 	}
 
 	if frm.IsEmpty() {
-		html, err := hnd.About.Get(ctx)
+		html, err := ctr.About.Get(ctx)
 		if err == nil {
 			abtFld := new(form.Field)
 			abtFld.Values = []string{string(html)}
@@ -55,7 +50,7 @@ func (hnd AboutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	cnt, err := hnd.Renderer.Render(ctx, "page/admin/about", struct {
+	cnt, err := ctr.Renderer.Render(ctx, "page/admin/about", struct {
 		User string
 		Form form.Form
 	}{
@@ -64,12 +59,13 @@ func (hnd AboutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		log.Errorf(ctx, "admin.IndexHandler - Unable to render content\n%v", err)
-		return
+		log.Errorf(ctx, "%v", errors.Wrap(err, "unable to render content"))
 	}
 
+	pg.Title = info.Title
+	pg.Meta["description"] = info.ShortDescription()
+	pg.Meta["author"] = info.Owner
 	pg.Content = template.HTML(cnt)
 
-	ses.Save(r, w)
-	hnd.Renderer.Send(w, r, pg)
+	return nil
 }

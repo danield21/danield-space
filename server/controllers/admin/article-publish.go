@@ -4,36 +4,36 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/danield21/danield-space/server/form"
+	"google.golang.org/appengine/log"
 
+	"golang.org/x/net/context"
+
+	"github.com/danield21/danield-space/server/form"
+	"github.com/pkg/errors"
+
+	"github.com/danield21/danield-space/server/controllers/controller"
 	"github.com/danield21/danield-space/server/controllers/session"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
-	"google.golang.org/appengine/log"
 )
 
-type ArticlePublishHandler struct {
-	Context      handler.ContextGenerator
-	Session      handler.SessionGenerator
-	Renderer     handler.Renderer
-	SiteInfo     store.SiteInfoRepository
-	Category     store.CategoryRepository
-	Unauthorized http.Handler
-	PutArticle   handler.Processor
+type ArticlePublishController struct {
+	Renderer            handler.Renderer
+	SiteInfo            store.SiteInfoRepository
+	Category            store.CategoryRepository
+	Unauthorized        controller.Controller
+	PutArticle          handler.Processor
+	InternalServerError controller.Controller
 }
 
-func (hnd ArticlePublishHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	ctx := hnd.Context.Generate(r)
-	ses := hnd.Session.Generate(ctx, r)
-	pg := handler.NewPage()
+func (ctr ArticlePublishController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
 
-	usr, signedIn := session.User(ses)
+	usr, signedIn := session.User(pg.Session)
 	if !signedIn {
-		hnd.Unauthorized.ServeHTTP(w, r)
-		return
+		return ctr.Unauthorized
 	}
 
-	info := hnd.SiteInfo.Get(ctx)
+	info := ctr.SiteInfo.Get(ctx)
 
 	pg.Title = info.Title
 	pg.Meta["description"] = info.ShortDescription()
@@ -41,16 +41,17 @@ func (hnd ArticlePublishHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 
 	frm := form.NewForm()
 
-	if r.Method == http.MethodPost {
-		frm = hnd.PutArticle.Process(ctx, r, ses)
+	if rqs.Method == http.MethodPost {
+		frm = ctr.PutArticle.Process(ctx, rqs, pg.Session)
 	}
 
-	cats, err := hnd.Category.GetAll(ctx)
+	cats, err := ctr.Category.GetAll(ctx)
 	if err != nil {
-		log.Warningf(ctx, "admin.Publish - Unable to get types of articles\n%v", err)
+		log.Errorf(ctx, "%v", errors.Wrap(err, "unable to get article categories"))
+		return ctr.InternalServerError
 	}
 
-	cnt, err := hnd.Renderer.Render(ctx, "page/admin/article-publish", struct {
+	cnt, err := ctr.Renderer.Render(ctx, "page/admin/article-publish", struct {
 		User       string
 		Form       form.Form
 		Categories []*store.Category
@@ -61,12 +62,11 @@ func (hnd ArticlePublishHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	})
 
 	if err != nil {
-		log.Errorf(ctx, "admin.ArticleAllHandler - Unable to render content\n%v", err)
-		return
+		log.Errorf(ctx, "%v", errors.Wrap(err, "unable to render content"))
+		return ctr.InternalServerError
 	}
 
 	pg.Content = template.HTML(cnt)
 
-	ses.Save(r, w)
-	hnd.Renderer.Send(w, r, pg)
+	return nil
 }

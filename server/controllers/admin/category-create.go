@@ -4,46 +4,42 @@ import (
 	"html/template"
 	"net/http"
 
+	"google.golang.org/appengine/log"
+
+	"golang.org/x/net/context"
+
+	"github.com/danield21/danield-space/server/controllers/controller"
 	"github.com/danield21/danield-space/server/controllers/session"
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
-	"google.golang.org/appengine/log"
+	"github.com/pkg/errors"
 )
 
-type CategoryCreateHandler struct {
-	Context      handler.ContextGenerator
-	Session      handler.SessionGenerator
-	Renderer     handler.Renderer
-	SiteInfo     store.SiteInfoRepository
-	Unauthorized http.Handler
-	PutCategory  handler.Processor
+type CategoryCreateController struct {
+	Renderer            handler.Renderer
+	SiteInfo            store.SiteInfoRepository
+	Unauthorized        controller.Controller
+	InternalServerError controller.Controller
+	PutCategory         handler.Processor
 }
 
-func (hnd CategoryCreateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	ctx := hnd.Context.Generate(r)
-	ses := hnd.Session.Generate(ctx, r)
-	pg := handler.NewPage()
+func (ctr CategoryCreateController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
 
-	usr, signedIn := session.User(ses)
+	usr, signedIn := session.User(pg.Session)
 	if !signedIn {
-		hnd.Unauthorized.ServeHTTP(w, r)
-		return
+		return ctr.Unauthorized
 	}
 
-	info := hnd.SiteInfo.Get(ctx)
-
-	pg.Title = info.Title
-	pg.Meta["description"] = info.ShortDescription()
-	pg.Meta["author"] = info.Owner
+	info := ctr.SiteInfo.Get(ctx)
 
 	frm := form.NewForm()
 
-	if r.Method == http.MethodPost {
-		frm = hnd.PutCategory.Process(ctx, r, ses)
+	if rqs.Method == http.MethodPost {
+		frm = ctr.PutCategory.Process(ctx, rqs, pg.Session)
 	}
 
-	cnt, err := hnd.Renderer.Render(ctx, "page/admin/category-create", struct {
+	cnt, err := ctr.Renderer.Render(ctx, "page/admin/category-create", struct {
 		User string
 		Form form.Form
 	}{
@@ -52,12 +48,14 @@ func (hnd CategoryCreateHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	})
 
 	if err != nil {
-		log.Errorf(ctx, "admin.ArticleAllHandler - Unable to render content\n%v", err)
-		return
+		log.Errorf(ctx, "%v", errors.Wrap(err, "unable to render content"))
+		return ctr.InternalServerError
 	}
 
+	pg.Title = info.Title
+	pg.Meta["description"] = info.ShortDescription()
+	pg.Meta["author"] = info.Owner
 	pg.Content = template.HTML(cnt)
 
-	ses.Save(r, w)
-	hnd.Renderer.Send(w, r, pg)
+	return nil
 }

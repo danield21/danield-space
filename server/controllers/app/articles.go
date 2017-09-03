@@ -4,9 +4,14 @@ import (
 	"html/template"
 	"net/http"
 
+	"google.golang.org/appengine/log"
+
+	"golang.org/x/net/context"
+
+	"github.com/danield21/danield-space/server/controllers/controller"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
-	"google.golang.org/appengine/log"
+	"github.com/pkg/errors"
 )
 
 type publicationList struct {
@@ -14,27 +19,21 @@ type publicationList struct {
 	Articles []*store.Article
 }
 
-type ArticlesHandler struct {
-	Context  handler.ContextGenerator
-	Renderer handler.Renderer
-	SiteInfo store.SiteInfoRepository
-	Article  store.ArticleRepository
+type ArticlesController struct {
+	Renderer            handler.Renderer
+	SiteInfo            store.SiteInfoRepository
+	Article             store.ArticleRepository
+	InternalServerError controller.Controller
 }
 
-func (hnd ArticlesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	ctx := hnd.Context.Generate(r)
-	pg := handler.NewPage()
+func (ctr ArticlesController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
+	info := ctr.SiteInfo.Get(ctx)
 
-	info := hnd.SiteInfo.Get(ctx)
-
-	pg.Title = info.Title
-	pg.Meta["description"] = info.ShortDescription()
-	pg.Meta["author"] = info.Owner
-
-	articleMap, err := hnd.Article.GetMapKeyedByCategory(ctx, 10)
+	articleMap, err := ctr.Article.GetMapKeyedByCategory(ctx, 3)
 
 	if err != nil {
-		log.Errorf(ctx, "app.ArticlesHandler - Unable to get articles organized by their type\n%v", err)
+		log.Errorf(ctx, "%v", errors.Wrap(err, "unable to get articles organized by their type"))
+		return ctr.InternalServerError
 	}
 
 	var articles []publicationList
@@ -46,18 +45,21 @@ func (hnd ArticlesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	cnt, err := hnd.Renderer.Render(ctx, "page/app/articles", struct {
+	cnt, err := ctr.Renderer.Render(ctx, "page/app/articles", struct {
 		Articles []publicationList
 	}{
 		Articles: articles,
 	})
 
 	if err != nil {
-		log.Errorf(ctx, "app.ArticlesHandler - Unable to render content\n%v", err)
-		return
+		log.Errorf(ctx, "%v", errors.Wrap(err, "unable to render content"))
+		return ctr.InternalServerError
 	}
 
+	pg.Title = info.Title
+	pg.Meta["description"] = info.ShortDescription()
+	pg.Meta["author"] = info.Owner
 	pg.Content = template.HTML(cnt)
 
-	hnd.Renderer.Send(w, r, pg)
+	return nil
 }

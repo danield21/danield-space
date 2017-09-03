@@ -4,47 +4,42 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/danield21/danield-space/server/controllers/controller"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
+	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
-type ArticleCategoryHandler struct {
-	Context  handler.ContextGenerator
-	Renderer handler.Renderer
-	NotFound http.Handler
-	SiteInfo store.SiteInfoRepository
-	Article  store.ArticleRepository
-	Category store.CategoryRepository
+type ArticleCategoryController struct {
+	Renderer            handler.Renderer
+	SiteInfo            store.SiteInfoRepository
+	Article             store.ArticleRepository
+	Category            store.CategoryRepository
+	InternalServerError controller.Controller
+	NotFound            controller.Controller
 }
 
-func (hnd ArticleCategoryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
+func (ctr ArticleCategoryController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
+	vars := mux.Vars(rqs)
 
-	ctx := hnd.Context.Generate(r)
-	pg := handler.NewPage()
+	info := ctr.SiteInfo.Get(ctx)
 
-	info := hnd.SiteInfo.Get(ctx)
-
-	pg.Title = info.Title
-	pg.Meta["description"] = info.ShortDescription()
-	pg.Meta["author"] = info.Owner
-
-	cat, err := hnd.Category.Get(ctx, vars["category"])
+	cat, err := ctr.Category.Get(ctx, vars["category"])
 	if err != nil {
 		log.Errorf(ctx, "app.ArticleCategoryHandler - Unable to get category %s\n%v", vars["category"], err)
-		hnd.NotFound.ServeHTTP(w, r)
-		return
+		return ctr.NotFound
 	}
 
-	arts, err := hnd.Article.GetAllByCategory(ctx, cat, 1)
+	arts, err := ctr.Article.GetAllByCategory(ctx, cat, 10)
 	if err != nil {
-		log.Errorf(ctx, "app.ArticleCategoryHandler - Unable to get articles by category %s\n%v", cat.Title, err)
-		return
+		log.Errorf(ctx, "app.ArticleCategoryHandler - Unable to get articles by category %s\n%v", vars["category"], err)
+		return ctr.NotFound
 	}
 
-	cnt, err := hnd.Renderer.Render(ctx, "page/app/article", struct {
+	cnt, err := ctr.Renderer.Render(ctx, "page/app/article", struct {
 		Articles []*store.Article
 		Category *store.Category
 	}{
@@ -53,11 +48,14 @@ func (hnd ArticleCategoryHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	})
 
 	if err != nil {
-		log.Errorf(ctx, "app.ArticleCategoryHandler - Unable to render content\n%v", err)
-		return
+		log.Errorf(ctx, "%v", errors.Wrap(err, "unable to render content"))
+		return ctr.InternalServerError
 	}
 
+	pg.Title = info.Title
+	pg.Meta["description"] = info.ShortDescription()
+	pg.Meta["author"] = info.Owner
 	pg.Content = template.HTML(cnt)
 
-	hnd.Renderer.Send(w, r, pg)
+	return nil
 }

@@ -4,56 +4,52 @@ import (
 	"html/template"
 	"net/http"
 
+	"google.golang.org/appengine/log"
+
+	"github.com/danield21/danield-space/server/controllers/controller"
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
-	"google.golang.org/appengine/log"
+	"github.com/pkg/errors"
+	"golang.org/x/net/context"
 )
 
-type SignInHandler struct {
-	Context  handler.ContextGenerator
-	Session  handler.SessionGenerator
-	Renderer handler.Renderer
-	SiteInfo store.SiteInfoRepository
-	Account  store.AccountRepository
-	SignIn   handler.Processor
+type SignInController struct {
+	Renderer            handler.Renderer
+	SiteInfo            store.SiteInfoRepository
+	Account             store.AccountRepository
+	SignIn              handler.Processor
+	InternalServerError controller.Controller
 }
 
-func (hnd SignInHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	ctx := hnd.Context.Generate(r)
-	ses := hnd.Session.Generate(ctx, r)
-	pg := handler.NewPage()
-
-	info := hnd.SiteInfo.Get(ctx)
-
-	pg.Title = info.Title
-	pg.Meta["description"] = info.ShortDescription()
-	pg.Meta["author"] = info.Owner
+func (ctr SignInController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
+	info := ctr.SiteInfo.Get(ctx)
 
 	var frm form.Form
 
-	if r.Method == http.MethodPost {
-		frm = hnd.SignIn.Process(ctx, r, ses)
+	if rqs.Method == http.MethodPost {
+		frm = ctr.SignIn.Process(ctx, rqs, pg.Session)
 	}
 
-	if frm.IsSuccessful() {
-		pg.Status = http.StatusSeeOther
-		pg.Header["Location"] = "."
-	}
-
-	cnt, err := hnd.Renderer.Render(ctx, "page/admin/sign-in", struct {
+	cnt, err := ctr.Renderer.Render(ctx, "page/admin/sign-in", struct {
 		Form form.Form
 	}{
 		frm,
 	})
 
 	if err != nil {
-		log.Errorf(ctx, "admin.SignInHandler - Unable to render content\n%v", err)
-		return
+		log.Errorf(ctx, "%v", errors.Wrap(err, "unable to render content"))
+		return ctr.InternalServerError
 	}
 
+	if frm.IsSuccessful() {
+		pg.Status = http.StatusSeeOther
+		pg.Header["Location"] = "."
+	}
+	pg.Title = info.Title
+	pg.Meta["description"] = info.ShortDescription()
+	pg.Meta["author"] = info.Owner
 	pg.Content = template.HTML(cnt)
 
-	ses.Save(r, w)
-	hnd.Renderer.Send(w, r, pg)
+	return nil
 }

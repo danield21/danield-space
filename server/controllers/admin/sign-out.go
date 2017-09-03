@@ -6,45 +6,40 @@ import (
 
 	"google.golang.org/appengine/log"
 
+	"github.com/danield21/danield-space/server/controllers/controller"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
+	"github.com/pkg/errors"
+	"golang.org/x/net/context"
 )
 
-type SignOutHandler struct {
-	Context  handler.ContextGenerator
-	Session  handler.SessionGenerator
-	Renderer handler.Renderer
-	SiteInfo store.SiteInfoRepository
-	SignOut  handler.Processor
+type SignOutController struct {
+	Renderer            handler.Renderer
+	SiteInfo            store.SiteInfoRepository
+	SignOut             handler.Processor
+	InternalServerError controller.Controller
 }
 
-func (hnd SignOutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	ctx := hnd.Context.Generate(r)
-	ses := hnd.Session.Generate(ctx, r)
-	pg := handler.NewPage()
+func (ctr SignOutController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
+	info := ctr.SiteInfo.Get(ctx)
 
-	info := hnd.SiteInfo.Get(ctx)
-
-	pg.Title = info.Title
-	pg.Meta["description"] = info.ShortDescription()
-	pg.Meta["author"] = info.Owner
-
-	if r.Method == http.MethodPost {
-		hnd.SignOut.Process(ctx, r, ses)
+	if rqs.Method == http.MethodPost {
+		ctr.SignOut.Process(ctx, rqs, pg.Session)
 	}
 
-	pg.Status = http.StatusSeeOther
-	pg.Header["Location"] = "/"
-
-	cnt, err := hnd.Renderer.Render(ctx, "page/admin/sign-out", nil)
+	cnt, err := ctr.Renderer.Render(ctx, "page/admin/sign-out", nil)
 
 	if err != nil {
-		log.Errorf(ctx, "admin.SignInHandler - Unable to render content\n%v", err)
-		return
+		log.Errorf(ctx, "%v", errors.Wrap(err, "unable to render content"))
+		return ctr.InternalServerError
 	}
 
+	pg.Title = info.Title
+	pg.Status = http.StatusSeeOther
+	pg.Header["Location"] = "/"
+	pg.Meta["description"] = info.ShortDescription()
+	pg.Meta["author"] = info.Owner
 	pg.Content = template.HTML(cnt)
 
-	ses.Save(r, w)
-	hnd.Renderer.Send(w, r, pg)
+	return nil
 }

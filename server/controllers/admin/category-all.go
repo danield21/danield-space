@@ -4,45 +4,41 @@ import (
 	"html/template"
 	"net/http"
 
+	"golang.org/x/net/context"
+
 	"google.golang.org/appengine/log"
 
+	"github.com/danield21/danield-space/server/controllers/controller"
 	"github.com/danield21/danield-space/server/controllers/session"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
+	"github.com/pkg/errors"
 )
 
-type CategoryAllHandler struct {
-	Context      handler.ContextGenerator
-	Session      handler.SessionGenerator
-	Renderer     handler.Renderer
-	SiteInfo     store.SiteInfoRepository
-	Category     store.CategoryRepository
-	Unauthorized http.Handler
+type CategoryAllController struct {
+	Renderer            handler.Renderer
+	SiteInfo            store.SiteInfoRepository
+	Category            store.CategoryRepository
+	Unauthorized        controller.Controller
+	InternalServerError controller.Controller
 }
 
-func (hnd CategoryAllHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	ctx := hnd.Context.Generate(r)
-	ses := hnd.Session.Generate(ctx, r)
-	pg := handler.NewPage()
+func (ctr CategoryAllController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
 
-	usr, signedIn := session.User(ses)
+	usr, signedIn := session.User(pg.Session)
 	if !signedIn {
-		hnd.Unauthorized.ServeHTTP(w, r)
-		return
+		return ctr.Unauthorized
 	}
 
-	info := hnd.SiteInfo.Get(ctx)
+	info := ctr.SiteInfo.Get(ctx)
 
-	pg.Title = info.Title
-	pg.Meta["description"] = info.ShortDescription()
-	pg.Meta["author"] = info.Owner
-
-	cats, err := hnd.Category.GetAll(ctx)
+	cats, err := ctr.Category.GetAll(ctx)
 	if err != nil {
-		log.Errorf(ctx, "admin.CategoryAllHandler - Unable to get all categories\n%v", err)
+		log.Errorf(ctx, "%v", errors.Wrap(err, "unable to get all categories"))
+		return ctr.InternalServerError
 	}
 
-	cnt, err := hnd.Renderer.Render(ctx, "page/admin/category-all", struct {
+	cnt, err := ctr.Renderer.Render(ctx, "page/admin/category-all", struct {
 		User       string
 		Categories []*store.Category
 	}{
@@ -51,12 +47,14 @@ func (hnd CategoryAllHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	})
 
 	if err != nil {
-		log.Errorf(ctx, "admin.CategoryAllHandler - Unable to render content\n%v", err)
-		return
+		log.Errorf(ctx, "%v", errors.Wrap(err, "unable to render content"))
+		return ctr.InternalServerError
 	}
 
+	pg.Title = info.Title
+	pg.Meta["description"] = info.ShortDescription()
+	pg.Meta["author"] = info.Owner
 	pg.Content = template.HTML(cnt)
 
-	ses.Save(r, w)
-	hnd.Renderer.Send(w, r, pg)
+	return nil
 }

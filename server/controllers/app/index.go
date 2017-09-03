@@ -4,34 +4,30 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/danield21/danield-space/server/controllers/controller"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
+	"github.com/pkg/errors"
+	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
-type IndexHandler struct {
-	Context  handler.ContextGenerator
-	Renderer handler.Renderer
-	SiteInfo store.SiteInfoRepository
-	Article  store.ArticleRepository
+type IndexController struct {
+	Renderer            handler.Renderer
+	SiteInfo            store.SiteInfoRepository
+	Article             store.ArticleRepository
+	InternalServerError controller.Controller
 }
 
-func (hnd IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	ctx := hnd.Context.Generate(r)
-	pg := handler.NewPage()
+func (ctr IndexController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
+	info := ctr.SiteInfo.Get(ctx)
 
-	info := hnd.SiteInfo.Get(ctx)
-
-	pg.Title = info.Title
-	pg.Meta["description"] = info.ShortDescription()
-	pg.Meta["author"] = info.Owner
-
-	a, err := hnd.Article.GetAll(ctx, 10)
+	a, err := ctr.Article.GetAll(ctx, 10)
 	if err != nil {
 		log.Errorf(ctx, "app.IndexHandler - Unable to get last 10 articles\n%v", err)
 	}
 
-	cnt, err := hnd.Renderer.Render(ctx, "page/app/index", struct {
+	cnt, err := ctr.Renderer.Render(ctx, "page/app/index", struct {
 		Articles    []*store.Article
 		Description string
 	}{
@@ -40,11 +36,14 @@ func (hnd IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		log.Errorf(ctx, "app.IndexHandler - Unable to render content\n%v", err)
-		return
+		log.Errorf(ctx, "%v", errors.Wrap(err, "unable to render content"))
+		return ctr.InternalServerError
 	}
 
+	pg.Title = info.Title
+	pg.Meta["description"] = info.ShortDescription()
+	pg.Meta["author"] = info.Owner
 	pg.Content = template.HTML(cnt)
 
-	hnd.Renderer.Send(w, r, pg)
+	return nil
 }

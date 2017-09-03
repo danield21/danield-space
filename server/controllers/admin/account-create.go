@@ -4,44 +4,41 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/danield21/danield-space/server/controllers/session"
+	"github.com/danield21/danield-space/server/controllers/controller"
 	"github.com/danield21/danield-space/server/controllers/process"
+	"github.com/danield21/danield-space/server/controllers/session"
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
+	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
-type AccountCreateHandler struct {
-	Context      handler.ContextGenerator
-	Session      handler.SessionGenerator
-	Renderer     handler.Renderer
-	SiteInfo     store.SiteInfoRepository
-	Account      store.AccountRepository
-	Unauthorized http.Handler
-	PutAccount   handler.Processor
+type AccountCreateController struct {
+	Renderer            handler.Renderer
+	SiteInfo            store.SiteInfoRepository
+	Account             store.AccountRepository
+	Unauthorized        controller.Controller
+	InternalServerError controller.Controller
+	PutAccount          handler.Processor
 }
 
-func (hnd AccountCreateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	ctx := hnd.Context.Generate(r)
-	ses := hnd.Session.Generate(ctx, r)
-	pg := handler.NewPage()
-	r.ParseForm()
+func (ctr AccountCreateController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
 
-	usr, signedIn := session.User(ses)
+	rqs.ParseForm()
+
+	usr, signedIn := session.User(pg.Session)
 	if !signedIn {
-		hnd.Unauthorized.ServeHTTP(w, r)
-		return
+		return ctr.Unauthorized
 	}
 
-	current, err := hnd.Account.Get(ctx, usr)
+	current, err := ctr.Account.Get(ctx, usr)
 	if err != nil {
 		log.Warningf(ctx, "admin.AccountAllHandler - Unable to verify account %s\n%v", usr, err)
-		hnd.Unauthorized.ServeHTTP(w, r)
-		return
+		return ctr.Unauthorized
 	}
 
-	info := hnd.SiteInfo.Get(ctx)
+	info := ctr.SiteInfo.Get(ctx)
 
 	pg.Title = info.Title
 	pg.Meta["description"] = info.ShortDescription()
@@ -49,13 +46,13 @@ func (hnd AccountCreateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
 
 	frm := form.NewForm()
 
-	if r.Method == http.MethodPost {
-		frm = hnd.PutAccount.Process(ctx, r, ses)
+	if rqs.Method == http.MethodPost {
+		frm = ctr.PutAccount.Process(ctx, rqs, pg.Session)
 	}
 
-	target := r.Form.Get("account")
+	target := rqs.Form.Get("account")
 	if frm.IsEmpty() && target != "" {
-		tUser, err := hnd.Account.Get(ctx, target)
+		tUser, err := ctr.Account.Get(ctx, target)
 		if err == nil {
 			frm = process.AccountToForm(tUser)
 		} else {
@@ -63,7 +60,7 @@ func (hnd AccountCreateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
 		}
 	}
 
-	cnt, err := hnd.Renderer.Render(ctx, "page/admin/account-create", struct {
+	cnt, err := ctr.Renderer.Render(ctx, "page/admin/account-create", struct {
 		User  string
 		Form  form.Form
 		Super bool
@@ -75,11 +72,10 @@ func (hnd AccountCreateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
 
 	if err != nil {
 		log.Errorf(ctx, "admin.AccountAllHandler - Unable to render content\n%v", err)
-		return
+		return ctr.InternalServerError
 	}
 
 	pg.Content = template.HTML(cnt)
 
-	ses.Save(r, w)
-	hnd.Renderer.Send(w, r, pg)
+	return nil
 }

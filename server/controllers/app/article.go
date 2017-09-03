@@ -4,54 +4,53 @@ import (
 	"html/template"
 	"net/http"
 
+	"golang.org/x/net/context"
+
+	"github.com/danield21/danield-space/server/controllers/controller"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
 	"google.golang.org/appengine/log"
 )
 
-type ArticleHandler struct {
-	Context  handler.ContextGenerator
-	Renderer handler.Renderer
-	NotFound http.Handler
-	SiteInfo store.SiteInfoRepository
-	Article  store.ArticleRepository
+type ArticleController struct {
+	Renderer            handler.Renderer
+	NotFound            controller.Controller
+	SiteInfo            store.SiteInfoRepository
+	Article             store.ArticleRepository
+	InternalServerError controller.Controller
 }
 
-func (hnd ArticleHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
+func (ctr ArticleController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
+	vars := mux.Vars(rqs)
 
-	ctx := hnd.Context.Generate(r)
-	pg := handler.NewPage()
-
-	info := hnd.SiteInfo.Get(ctx)
-
-	pg.Title = info.Title
-	pg.Meta["description"] = info.ShortDescription()
-	pg.Meta["author"] = info.Owner
+	info := ctr.SiteInfo.Get(ctx)
 
 	cat := store.NewEmptyCategory(vars["category"])
 
-	art, err := hnd.Article.Get(ctx, cat, vars["key"])
+	art, err := ctr.Article.Get(ctx, cat, vars["key"])
 
 	if err != nil {
 		log.Errorf(ctx, "app.ArticleHandler - Unable to get articles by type\n%v", err)
-		hnd.NotFound.ServeHTTP(w, r)
-		return
+		return ctr.NotFound
 	}
 
-	cnt, err := hnd.Renderer.Render(ctx, "page/app/article", struct {
+	cnt, err := ctr.Renderer.Render(ctx, "page/app/article", struct {
 		Article *store.Article
 	}{
 		art,
 	})
 
 	if err != nil {
-		log.Errorf(ctx, "app.ArticleHandler - Unable to render content\n%v", err)
-		return
+		log.Errorf(ctx, "%v", errors.Wrap(err, "unable to render content"))
+		return ctr.InternalServerError
 	}
 
+	pg.Title = info.Title
+	pg.Meta["description"] = info.ShortDescription()
+	pg.Meta["author"] = info.Owner
 	pg.Content = template.HTML(cnt)
 
-	hnd.Renderer.Send(w, r, pg)
+	return nil
 }

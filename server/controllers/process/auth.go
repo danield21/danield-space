@@ -61,16 +61,6 @@ func (prc SignInProcessor) Process(ctx context.Context, r *http.Request, s *sess
 	return frm
 }
 
-func UnauthenicateLink(h handler.Handler) handler.Handler {
-	return func(ctx context.Context, e handler.Environment, w http.ResponseWriter) (context.Context, error) {
-		s := handler.Session(ctx)
-		for key := range s.Values {
-			delete(s.Values, key)
-		}
-		return h(ctx, e, w)
-	}
-}
-
 var SignOutProcessor handler.ProcessorFunc = func(ctx context.Context, r *http.Request, s *sessions.Session) form.Form {
 	for key := range s.Values {
 		delete(s.Values, key)

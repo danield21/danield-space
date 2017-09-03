@@ -4,37 +4,37 @@ import (
 	"html/template"
 	"net/http"
 
+	"google.golang.org/appengine/log"
+
+	"github.com/danield21/danield-space/server/controllers/controller"
 	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
-	"google.golang.org/appengine/log"
+	"github.com/pkg/errors"
+	"golang.org/x/net/context"
 )
 
-type NotFoundHandler struct {
-	Context  handler.ContextGenerator
-	Renderer handler.Renderer
-	SiteInfo store.SiteInfoRepository
-	About    store.AboutRepository
+type NotFoundController struct {
+	Renderer            handler.Renderer
+	SiteInfo            store.SiteInfoRepository
+	InternalServerError controller.Controller
 }
 
-func (hnd NotFoundHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	ctx := hnd.Context.Generate(r)
-	pg := handler.NewPage()
+func (ctr NotFoundController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
+	info := ctr.SiteInfo.Get(ctx)
 
-	info := hnd.SiteInfo.Get(ctx)
+	cnt, err := ctr.Renderer.Render(ctx, "page/status/not-found", nil)
+
+	if err != nil {
+		log.Errorf(ctx, "%v", errors.Wrap(err, "unable to render content"))
+		return ctr.InternalServerError
+	}
 
 	pg.Title = info.Title
 	pg.Meta["description"] = info.ShortDescription()
 	pg.Meta["author"] = info.Owner
 
-	cnt, err := hnd.Renderer.Render(ctx, "page/status/not-found", nil)
-
-	if err != nil {
-		log.Errorf(ctx, "status.NotFound - Unable to render content\n%v", err)
-		return
-	}
-
 	pg.Status = http.StatusNotFound
 	pg.Content = template.HTML(cnt)
 
-	hnd.Renderer.Send(w, r, pg)
+	return nil
 }

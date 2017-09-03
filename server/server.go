@@ -23,6 +23,7 @@ func New() http.Handler {
 
 	controllers.AppRouter{
 		Context:  mgr.Context(),
+		Session:  mgr.Session(),
 		Renderer: rnd,
 		SiteInfo: e.Repository().SiteInfo(),
 		About:    e.Repository().About(),
