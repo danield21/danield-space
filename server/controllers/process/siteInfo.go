@@ -6,7 +6,6 @@ import (
 	"net/url"
 
 	"github.com/danield21/danield-space/server/form"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/gorilla/sessions"
 	"golang.org/x/net/context"
@@ -74,14 +73,13 @@ type PutSiteInfoProcessor struct {
 	SiteInfo store.SiteInfoRepository
 }
 
-func (prc PutSiteInfoProcessor) Process(ctx context.Context, req *http.Request, ses *sessions.Session) form.Form {
-	r := handler.Request(ctx)
-	err := r.ParseForm()
+func (prc PutSiteInfoProcessor) Process(ctx context.Context, rqs *http.Request, ses *sessions.Session) form.Form {
+	err := rqs.ParseForm()
 	if err != nil {
 		return form.NewErrorForm(errors.New("Unable to parse form"))
 	}
 
-	info, frm := UnpackSiteInfo(ctx, r.Form)
+	info, frm := UnpackSiteInfo(ctx, rqs.Form)
 	if info == nil {
 		return frm
 	}

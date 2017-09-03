@@ -11,35 +11,33 @@ import (
 //New creates a new server instance to run
 func New() http.Handler {
 	r := mux.NewRouter()
-	e := ProductionEnvironment{
-		Connections: CreateRepository(),
+
+	connections := CreateRepository()
+	session := SessionGenerator{
+		connections.Session,
 	}
 
 	rnd := NewRenderer(views.Get("view"))
 
-	mgr := controllers.Migrator{
-		Environment: &e,
-	}
-
 	controllers.AppRouter{
-		Context:  mgr.Context(),
-		Session:  mgr.Session(),
+		Context:  ContextGenerater,
+		Session:  session,
 		Renderer: rnd,
-		SiteInfo: e.Repository().SiteInfo(),
-		About:    e.Repository().About(),
-		Article:  e.Repository().Article(),
-		Category: e.Repository().Category(),
+		SiteInfo: connections.SiteInfo,
+		About:    connections.About,
+		Article:  connections.Article,
+		Category: connections.Category,
 	}.Route(r)
 
 	controllers.AdminRouter{
-		Context:  mgr.Context(),
-		Session:  mgr.Session(),
+		Context:  ContextGenerater,
+		Session:  session,
 		Renderer: rnd,
-		SiteInfo: e.Repository().SiteInfo(),
-		Account:  e.Repository().Account(),
-		About:    e.Repository().About(),
-		Article:  e.Repository().Article(),
-		Category: e.Repository().Category(),
+		SiteInfo: connections.SiteInfo,
+		Account:  connections.Account,
+		About:    connections.About,
+		Article:  connections.Article,
+		Category: connections.Category,
 	}.Route(r.PathPrefix("/admin").Subrouter())
 
 	return r

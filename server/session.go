@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
@@ -17,12 +16,16 @@ var sessionStore sessions.Store
 
 var ErrCreateSession = errors.New("Unable to create session")
 
+type SessionGenerator struct {
+	Session store.SessionRepository
+}
+
 //GetSession returns a session using a secure key
-func GetSession(ctx context.Context, e handler.Environment, r *http.Request) *sessions.Session {
+func (gen SessionGenerator) Generate(ctx context.Context, r *http.Request) *sessions.Session {
 	var err error
 
 	if sessionStore == nil {
-		sessionStore, err = NewStore(ctx, e)
+		sessionStore, err = gen.newStore(ctx)
 		if err != nil {
 			return nil
 		}
@@ -35,16 +38,16 @@ func GetSession(ctx context.Context, e handler.Environment, r *http.Request) *se
 	return session
 }
 
-func NewStore(ctx context.Context, e handler.Environment) (sessions.Store, error) {
+func (gen SessionGenerator) newStore(ctx context.Context) (sessions.Store, error) {
 	var kytes [][]byte
-	keys, _ := e.Repository().Session().GetAllSince(ctx, time.Now().AddDate(0, 0, -3))
+	keys, _ := gen.Session.GetAllSince(ctx, time.Now().AddDate(0, 0, -3))
 
 	if len(keys) == 0 {
-		key, err := NewKeys()
+		key, err := gen.newKeys()
 		if err != nil {
 			return nil, err
 		}
-		e.Repository().Session().Put(ctx, key)
+		gen.Session.Put(ctx, key)
 		keys = append(keys, key)
 	}
 
@@ -60,7 +63,7 @@ func NewStore(ctx context.Context, e handler.Environment) (sessions.Store, error
 	return s, nil
 }
 
-func NewKeys() (*store.SessionKey, error) {
+func (gen SessionGenerator) newKeys() (*store.SessionKey, error) {
 	hash := securecookie.GenerateRandomKey(64)
 	block := securecookie.GenerateRandomKey(32)
 
