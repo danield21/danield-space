@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/danield21/danield-space/server/controllers/controller"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
@@ -13,13 +12,13 @@ import (
 )
 
 type IndexController struct {
-	Renderer            handler.Renderer
+	Renderer            Renderer
 	SiteInfo            store.SiteInfoRepository
 	Article             store.ArticleRepository
 	InternalServerError controller.Controller
 }
 
-func (ctr IndexController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
+func (ctr IndexController) Serve(ctx context.Context, pg *controller.Page, rqs *http.Request) controller.Controller {
 	info := ctr.SiteInfo.Get(ctx)
 
 	a, err := ctr.Article.GetAll(ctx, 10)
@@ -27,7 +26,7 @@ func (ctr IndexController) Serve(ctx context.Context, pg *handler.Page, rqs *htt
 		log.Errorf(ctx, "app.IndexHandler - Unable to get last 10 articles\n%v", err)
 	}
 
-	cnt, err := ctr.Renderer.Render(ctx, "page/app/index", struct {
+	cnt, err := ctr.Renderer.String("page/app/index", struct {
 		Articles    []*store.Article
 		Description string
 	}{

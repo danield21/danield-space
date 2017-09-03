@@ -16,11 +16,12 @@ func New() http.Handler {
 	session := SessionGenerator{
 		connections.Session,
 	}
+	context := ContextGenerater{}
 
-	rnd := NewRenderer(views.Get("view"))
+	rnd := views.Get("view")
 
 	controllers.AppRouter{
-		Context:  ContextGenerater,
+		Context:  context,
 		Session:  session,
 		Renderer: rnd,
 		SiteInfo: connections.SiteInfo,
@@ -30,7 +31,7 @@ func New() http.Handler {
 	}.Route(r)
 
 	controllers.AdminRouter{
-		Context:  ContextGenerater,
+		Context:  context,
 		Session:  session,
 		Renderer: rnd,
 		SiteInfo: connections.SiteInfo,

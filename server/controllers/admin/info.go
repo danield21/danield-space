@@ -8,7 +8,6 @@ import (
 	"github.com/danield21/danield-space/server/controllers/process"
 	"github.com/danield21/danield-space/server/controllers/session"
 	"github.com/danield21/danield-space/server/form"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
@@ -16,15 +15,15 @@ import (
 )
 
 type SiteInfoController struct {
-	Renderer            handler.Renderer
+	Renderer            Renderer
 	SiteInfo            store.SiteInfoRepository
 	About               store.AboutRepository
 	Unauthorized        controller.Controller
 	InternalServerError controller.Controller
-	PutSiteInfo         handler.Processor
+	PutSiteInfo         Processor
 }
 
-func (ctr SiteInfoController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
+func (ctr SiteInfoController) Serve(ctx context.Context, pg *controller.Page, rqs *http.Request) controller.Controller {
 
 	usr, signedIn := session.User(pg.Session)
 	if !signedIn {
@@ -47,7 +46,7 @@ func (ctr SiteInfoController) Serve(ctx context.Context, pg *handler.Page, rqs *
 		frm = process.RepackSiteInfo(info)
 	}
 
-	cnt, err := ctr.Renderer.Render(ctx, "page/admin/site-info-manage", struct {
+	cnt, err := ctr.Renderer.String("page/admin/site-info-manage", struct {
 		User string
 		Form form.Form
 	}{

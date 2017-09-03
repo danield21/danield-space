@@ -11,20 +11,19 @@ import (
 	"github.com/danield21/danield-space/server/controllers/controller"
 	"github.com/danield21/danield-space/server/controllers/session"
 	"github.com/danield21/danield-space/server/form"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/pkg/errors"
 )
 
 type CategoryCreateController struct {
-	Renderer            handler.Renderer
+	Renderer            Renderer
 	SiteInfo            store.SiteInfoRepository
 	Unauthorized        controller.Controller
 	InternalServerError controller.Controller
-	PutCategory         handler.Processor
+	PutCategory         Processor
 }
 
-func (ctr CategoryCreateController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
+func (ctr CategoryCreateController) Serve(ctx context.Context, pg *controller.Page, rqs *http.Request) controller.Controller {
 
 	usr, signedIn := session.User(pg.Session)
 	if !signedIn {
@@ -39,7 +38,7 @@ func (ctr CategoryCreateController) Serve(ctx context.Context, pg *handler.Page,
 		frm = ctr.PutCategory.Process(ctx, rqs, pg.Session)
 	}
 
-	cnt, err := ctr.Renderer.Render(ctx, "page/admin/category-create", struct {
+	cnt, err := ctr.Renderer.String("page/admin/category-create", struct {
 		User string
 		Form form.Form
 	}{

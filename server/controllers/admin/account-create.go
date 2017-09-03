@@ -8,22 +8,21 @@ import (
 	"github.com/danield21/danield-space/server/controllers/process"
 	"github.com/danield21/danield-space/server/controllers/session"
 	"github.com/danield21/danield-space/server/form"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
 type AccountCreateController struct {
-	Renderer            handler.Renderer
+	Renderer            Renderer
 	SiteInfo            store.SiteInfoRepository
 	Account             store.AccountRepository
 	Unauthorized        controller.Controller
 	InternalServerError controller.Controller
-	PutAccount          handler.Processor
+	PutAccount          Processor
 }
 
-func (ctr AccountCreateController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
+func (ctr AccountCreateController) Serve(ctx context.Context, pg *controller.Page, rqs *http.Request) controller.Controller {
 
 	rqs.ParseForm()
 
@@ -60,7 +59,7 @@ func (ctr AccountCreateController) Serve(ctx context.Context, pg *handler.Page, 
 		}
 	}
 
-	cnt, err := ctr.Renderer.Render(ctx, "page/admin/account-create", struct {
+	cnt, err := ctr.Renderer.String("page/admin/account-create", struct {
 		User  string
 		Form  form.Form
 		Super bool

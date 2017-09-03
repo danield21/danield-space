@@ -1,4 +1,4 @@
-package server_test
+package controller_test
 
 import (
 	"net/http"

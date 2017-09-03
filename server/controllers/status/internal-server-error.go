@@ -4,25 +4,23 @@ import (
 	"html/template"
 	"net/http"
 
-	"google.golang.org/appengine/log"
-
 	"github.com/danield21/danield-space/server/controllers/controller"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
+	"google.golang.org/appengine/log"
 )
 
 type InternalServerErrorController struct {
-	Renderer handler.Renderer
+	Renderer Renderer
 	SiteInfo store.SiteInfoRepository
 	About    store.AboutRepository
 }
 
-func (ctr InternalServerErrorController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
+func (ctr InternalServerErrorController) Serve(ctx context.Context, pg *controller.Page, rqs *http.Request) controller.Controller {
 	info := ctr.SiteInfo.Get(ctx)
 
-	cnt, err := ctr.Renderer.Render(ctx, "page/status/internal-server-error", nil)
+	cnt, err := ctr.Renderer.String("page/status/internal-server-error", nil)
 
 	if err != nil {
 		log.Errorf(ctx, "%v", errors.Wrap(err, "unable to render content"))

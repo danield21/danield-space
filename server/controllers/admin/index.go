@@ -8,14 +8,13 @@ import (
 
 	"github.com/danield21/danield-space/server/controllers/controller"
 	"github.com/danield21/danield-space/server/controllers/session"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 )
 
 type IndexController struct {
-	Renderer            handler.Renderer
+	Renderer            Renderer
 	SiteInfo            store.SiteInfoRepository
 	Article             store.ArticleRepository
 	Category            store.CategoryRepository
@@ -23,7 +22,7 @@ type IndexController struct {
 	InternalServerError controller.Controller
 }
 
-func (ctr IndexController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
+func (ctr IndexController) Serve(ctx context.Context, pg *controller.Page, rqs *http.Request) controller.Controller {
 
 	user, signedIn := session.User(pg.Session)
 	if !signedIn {
@@ -34,7 +33,7 @@ func (ctr IndexController) Serve(ctx context.Context, pg *handler.Page, rqs *htt
 	cats, _ := ctr.Category.GetAll(ctx)
 	arts, _ := ctr.Article.GetAll(ctx, 1)
 
-	cnt, err := ctr.Renderer.Render(ctx, "page/admin/index", struct {
+	cnt, err := ctr.Renderer.String("page/admin/index", struct {
 		User          string
 		HasCategories bool
 		HasArticles   bool

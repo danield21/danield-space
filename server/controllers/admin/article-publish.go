@@ -13,20 +13,19 @@ import (
 
 	"github.com/danield21/danield-space/server/controllers/controller"
 	"github.com/danield21/danield-space/server/controllers/session"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 )
 
 type ArticlePublishController struct {
-	Renderer            handler.Renderer
+	Renderer            Renderer
 	SiteInfo            store.SiteInfoRepository
 	Category            store.CategoryRepository
 	Unauthorized        controller.Controller
-	PutArticle          handler.Processor
+	PutArticle          Processor
 	InternalServerError controller.Controller
 }
 
-func (ctr ArticlePublishController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
+func (ctr ArticlePublishController) Serve(ctx context.Context, pg *controller.Page, rqs *http.Request) controller.Controller {
 
 	usr, signedIn := session.User(pg.Session)
 	if !signedIn {
@@ -51,7 +50,7 @@ func (ctr ArticlePublishController) Serve(ctx context.Context, pg *handler.Page,
 		return ctr.InternalServerError
 	}
 
-	cnt, err := ctr.Renderer.Render(ctx, "page/admin/article-publish", struct {
+	cnt, err := ctr.Renderer.String("page/admin/article-publish", struct {
 		User       string
 		Form       form.Form
 		Categories []*store.Category

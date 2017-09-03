@@ -9,20 +9,19 @@ import (
 	"golang.org/x/net/context"
 
 	"github.com/danield21/danield-space/server/controllers/controller"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/pkg/errors"
 )
 
 type AboutController struct {
-	Context             handler.ContextGenerator
-	Renderer            handler.Renderer
+	Context             ContextGenerator
+	Renderer            Renderer
 	SiteInfo            store.SiteInfoRepository
 	About               store.AboutRepository
 	InternalServerError controller.Controller
 }
 
-func (ctr AboutController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
+func (ctr AboutController) Serve(ctx context.Context, pg *controller.Page, rqs *http.Request) controller.Controller {
 	info := ctr.SiteInfo.Get(ctx)
 
 	abt, err := ctr.About.Get(ctx)
@@ -32,7 +31,7 @@ func (ctr AboutController) Serve(ctx context.Context, pg *handler.Page, rqs *htt
 		return ctr.InternalServerError
 	}
 
-	cnt, err := ctr.Renderer.Render(ctx, "page/app/about", struct {
+	cnt, err := ctr.Renderer.String("page/app/about", struct {
 		About template.HTML
 	}{
 		abt,

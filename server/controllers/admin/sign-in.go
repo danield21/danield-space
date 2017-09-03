@@ -8,21 +8,20 @@ import (
 
 	"github.com/danield21/danield-space/server/controllers/controller"
 	"github.com/danield21/danield-space/server/form"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 )
 
 type SignInController struct {
-	Renderer            handler.Renderer
+	Renderer            Renderer
 	SiteInfo            store.SiteInfoRepository
 	Account             store.AccountRepository
-	SignIn              handler.Processor
+	SignIn              Processor
 	InternalServerError controller.Controller
 }
 
-func (ctr SignInController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
+func (ctr SignInController) Serve(ctx context.Context, pg *controller.Page, rqs *http.Request) controller.Controller {
 	info := ctr.SiteInfo.Get(ctx)
 
 	var frm form.Form
@@ -31,7 +30,7 @@ func (ctr SignInController) Serve(ctx context.Context, pg *handler.Page, rqs *ht
 		frm = ctr.SignIn.Process(ctx, rqs, pg.Session)
 	}
 
-	cnt, err := ctr.Renderer.Render(ctx, "page/admin/sign-in", struct {
+	cnt, err := ctr.Renderer.String("page/admin/sign-in", struct {
 		Form form.Form
 	}{
 		frm,

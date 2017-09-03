@@ -10,7 +10,6 @@ import (
 
 	"github.com/danield21/danield-space/server/controllers/session"
 	"github.com/danield21/danield-space/server/form"
-	"github.com/danield21/danield-space/server/handler"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
@@ -61,7 +60,7 @@ func (prc SignInProcessor) Process(ctx context.Context, r *http.Request, s *sess
 	return frm
 }
 
-var SignOutProcessor handler.ProcessorFunc = func(ctx context.Context, r *http.Request, s *sessions.Session) form.Form {
+var SignOutProcessor ProcessorFunc = func(ctx context.Context, r *http.Request, s *sessions.Session) form.Form {
 	for key := range s.Values {
 		delete(s.Values, key)
 	}

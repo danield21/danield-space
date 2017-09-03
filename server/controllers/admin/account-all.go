@@ -7,21 +7,20 @@ import (
 
 	"github.com/danield21/danield-space/server/controllers/controller"
 	"github.com/danield21/danield-space/server/controllers/session"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 
 type AccountAllController struct {
-	Renderer            handler.Renderer
+	Renderer            Renderer
 	SiteInfo            store.SiteInfoRepository
 	Account             store.AccountRepository
 	Unauthorized        controller.Controller
 	InternalServerError controller.Controller
 }
 
-func (ctr AccountAllController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
+func (ctr AccountAllController) Serve(ctx context.Context, pg *controller.Page, rqs *http.Request) controller.Controller {
 
 	usr, signedIn := session.User(pg.Session)
 	if !signedIn {
@@ -46,7 +45,7 @@ func (ctr AccountAllController) Serve(ctx context.Context, pg *handler.Page, rqs
 		log.Errorf(ctx, "admin.AccountAllHandler - Unable to get all acounts\n%v", err)
 	}
 
-	cnt, err := ctr.Renderer.Render(ctx, "page/admin/account-all", struct {
+	cnt, err := ctr.Renderer.String("page/admin/account-all", struct {
 		User     string
 		Accounts []*store.Account
 		Super    bool

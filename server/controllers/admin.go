@@ -5,16 +5,15 @@ import (
 	"github.com/danield21/danield-space/server/controllers/controller"
 	"github.com/danield21/danield-space/server/controllers/process"
 	"github.com/danield21/danield-space/server/controllers/status"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/gorilla/mux"
 )
 
 //AdminRouter creates a new server instance to run
 type AdminRouter struct {
-	Context  handler.ContextGenerator
-	Session  handler.SessionGenerator
-	Renderer handler.Renderer
+	Context  ContextGenerator
+	Session  SessionGenerator
+	Renderer Renderer
 	SiteInfo store.SiteInfoRepository
 	Account  store.AccountRepository
 	About    store.AboutRepository

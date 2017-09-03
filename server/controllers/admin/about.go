@@ -7,7 +7,6 @@ import (
 	"github.com/danield21/danield-space/server/controllers/controller"
 	"github.com/danield21/danield-space/server/controllers/session"
 	"github.com/danield21/danield-space/server/form"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
@@ -15,15 +14,15 @@ import (
 )
 
 type AboutController struct {
-	Renderer            handler.Renderer
+	Renderer            Renderer
 	SiteInfo            store.SiteInfoRepository
 	About               store.AboutRepository
 	InternalServerError controller.Controller
 	Unauthorized        controller.Controller
-	PutAbout            handler.Processor
+	PutAbout            Processor
 }
 
-func (ctr AboutController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
+func (ctr AboutController) Serve(ctx context.Context, pg *controller.Page, rqs *http.Request) controller.Controller {
 
 	usr, signedIn := session.User(pg.Session)
 	if !signedIn {
@@ -50,7 +49,7 @@ func (ctr AboutController) Serve(ctx context.Context, pg *handler.Page, rqs *htt
 		}
 	}
 
-	cnt, err := ctr.Renderer.Render(ctx, "page/admin/about", struct {
+	cnt, err := ctr.Renderer.String("page/admin/about", struct {
 		User string
 		Form form.Form
 	}{

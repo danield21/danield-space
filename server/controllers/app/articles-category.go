@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/danield21/danield-space/server/controllers/controller"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
@@ -14,7 +13,7 @@ import (
 )
 
 type ArticleCategoryController struct {
-	Renderer            handler.Renderer
+	Renderer            Renderer
 	SiteInfo            store.SiteInfoRepository
 	Article             store.ArticleRepository
 	Category            store.CategoryRepository
@@ -22,7 +21,7 @@ type ArticleCategoryController struct {
 	NotFound            controller.Controller
 }
 
-func (ctr ArticleCategoryController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
+func (ctr ArticleCategoryController) Serve(ctx context.Context, pg *controller.Page, rqs *http.Request) controller.Controller {
 	vars := mux.Vars(rqs)
 
 	info := ctr.SiteInfo.Get(ctx)
@@ -39,7 +38,7 @@ func (ctr ArticleCategoryController) Serve(ctx context.Context, pg *handler.Page
 		return ctr.NotFound
 	}
 
-	cnt, err := ctr.Renderer.Render(ctx, "page/app/article", struct {
+	cnt, err := ctr.Renderer.String("page/app/article", struct {
 		Articles []*store.Article
 		Category *store.Category
 	}{

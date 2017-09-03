@@ -10,7 +10,7 @@ import (
 )
 
 //Get gathers all the html files in the view directory and stores them in the Go template structure
-func Get(directory string) <-chan *template.Template {
+func Get(directory string) *Renderer {
 	out := make(chan *template.Template)
 	views := template.New("view")
 
@@ -29,7 +29,9 @@ func Get(directory string) <-chan *template.Template {
 		out <- views
 	})()
 
-	return out
+	renderer := new(Renderer)
+	renderer.generateTemplates = out
+	return renderer
 }
 
 func addTo(views *template.Template, funcs template.FuncMap) func(string, os.FileInfo, error) error {

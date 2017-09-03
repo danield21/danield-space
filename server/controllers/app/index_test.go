@@ -10,7 +10,6 @@ import (
 
 	"github.com/danield21/danield-space/server"
 	"github.com/danield21/danield-space/server/controllers/app"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/appengine/aetest"

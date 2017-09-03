@@ -10,19 +10,18 @@ import (
 
 	"github.com/danield21/danield-space/server/controllers/controller"
 	"github.com/danield21/danield-space/server/controllers/session"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 )
 
 type ArticleAllController struct {
-	Renderer            handler.Renderer
+	Renderer            Renderer
 	SiteInfo            store.SiteInfoRepository
 	Article             store.ArticleRepository
 	Unauthorized        controller.Controller
 	InternalServerError controller.Controller
 }
 
-func (ctr ArticleAllController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
+func (ctr ArticleAllController) Serve(ctx context.Context, pg *controller.Page, rqs *http.Request) controller.Controller {
 
 	usr, signedIn := session.User(pg.Session)
 	if !signedIn {
@@ -36,7 +35,7 @@ func (ctr ArticleAllController) Serve(ctx context.Context, pg *handler.Page, rqs
 		log.Errorf(ctx, "admin.ArticleAllHandler - Unable to get all acounts\n%v", err)
 	}
 
-	cnt, err := ctr.Renderer.Render(ctx, "page/admin/article-all", struct {
+	cnt, err := ctr.Renderer.String("page/admin/article-all", struct {
 		User     string
 		Articles []*store.Article
 	}{

@@ -9,7 +9,6 @@ import (
 	"golang.org/x/net/context"
 
 	"github.com/danield21/danield-space/server/controllers/controller"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/pkg/errors"
 )
@@ -20,13 +19,13 @@ type publicationList struct {
 }
 
 type ArticlesController struct {
-	Renderer            handler.Renderer
+	Renderer            Renderer
 	SiteInfo            store.SiteInfoRepository
 	Article             store.ArticleRepository
 	InternalServerError controller.Controller
 }
 
-func (ctr ArticlesController) Serve(ctx context.Context, pg *handler.Page, rqs *http.Request) controller.Controller {
+func (ctr ArticlesController) Serve(ctx context.Context, pg *controller.Page, rqs *http.Request) controller.Controller {
 	info := ctr.SiteInfo.Get(ctx)
 
 	articleMap, err := ctr.Article.GetMapKeyedByCategory(ctx, 3)
@@ -45,7 +44,7 @@ func (ctr ArticlesController) Serve(ctx context.Context, pg *handler.Page, rqs *
 		})
 	}
 
-	cnt, err := ctr.Renderer.Render(ctx, "page/app/articles", struct {
+	cnt, err := ctr.Renderer.String("page/app/articles", struct {
 		Articles []publicationList
 	}{
 		Articles: articles,

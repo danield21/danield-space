@@ -4,16 +4,15 @@ import (
 	"github.com/danield21/danield-space/server/controllers/app"
 	"github.com/danield21/danield-space/server/controllers/controller"
 	"github.com/danield21/danield-space/server/controllers/status"
-	"github.com/danield21/danield-space/server/handler"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/gorilla/mux"
 )
 
 //App creates a new server instance to run
 type AppRouter struct {
-	Context  handler.ContextGenerator
-	Session  handler.SessionGenerator
-	Renderer handler.Renderer
+	Context  ContextGenerator
+	Session  SessionGenerator
+	Renderer Renderer
 	SiteInfo store.SiteInfoRepository
 	About    store.AboutRepository
 	Article  store.ArticleRepository
