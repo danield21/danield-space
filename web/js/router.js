@@ -50,7 +50,7 @@ function storeState(main, state, newPage, scroll) {
 
 function next(url, scroll) {
     return html => {
-        const main = Bliss('main', html)
+        const main = html.body
 
         storeState(main, {
             url,
@@ -94,7 +94,13 @@ function submitForm(form) {
         return encode
     }, '')
 
-    return getPage(url, { responseType: 'document', method, data })
+    return getPage(url, {
+        method,
+        data,
+        headers: {
+            Accept: 'application/json'
+        }
+    })
 }
 
 function navigate(a) {
@@ -102,14 +108,24 @@ function navigate(a) {
         return Promise.reject(new Error('Provided value is not an A element with an href'))
     }
 
-    return getPage(a.href, { responseType: 'document' })
+    return getPage(a.href, {
+        headers: {
+            Accept: 'application/json'
+        }
+    })
 }
 
 function getPage(url, data) {
-    return Bliss.fetch(url, data).then(response => {
-        return response.responseXML ? Promise.resolve(response.responseXML) : Promise.reject(new Error('Did not get a document back from ' + url))
-    }, e => {
-        return e.xhr.responseXML ? Promise.resolve(e.xhr.responseXML) : Promise.reject(new Error('Did not get a document back from ' + url))
+    return Bliss.fetch(url, data).then(
+        response => new Promise((resolve, _reject) => {
+            resolve(JSON.parse(response.response))
+        }), e => new Promise((resolve, _reject) => {
+            resolve(JSON.parse(e.xhr.response))
+        })
+    ).then(page => {
+        const parser = new DOMParser()
+        page.Content = parser.parseFromString(page.Content, 'text/html')
+        return Promise.resolve(page.Content)
     })
 }
 

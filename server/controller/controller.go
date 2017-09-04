@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"golang.org/x/net/context"
@@ -21,6 +22,14 @@ func (hnd ControllerHandler) ToHandler(ctr Controller) http.Handler {
 	return http.HandlerFunc(func(rsp http.ResponseWriter, rqs *http.Request) {
 		ctx := hnd.Context.Generate(rqs)
 
+		mime, err := Negotiate(rqs, "text/html", "application/json")
+		if err != nil {
+			log.Errorf(ctx, "Content Negotiation failed\n%v", err)
+			rsp.WriteHeader(http.StatusNotAcceptable)
+			rsp.Write(nil)
+			return
+		}
+
 		pg := NewPage()
 		pg.Session = hnd.Session.Generate(ctx, rqs)
 
@@ -36,10 +45,26 @@ func (hnd ControllerHandler) ToHandler(ctr Controller) http.Handler {
 		for head, value := range pg.Header {
 			rsp.Header().Add(head, value)
 		}
-		err := hnd.Renderer.Render(rsp, "core/page", pg)
 
-		if err != nil {
-			log.Errorf(ctx, "Error occurred during rendering %s\n%v", rqs.URL.Path, err)
+		if pg.Header["Content-Type"] == "" {
+			rsp.Header().Add("Content-Type", mime.MIME)
+		}
+
+		switch mime.MIME {
+		case "text/html":
+			err := hnd.Renderer.Render(rsp, "core/page", pg)
+			if err != nil {
+				log.Errorf(ctx, "Error occurred during rendering %s\n%v", rqs.URL.Path, err)
+			}
+			break
+		case "application/json":
+			bPg, err := json.Marshal(pg)
+			if err != nil {
+				log.Errorf(ctx, "Error occurred during rendering %s\n%v", rqs.URL.Path, err)
+				break
+			}
+			rsp.Write(bPg)
+			break
 		}
 	})
 }

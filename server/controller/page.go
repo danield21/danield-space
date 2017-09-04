@@ -8,9 +8,9 @@ import (
 )
 
 type Page struct {
-	Status   int
-	Header   map[string]string
-	Session  *sessions.Session
+	Status   int               `json:"-"`
+	Header   map[string]string `json:"-"`
+	Session  *sessions.Session `json:"-"`
 	Title    string
 	Language language.Tag
 	Meta     map[string]string
