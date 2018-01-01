@@ -1,5 +1,6 @@
 .generated-html {
-    section {
+    section,
+    div {
         @include cloud;
         &>img:first-child {
             float: right;
@@ -34,7 +35,7 @@
             }
         }
     }
-    div+div {
+    &+& {
         margin-top: .5rem
     }
     h1,
