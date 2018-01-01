@@ -1,10 +1,9 @@
 package store
 
 import (
+	"context"
 	"regexp"
 	"strings"
-
-	"golang.org/x/net/context"
 )
 
 //Default has default information about the site

@@ -1,15 +1,14 @@
 package process
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"net/url"
 
+	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/gorilla/sessions"
-
-	"github.com/danield21/danield-space/server/form"
-	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 

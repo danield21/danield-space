@@ -1,9 +1,8 @@
 package store
 
 import (
+	"context"
 	"time"
-
-	"golang.org/x/net/context"
 )
 
 type SessionKey struct {

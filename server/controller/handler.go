@@ -1,12 +1,11 @@
 package controller
 
 import (
+	"context"
 	"io"
 	"net/http"
 
 	"github.com/gorilla/sessions"
-
-	"golang.org/x/net/context"
 )
 
 type SessionGenerator interface {

@@ -1,13 +1,13 @@
 package status
 
 import (
+	"context"
 	"html/template"
 	"net/http"
 
 	"github.com/danield21/danield-space/server/controller"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/pkg/errors"
-	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 

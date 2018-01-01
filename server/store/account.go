@@ -1,10 +1,10 @@
 package store
 
 import (
+	"context"
 	"regexp"
 
 	"golang.org/x/crypto/bcrypt"
-	"golang.org/x/net/context"
 )
 
 type Account struct {

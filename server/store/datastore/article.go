@@ -1,11 +1,11 @@
 package datastore
 
 import (
+	"context"
 	"errors"
 	"time"
 
 	"github.com/danield21/danield-space/server/store"
-	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
 )
 

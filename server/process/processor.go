@@ -1,11 +1,11 @@
 package process
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/danield21/danield-space/server/form"
 	"github.com/gorilla/sessions"
-	"golang.org/x/net/context"
 )
 
 type ProcessorFunc func(ctx context.Context, r *http.Request, s *sessions.Session) form.Form

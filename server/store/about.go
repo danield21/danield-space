@@ -4,7 +4,7 @@ import (
 	"html/template"
 	"log"
 
-	"golang.org/x/net/context"
+	"context"
 )
 
 var DefaultAbout = []byte(

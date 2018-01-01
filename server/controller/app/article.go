@@ -1,10 +1,9 @@
 package app
 
 import (
+	"context"
 	"html/template"
 	"net/http"
-
-	"golang.org/x/net/context"
 
 	"github.com/danield21/danield-space/server/controller"
 	"github.com/danield21/danield-space/server/store"

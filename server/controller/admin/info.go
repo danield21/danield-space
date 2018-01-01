@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"context"
 	"html/template"
 	"net/http"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/danield21/danield-space/server/process"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/pkg/errors"
-	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 

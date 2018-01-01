@@ -1,6 +1,7 @@
 package process
 
 import (
+	"context"
 	"errors"
 	"html/template"
 	"net/http"
@@ -10,7 +11,6 @@ import (
 	"github.com/danield21/danield-space/server/form"
 	"github.com/danield21/danield-space/server/store"
 	"github.com/gorilla/sessions"
-	"golang.org/x/net/context"
 )
 
 const titleKey = "title"

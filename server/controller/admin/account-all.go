@@ -1,13 +1,13 @@
 package admin
 
 import (
+	"context"
 	"errors"
 	"html/template"
 	"net/http"
 
 	"github.com/danield21/danield-space/server/controller"
 	"github.com/danield21/danield-space/server/store"
-	"golang.org/x/net/context"
 	"google.golang.org/appengine/log"
 )
 

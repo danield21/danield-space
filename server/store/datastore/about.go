@@ -1,10 +1,10 @@
 package datastore
 
 import (
+	"context"
 	"html/template"
 
 	"github.com/danield21/danield-space/server/store"
-	"golang.org/x/net/context"
 )
 
 const bucketKey = "about-page"
