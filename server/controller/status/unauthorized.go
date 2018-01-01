@@ -9,6 +9,7 @@ import (
 	"github.com/danield21/danield-space/server/store"
 	"github.com/pkg/errors"
 	"google.golang.org/appengine/log"
+	"google.golang.org/appengine/user"
 )
 
 type UnauthorizedController struct {
@@ -21,7 +22,12 @@ type UnauthorizedController struct {
 func (ctr UnauthorizedController) Serve(ctx context.Context, pg *controller.Page, rqs *http.Request) controller.Controller {
 	info := ctr.SiteInfo.Get(ctx)
 
-	cnt, err := ctr.Renderer.String("page/status/unauthorized", nil)
+	url, _ := user.LoginURL(ctx, rqs.URL.Path)
+	cnt, err := ctr.Renderer.String("page/status/unauthorized", struct {
+		URL string
+	}{
+		URL: url,
+	})
 
 	if err != nil {
 		log.Errorf(ctx, "%v", errors.Wrap(err, "unable to render content"))

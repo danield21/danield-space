@@ -15,7 +15,6 @@ type AdminRouter struct {
 	Session  SessionGenerator
 	Renderer controller.Renderer
 	SiteInfo store.SiteInfoRepository
-	Account  store.AccountRepository
 	About    store.AboutRepository
 	Article  store.ArticleRepository
 	Category store.CategoryRepository
@@ -53,21 +52,6 @@ func (rtr AdminRouter) Route(r *mux.Router) {
 		Unauthorized:        unauth,
 		InternalServerError: inrErr,
 	}))
-	r.Handle("/sign-in", ctrHnd.ToHandler(admin.SignInController{
-		Renderer:            rtr.Renderer,
-		SiteInfo:            rtr.SiteInfo,
-		Account:             rtr.Account,
-		InternalServerError: inrErr,
-		SignIn: process.SignInProcessor{
-			Account: rtr.Account,
-		},
-	}))
-	r.Handle("/sign-out", ctrHnd.ToHandler(admin.SignOutController{
-		Renderer:            rtr.Renderer,
-		SiteInfo:            rtr.SiteInfo,
-		InternalServerError: inrErr,
-		SignOut:             process.SignOutProcessor,
-	}))
 	r.Handle("/about", ctrHnd.ToHandler(admin.AboutController{
 		Renderer:            rtr.Renderer,
 		SiteInfo:            rtr.SiteInfo,
@@ -76,23 +60,6 @@ func (rtr AdminRouter) Route(r *mux.Router) {
 		InternalServerError: inrErr,
 		PutAbout: process.PutAboutProcessor{
 			About: rtr.About,
-		},
-	}))
-	r.Handle("/account", ctrHnd.ToHandler(admin.AccountAllController{
-		Renderer:            rtr.Renderer,
-		SiteInfo:            rtr.SiteInfo,
-		Account:             rtr.Account,
-		Unauthorized:        unauth,
-		InternalServerError: inrErr,
-	}))
-	r.Handle("/account/create", ctrHnd.ToHandler(admin.AccountCreateController{
-		Renderer:            rtr.Renderer,
-		SiteInfo:            rtr.SiteInfo,
-		Account:             rtr.Account,
-		Unauthorized:        unauth,
-		InternalServerError: inrErr,
-		PutAccount: process.PutAccountProcessor{
-			Account: rtr.Account,
 		},
 	}))
 	r.Handle("/article", ctrHnd.ToHandler(admin.ArticleAllController{

@@ -9,6 +9,7 @@ import (
 	"github.com/danield21/danield-space/server/store"
 	"github.com/pkg/errors"
 	"google.golang.org/appengine/log"
+	"google.golang.org/appengine/user"
 )
 
 type CategoryAllController struct {
@@ -20,10 +21,14 @@ type CategoryAllController struct {
 }
 
 func (ctr CategoryAllController) Serve(ctx context.Context, pg *controller.Page, rqs *http.Request) controller.Controller {
-
-	usr, signedIn := User(pg.Session)
-	if !signedIn {
+	usr := user.Current(ctx)
+	if usr == nil {
 		return ctr.Unauthorized
+	}
+
+	signOut, err := user.LogoutURL(ctx, "/")
+	if err != nil {
+		log.Errorf(ctx, "%v", errors.Wrap(err, "cannot create a url for logging out"))
 	}
 
 	info := ctr.SiteInfo.Get(ctx)
@@ -37,9 +42,11 @@ func (ctr CategoryAllController) Serve(ctx context.Context, pg *controller.Page,
 	cnt, err := ctr.Renderer.String("page/admin/category-all", struct {
 		User       string
 		Categories []*store.Category
+		SignOut    string
 	}{
-		User:       usr,
+		User:       usr.String(),
 		Categories: cats,
+		SignOut:    signOut,
 	})
 
 	if err != nil {

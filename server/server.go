@@ -35,7 +35,6 @@ func New() http.Handler {
 		Session:  session,
 		Renderer: rnd,
 		SiteInfo: connections.SiteInfo,
-		Account:  connections.Account,
 		About:    connections.About,
 		Article:  connections.Article,
 		Category: connections.Category,

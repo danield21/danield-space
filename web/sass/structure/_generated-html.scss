@@ -1,5 +1,5 @@
 .generated-html {
-    div {
+    section {
         @include cloud;
         &>img:first-child {
             float: right;

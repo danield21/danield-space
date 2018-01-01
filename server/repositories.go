@@ -9,7 +9,6 @@ type RepositoryConnections struct {
 	About    datastore.About
 	SiteInfo datastore.SiteInfo
 	Session  datastore.Session
-	Account  datastore.Account
 	Article  datastore.Article
 	Category datastore.Category
 }
@@ -25,7 +24,6 @@ func CreateRepository() RepositoryConnections {
 		Bucket: connections.Bucket,
 	}
 	connections.Session = datastore.Session{}
-	connections.Account = datastore.Account{}
 	connections.Category = datastore.Category{}
 	connections.Article = datastore.Article{
 		Category: connections.Category,

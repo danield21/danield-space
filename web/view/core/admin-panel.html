@@ -1,13 +1,12 @@
 <div class="cloud" style="padding: 4px;">
     <div class="welcome-panel" style="margin: 16px;">
         <h1>Welcome {{ .User }}</h1>
-        <form action="/admin/sign-out" method="post">
-            <button type="submit">Sign Out</button>
-        </form>
+        <div class="sign-out">
+            <a class="button router-no-spa" href="{{.SignOut}}">Sign Out</a>
+        </div>
     </div>
     <nav role="navigation">
         <a href="/admin/">Control Panel</a>
         <a href="/admin/article">Articles</a>
-        <a href="/admin/account">Accounts</a>
     </nav>
 </div>

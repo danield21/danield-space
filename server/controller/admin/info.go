@@ -11,6 +11,7 @@ import (
 	"github.com/danield21/danield-space/server/store"
 	"github.com/pkg/errors"
 	"google.golang.org/appengine/log"
+	"google.golang.org/appengine/user"
 )
 
 type SiteInfoController struct {
@@ -23,10 +24,14 @@ type SiteInfoController struct {
 }
 
 func (ctr SiteInfoController) Serve(ctx context.Context, pg *controller.Page, rqs *http.Request) controller.Controller {
-
-	usr, signedIn := User(pg.Session)
-	if !signedIn {
+	usr := user.Current(ctx)
+	if usr == nil {
 		return ctr.Unauthorized
+	}
+
+	signOut, err := user.LogoutURL(ctx, "/")
+	if err != nil {
+		log.Errorf(ctx, "%v", errors.Wrap(err, "cannot create a url for logging out"))
 	}
 
 	info := ctr.SiteInfo.Get(ctx)
@@ -46,11 +51,13 @@ func (ctr SiteInfoController) Serve(ctx context.Context, pg *controller.Page, rq
 	}
 
 	cnt, err := ctr.Renderer.String("page/admin/site-info-manage", struct {
-		User string
-		Form form.Form
+		User    string
+		Form    form.Form
+		SignOut string
 	}{
-		User: usr,
-		Form: frm,
+		User:    usr.String(),
+		Form:    frm,
+		SignOut: signOut,
 	})
 
 	if err != nil {

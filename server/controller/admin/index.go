@@ -9,6 +9,7 @@ import (
 	"github.com/danield21/danield-space/server/store"
 	"github.com/pkg/errors"
 	"google.golang.org/appengine/log"
+	"google.golang.org/appengine/user"
 )
 
 type IndexController struct {
@@ -21,10 +22,16 @@ type IndexController struct {
 }
 
 func (ctr IndexController) Serve(ctx context.Context, pg *controller.Page, rqs *http.Request) controller.Controller {
-
-	user, signedIn := User(pg.Session)
-	if !signedIn {
+	usr := user.Current(ctx)
+	if usr == nil {
 		return ctr.Unauthorized
+	}
+
+	log.Debugf(ctx, "%v", user.IsAdmin(ctx))
+
+	signOut, err := user.LogoutURL(ctx, "/")
+	if err != nil {
+		log.Errorf(ctx, "%v", errors.Wrap(err, "cannot create a url for logging out"))
 	}
 
 	info := ctr.SiteInfo.Get(ctx)
@@ -35,10 +42,12 @@ func (ctr IndexController) Serve(ctx context.Context, pg *controller.Page, rqs *
 		User          string
 		HasCategories bool
 		HasArticles   bool
+		SignOut       string
 	}{
-		User:          user,
+		User:          usr.String(),
 		HasCategories: len(cats) > 0,
 		HasArticles:   len(arts) > 0,
+		SignOut:       signOut,
 	})
 
 	if err != nil {

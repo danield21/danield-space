@@ -17,10 +17,10 @@
         text-align: left;
         flex-grow: 1;
     }
-    form {
+    .sign-out {
         text-align: right;
         flex-grow: 1;
-        button {
+        a {
             padding: .7rem;
             font-size: 1.5rem;
         }

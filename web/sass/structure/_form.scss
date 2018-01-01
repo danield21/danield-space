@@ -42,12 +42,15 @@ select {
 }
 
 button,
-input[type="button"] {
+input[type="button"],
+a.button {
     border: 0;
     color: $cloud-color;
     padding: 0.5rem;
     border-radius: 0.5rem;
     background: linear-gradient(to bottom, lighten($fire-color, 8) 0%, darken($fire-color, 8) 100%);
+    display: inline-block;
+    text-decoration: none;
     &:hover {
         background: linear-gradient(to bottom, lighten($fire-color, 16) 0%, $fire-color 100%);
     }
