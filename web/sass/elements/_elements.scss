@@ -21,7 +21,7 @@ body {
 @mixin cloud {
     border-radius: 8px;
     background-color: rgba($cloud-color, .8);
-    padding: 3rem;
+    padding: 2rem;
     &+& {
         margin-top: 1rem;
     }
