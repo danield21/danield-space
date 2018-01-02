@@ -5,9 +5,6 @@ handlers:
 - url: /dist
   static_dir: dist
 
-- url: /.well-known
-  static_dir: well-known
-
 - url: /admin/.*
   script: _go_app
   login: admin

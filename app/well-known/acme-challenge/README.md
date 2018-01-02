@@ -1,1 +1,0 @@
-This folder should contain any challenges by Let's Encrypt
