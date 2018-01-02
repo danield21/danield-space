@@ -103,7 +103,7 @@ const balloons = {
 }
 
 function initBalloons(easel) {
-    Bliss.fetch('/dist/svg/balloon.svg').then(svg => {
+    Bliss.fetch('/dist/images/balloon.svg').then(svg => {
         const intID = setInterval(addBalloon, balloons.EVERY)
         requestAnimationFrame(addBalloon)
 

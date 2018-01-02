@@ -4,10 +4,18 @@ api_version: go1
 handlers:
 - url: /dist
   static_dir: dist
+  secure: always
 
 - url: /admin/.*
   script: _go_app
   login: admin
+  secure: always
+
+- url: /(favicon\.ico|android-chrome-(192x192|512x512)\.png|apple-touch-icon\.png|browserconfig\.xml|favicon-(16x16|32x32)\.png|manifest\.json|mstile-150x150\.png|safari-pinned-tab\.svg)$
+  static_files: dist/favicons/\1
+  upload: dist/favicons/(favicon\.ico|android-chrome-(192x192|512x512)\.png|apple-touch-icon\.png|browserconfig\.xml|favicon-(16x16|32x32)\.png|manifest\.json|mstile-150x150\.png|safari-pinned-tab\.svg)$
+  secure: always
 
 - url: /.*
   script: _go_app
+  secure: always
