@@ -116,7 +116,7 @@ function navigate(a) {
 }
 
 function getPage(url, data) {
-    return Bliss.fetch(url, data).then(
+    return Bliss.fetch(url + (url.indexOf('?') >= 0 ? '&' : '?') + 'content-format=json', data).then(
         response => new Promise((resolve, _reject) => {
             resolve(JSON.parse(response.response))
         }), e => new Promise((resolve, _reject) => {

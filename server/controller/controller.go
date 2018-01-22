@@ -22,13 +22,7 @@ func (hnd ControllerHandler) ToHandler(ctr Controller) http.Handler {
 	return http.HandlerFunc(func(rsp http.ResponseWriter, rqs *http.Request) {
 		ctx := hnd.Context.Generate(rqs)
 
-		mime, err := Negotiate(rqs, "text/html", "application/json")
-		if err != nil {
-			log.Errorf(ctx, "Content Negotiation failed\n%v", err)
-			rsp.WriteHeader(http.StatusNotAcceptable)
-			rsp.Write(nil)
-			return
-		}
+		format := rqs.FormValue("content-format")
 
 		pg := NewPage()
 		pg.Session = hnd.Session.Generate(ctx, rqs)
@@ -46,24 +40,29 @@ func (hnd ControllerHandler) ToHandler(ctr Controller) http.Handler {
 			rsp.Header().Add(head, value)
 		}
 
-		if pg.Header["Content-Type"] == "" {
-			rsp.Header().Add("Content-Type", mime.MIME)
-		}
-
-		switch mime.MIME {
-		case "text/html":
+		switch format {
+		case "":
+			fallthrough
+		case "html":
+			rsp.Header().Add("Content-Type", "text/html")
 			err := hnd.Renderer.Render(rsp, "core/page", pg)
 			if err != nil {
 				log.Errorf(ctx, "Error occurred during rendering %s\n%v", rqs.URL.Path, err)
 			}
 			break
-		case "application/json":
+		case "json":
+			rsp.Header().Add("Content-Type", "application/json")
 			bPg, err := json.Marshal(pg)
 			if err != nil {
 				log.Errorf(ctx, "Error occurred during rendering %s\n%v", rqs.URL.Path, err)
 				break
 			}
 			rsp.Write(bPg)
+			break
+		default:
+			log.Errorf(ctx, "Content Negotiation failed\nUnknown format %s", format)
+			rsp.WriteHeader(http.StatusNotAcceptable)
+			rsp.Write(nil)
 			break
 		}
 	})
