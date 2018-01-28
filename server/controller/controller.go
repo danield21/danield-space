@@ -47,7 +47,9 @@ func (hnd ControllerHandler) ToHandler(ctr Controller) http.Handler {
 		}
 
 		if pg.Header["Content-Type"] == "" {
-			rsp.Header().Add("Content-Type", mime.MIME)
+			hdr := rsp.Header()
+			hdr.Add("Vary", "Accept")
+			hdr.Add("Content-Type", mime.MIME)
 		}
 
 		switch mime.MIME {
