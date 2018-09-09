@@ -76,6 +76,10 @@ document.addEventListener('DOMContentLoaded', () => {
         desertFunc(true)
             .then(raiseEasel)
     })
+    document.addEventListener('scroll', () => {
+        desertFunc(false)
+            .then(raiseEasel)
+    })
 })
 
 function initSun(easel) {
