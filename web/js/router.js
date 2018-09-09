@@ -144,7 +144,7 @@ function handleBack(main, transitionOut, transitionIn) {
 
 function handleRouting(transitionOut, transitionIn) {
     return e => {
-        if (e.defaultPrevented) {
+        if (typeof e.which === 'undefined' || e.which !== 1 || e.defaultPrevented) {
             return
         }
 

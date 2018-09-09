@@ -4,6 +4,10 @@
         "commonjs": true,
         "es6": true
     },
+    "parserOptions": {
+        "ecmaVersion": 7,
+        "sourceType": "module"
+    },
     "extends": "eslint:recommended",
     "rules": {
         "indent": [

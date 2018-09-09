@@ -141,7 +141,6 @@ function ascend(balloon) {
             translateY: `-${climb}px`,
             easing: 'easeInQuad',
             duration: 4000,
-            complete: () => descend(balloon)
         })
 
         return a.finished.then(descend(balloon))

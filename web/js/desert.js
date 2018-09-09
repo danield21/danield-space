@@ -1,5 +1,3 @@
-const anime = require('animejs')
-
 const util = require('./util')
 const stick = require('./stick')
 

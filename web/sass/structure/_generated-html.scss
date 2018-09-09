@@ -5,7 +5,7 @@
         &>img:first-child {
             float: right;
             width: 28%;
-            border-radius: 8px;
+            border-radius: .5em;
             opacity: .9;
         }
         &>img:first-child~p {
@@ -17,12 +17,12 @@
             display: table;
             clear: both;
         }
-        @media(max-width: 800px) {
+        @media(max-width: 60em) {
             &>img:first-child {
                 float: none;
                 width: auto;
                 margin: 0 auto;
-                max-height: 200px;
+                max-height: 10em;
                 display: block;
             }
             &>img:first-child~p {
@@ -36,7 +36,7 @@
         }
     }
     &+& {
-        margin-top: .5rem
+        margin-top: .5em
     }
     h1,
     h2,
@@ -44,11 +44,11 @@
     h4,
     h5,
     h6 {
-        margin-top: 1rem;
+        margin-top: 1em;
     }
     p {
-        @media(max-width: 800px) {
-            text-indent: 2rem;
+        @media(max-width: 60em) {
+            text-indent: 2em;
         }
     }
 }

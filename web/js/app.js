@@ -1,14 +1,15 @@
-const Anime = require('animejs')
-const Modernizr = require('modernizr')
-const Please = require('pleasejs')
-const SdRand = require('gauss-random')
+import Anime from 'animejs'
+import * as Modernizr from 'modernizr'
+import * as Please from 'pleasejs'
+import gaussRandom from 'gauss-random'
 
-const util = require('./util')
+import * as util from './util'
 
-const Balloons = require('./balloons')
-const Router = require('./router')
-const Sun = require('./sun')
-const desert = require('./desert')
+import * as Balloons from './balloons'
+import * as Router from './router'
+import * as Sun from './sun'
+import * as desert from './desert'
+import * as Easel from './easel'
 
 function meetsRequirements() {
     return Modernizr.eventlistener &&
@@ -28,13 +29,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return
     }
 
-    const main = Bliss('main')
-    const easel = Bliss('#sky-easel')
+    const main = document.querySelector('main')
     const mainCloud = Bliss('body > .cloud')
     const sand = Bliss('footer > .sand')
     const mountainRange = document.getElementById('mountain-range')
 
-    initEasel(easel)
+    const easel = Easel.create()
 
     if (Balloons.meetsRequirements()) {
         initBalloons(easel)
@@ -76,16 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         desertFunc(true)
             .then(raiseEasel)
     })
-    document.addEventListener('scroll', () => {
-        desertFunc(false)
-            .then(raiseEasel)
-    })
 })
-
-function initEasel(easel) {
-    easel.style.position = 'fixed'
-    easel.style.top = 0
-}
 
 function initSun(easel) {
     const sun = Sun.create(1000)
@@ -119,13 +110,13 @@ function initBalloons(easel) {
             const min = screen.width * balloons.MIN_HEIGHT
             const bottom = screen.height - max
 
-            const top = util.choosePoint(SdRand(), 0, bottom / 2, bottom)
+            const top = util.choosePoint(gaussRandom(), 0, bottom / 2, bottom)
             const left = screen.width
             const hexColor = Please.make_color({
                 saturation: .8 + Math.random() * .2,
                 value: .8 + Math.random() * .2
             })[0]
-            const height = util.choosePoint(SdRand(), min, avg, max) * adjustHeigth(top, bottom)
+            const height = util.choosePoint(gaussRandom(), min, avg, max) * adjustHeigth(top, bottom)
             Balloons.parseSVG(svg)
                 .then(Balloons.size(height))
                 .then(Balloons.position(top, left))
