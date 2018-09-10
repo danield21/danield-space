@@ -56,7 +56,7 @@ function position(top, left) {
         left += balloon.width
 
         Bliss.style(balloon.root, {
-            position: 'fixed',
+            position: 'absolute',
             top: top + 'px',
             left: 0 + 'px',
             transform: `translateX(${left}px) translateY(0)`

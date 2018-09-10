@@ -1,36 +1,107 @@
-body > .cloud {
-    @include cloud;
+html,
+body {
+    font-family: 'Raleway', sans-serif;
+    color: $font-color;
+    margin: 0;
+}
 
-    width: 80%;
-    max-width: 75em;
-    margin: 2em auto 0 auto;
-    position: relative;
-    @media(max-width: 60em) {
-        & {
-            width: 90%;
+body {
+    background: $skyblue-color;
+}
+
+#outer-wrapper {
+    @mixin container {
+        max-width: 75em;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+    }
+
+    & > header {
+        @include cloud;
+        @include container;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        margin-top: 1em;
+        padding-bottom: 1em;
+
+        @media(max-width: 30em) {
+            & {
+                padding-bottom: .75em;
+            }
+        }
+    }
+    
+    & > main {
+        @include cloud;
+        @include container;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        padding-top: 0;
+        @media(max-width: 30em) {
+            & {
+                padding-top: 0em;
+            }
         }
     }
 }
 
-#sky-easel {
-    position: fixed;
-    top: 0;
-}
-        
-#sky-easel > .sun {
+@mixin slide-in-later {
     visibility: hidden;
     transform: translateY(-100%);
     transition: transform 1s;
+    
+    &.shown {
+        visibility: visible;
+        transform: translateY(0);
+    }
 }
 
-footer>.sand {
+#sky-canvas {
+    position: sticky;
+    bottom: 0;
+}
+
+#sky-easel {
+    position: absolute;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    margin-top: -100vh;
+}
+        
+#sun {
+    @include slide-in-later;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 80em;
+    width: 80em;
+    max-width: 50%;
+    background: radial-gradient(circle closest-side at center, #FFF250 0%, #FFFFFF 10%, transparent 100%);
+    
+    transform: translateX(-50%) translateY(-100%);
+    &.shown {
+        transform: translateX(-50%) translateY(-50%);
+    }
+}
+
+#sand {
+    @include slide-in-later;
+
     height: 6em;
+    background-color: $sand-color;
     position: relative;
-    z-index: 5;
 }
 
-footer>.mountain {
-    height: 9em;
-    position: relative;
-    z-index: 5;
+#mountain-range {
+    @include slide-in-later;
+
+    width: 100%;
+    display: block;
+    position: sticky;
+    bottom: 0;
+
+    transform: translateY(100%);
 }

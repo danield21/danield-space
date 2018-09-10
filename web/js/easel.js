@@ -1,7 +1,11 @@
-export function create() {
+export function create(target) {
+    const canvas = document.createElement('div')
+    canvas.setAttribute('id', 'sky-canvas')
+    target.parentElement.insertBefore(canvas, target.nextSibling)
+
     const easel = document.createElement('div')
     easel.setAttribute('id', 'sky-easel')
-    document.body.insertBefore(easel, document.body.firstChild)
+    canvas.append(easel)
 
     return easel
 }

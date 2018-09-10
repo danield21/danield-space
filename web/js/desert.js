@@ -1,7 +1,6 @@
-const util = require('./util')
-const stick = require('./stick')
+import * as util from './util'
 
-function style(mainCloud, minAltitude) {
+export function style(mainCloud, minAltitude) {
     return () => {
         return new Promise((resolve) => {
             let screen = util.screenSize()
@@ -10,26 +9,15 @@ function style(mainCloud, minAltitude) {
             if (altitude < minAltitude) {
                 altitude = minAltitude
             }
-            mainCloud.style.marginBottom = altitude + 'px'
+            mainCloud.lastElementChild.style.marginBottom = altitude + 'px'
             resolve()
         })
     }
 }
 
-function display(mountain, desert, sun) {
-    return () => {
-        mountain.classList.add('shown')
-        desert.classList.add('shown')
-        sun.classList.add('shown')
-    }
-}
-
-function stickMountain(mountain) {
-    return stick.toBottom(mountain)
-}
-
-module.exports = {
-    style,
-    display,
-    stickMountain
+export function createMountain() {
+    const embed = document.createElement('embed')
+    embed.setAttribute('id', 'mountain-range')
+    embed.setAttribute('src', '/dist/images/mountain.svg')
+    return embed
 }

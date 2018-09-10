@@ -19,39 +19,18 @@
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=blissfuljs" defer></script>
     <script src="/dist/js/bliss.min.js" defer></script>
     <script src="/dist/js/app.js" defer></script>
-    <style>
-        #mountain-range {
-            display: block;
-            width: 100%;
-            visibility: hidden;
-            transform: translateY(100%);
-            transition: transform .5s .5s;
-        }
-        
-        footer>.sand {
-            visibility: hidden;
-            transform: translateY(100%);
-            transition: transform .5s .5s;
-        }
-        
-        #mountain-range.shown,
-        footer>.sand.shown,
-        #sky-easel>.sun.shown {
-            visibility: visible;
-            transform: translateY(0);
-        }
-    </style>
 </head>
 <body>
-    <div class="cloud">
+    <div id="outer-wrapper">
         <header>
-            {{template "core/navigation" .}}
+            <ul role="navigation">
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/articles">Articles</a></li>
+            </ul>
         </header>
         <main>{{ .Content }}</main>
     </div>
-    <footer>
-        <embed id="mountain-range" src="/dist/images/mountain.svg">
-        <div class="sand"></div>
-    </footer>
+    <footer id="sand"></footer>
 </body>
 </html>

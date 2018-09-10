@@ -1,22 +1,3 @@
-html,
-body {
-    font-family: 'Raleway', sans-serif;
-    color: $font-color;
-    margin: 0;
-}
-
-body {
-    background: $skyblue-color;
-}
-
-.sand {
-    background-color: $sand-color;
-    width: 100%;
-}
-
-.mountain {
-    width: 100%;
-}
 
 @mixin cloud {
     border-radius: .5em;

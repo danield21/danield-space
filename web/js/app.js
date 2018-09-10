@@ -30,32 +30,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const main = document.querySelector('main')
-    const mainCloud = Bliss('body > .cloud')
-    const sand = Bliss('footer > .sand')
-    const mountainRange = document.getElementById('mountain-range')
+    const outerSection = document.getElementById('outer-wrapper')
+    const sand = document.getElementById('sand')
 
-    const easel = Easel.create()
+    const easel = Easel.create(outerSection)
 
     if (Balloons.meetsRequirements()) {
         initBalloons(easel)
     }
 
-    initSun(easel)
+    const sun = Sun.create(easel)
 
     if (Router.meetsRequirements()) {
         initRouting(main)
     }
 
-    const desertFunc = initDesert(mainCloud, mountainRange, sand, Bliss('.sun'))
-    let raiseEasel = () => {
-        var height = util.screenSize(true).height
-        const offset = sand.getBoundingClientRect().top
-        if (offset < height) {
-            easel.style.transform = `translateY(-${height - offset}px)`
-        } else {
-            easel.style.transform = null
-        }
-    }
+    const mountain = desert.createMountain()
+    document.body.insertBefore(mountain, sand)
+
+    const desertFunc = desert.style(outerSection, 300)
 
     document.addEventListener('click', e => {
         const button = util.findAncestor(e.target, element => element.classList.contains('js-fillNow'))
@@ -66,28 +59,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
 
-    desertFunc(true)
-        .then(raiseEasel)
-    window.addEventListener('load', () => {
-        desertFunc(true)
-            .then(raiseEasel)
-    })
-    window.addEventListener('resize', () => {
-        desertFunc(true)
-            .then(raiseEasel)
-    })
-    document.addEventListener('scroll', () => {
-        desertFunc(false)
-            .then(raiseEasel)
-    })
+    window.addEventListener('load', desertFunc)
+    window.addEventListener('resize', desertFunc)
+
+    mountain.addEventListener('load', show(sun, mountain, sand))
 })
 
-function initSun(easel) {
-    const sun = Sun.create(1000)
-    Sun.setColor(sun, '#FFF250', '#FFFFFF')
-    easel.appendChild(sun)
+function show(...elms) {
+    return () => {
+        requestAnimationFrame(() => {
+            for(let elm of elms) {
+                elm.classList.add('shown')
+            }
+        })
+    }
 }
-
 
 const balloons = {
     MAX_AMOUNT: 10,
@@ -136,22 +122,6 @@ function initBalloons(easel) {
             return Math.sqrt(1 - Math.pow(top / bottom, 2))
         }
     })
-}
-
-const MIN_ALTITUDE = 300
-
-function initDesert(cloud, mountainRange, sand, sun) {
-    requestAnimationFrame(desert.display(mountainRange, sand, sun))
-    const style = desert.style(cloud, MIN_ALTITUDE)
-    const stick = desert.stickMountain(mountainRange)
-
-    return (layoutChanged) => {
-        if (layoutChanged) {
-            return style().then(stick)
-        } else {
-            return stick()
-        }
-    }
 }
 
 function initRouting(main) {
