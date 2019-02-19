@@ -18,6 +18,7 @@ export function style(mainCloud, minAltitude) {
 export function createMountain() {
     const embed = document.createElement('embed')
     embed.setAttribute('id', 'mountain-range')
+    embed.setAttribute('aria-hidden', 'true')
     embed.setAttribute('src', '/dist/images/mountain.svg')
     return embed
 }

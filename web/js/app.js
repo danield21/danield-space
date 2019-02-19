@@ -59,10 +59,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
 
-    window.addEventListener('load', desertFunc)
-    window.addEventListener('resize', desertFunc)
-
-    mountain.addEventListener('load', show(sun, mountain, sand))
+    window.addEventListener('load', () => {
+        desertFunc().then(show(sun, mountain, sand))
+        window.addEventListener('resize', desertFunc)
+    })
 })
 
 function show(...elms) {
